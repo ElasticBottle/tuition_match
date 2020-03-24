@@ -1,5 +1,5 @@
-import 'package:firebase_auth_demo_flutter/feature/sign-in/app/sign_in/sign_in_page.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
 import 'package:firebase_auth_demo_flutter/home_page.dart';
 import 'package:flutter/material.dart';
 

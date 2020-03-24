@@ -1,8 +1,8 @@
-import 'package:firebase_auth_demo_flutter/feature/sign-in/app/email_link_error_presenter.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service_adapter.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/email_secure_store.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_email_link_handler.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/app/email_link_error_presenter.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service_adapter.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/email_secure_store.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:firebase_auth_demo_flutter/initial_page_decider.dart';
 import 'package:firebase_auth_demo_flutter/user_data_injector.dart';
 import 'package:flutter/material.dart';

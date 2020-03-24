@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';

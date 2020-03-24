@@ -7,7 +7,6 @@ import 'package:firebase_auth_demo_flutter/app/sign_in/social_sign_in_button.dar
 import 'package:firebase_auth_demo_flutter/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:firebase_auth_demo_flutter/constants/keys.dart';
 import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/services/apple_sign_in_available.dart';
 import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -89,16 +88,6 @@ class SignInPage extends StatelessWidget {
     }
   }
 
-  Future<void> _signInWithApple(BuildContext context) async {
-    try {
-      await manager.signInWithApple();
-    } on PlatformException catch (e) {
-      if (e.code != 'ERROR_ABORTED_BY_USER') {
-        _showSignInError(context, e);
-      }
-    }
-  }
-
   Future<void> _signInWithEmailAndPassword(BuildContext context) async {
     final navigator = Navigator.of(context);
     await EmailPasswordSignInPage.show(
@@ -144,7 +133,6 @@ class SignInPage extends StatelessWidget {
   }
 
   Widget _buildSignIn(BuildContext context) {
-    final appleSignInAvailable = Provider.of<AppleSignInAvailable>(context);
     // Make content scrollable so that it fits on small screens
     return SingleChildScrollView(
       child: Container(
@@ -159,15 +147,6 @@ class SignInPage extends StatelessWidget {
               child: _buildHeader(),
             ),
             SizedBox(height: 32.0),
-            if (appleSignInAvailable.isAvailable) ...[
-              AppleSignInButton(
-                // TODO: add key when supported
-                style: ButtonStyle.black,
-                type: ButtonType.signIn,
-                onPressed: isLoading ? null : () => _signInWithApple(context),
-              ),
-              SizedBox(height: 8),
-            ],
             SocialSignInButton(
               key: googleButtonKey,
               assetName: 'assets/go-logo.png',

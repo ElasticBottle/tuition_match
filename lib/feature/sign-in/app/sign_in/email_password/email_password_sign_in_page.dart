@@ -1,9 +1,9 @@
-import 'package:firebase_auth_demo_flutter/app/sign_in/email_password/email_password_sign_in_model.dart';
 import 'package:firebase_auth_demo_flutter/common_widgets/form_submit_button.dart';
 import 'package:firebase_auth_demo_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:firebase_auth_demo_flutter/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/app/sign_in/email_password/email_password_sign_in_model.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

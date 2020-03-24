@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth_demo_flutter/common_widgets/platform_alert_dialog.dart';
 import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/services/firebase_email_link_handler.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

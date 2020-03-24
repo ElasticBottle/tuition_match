@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/services/email_secure_store.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/email_secure_store.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

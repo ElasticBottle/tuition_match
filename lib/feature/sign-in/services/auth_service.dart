@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:meta/meta.dart';
 
 @immutable

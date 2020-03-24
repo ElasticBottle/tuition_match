@@ -1,10 +1,10 @@
-import 'package:firebase_auth_demo_flutter/app/auth_widget_builder.dart';
-import 'package:firebase_auth_demo_flutter/app/email_link_error_presenter.dart';
-import 'package:firebase_auth_demo_flutter/app/auth_widget.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service_adapter.dart';
-import 'package:firebase_auth_demo_flutter/services/firebase_email_link_handler.dart';
-import 'package:firebase_auth_demo_flutter/services/email_secure_store.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/app/email_link_error_presenter.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service_adapter.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/email_secure_store.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_email_link_handler.dart';
+import 'package:firebase_auth_demo_flutter/initial_page_decider.dart';
+import 'package:firebase_auth_demo_flutter/user_data_injector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -47,13 +47,13 @@ class MyApp extends StatelessWidget {
           dispose: (_, linkHandler) => linkHandler.dispose(),
         ),
       ],
-      child: AuthWidgetBuilder(
+      child: UserDataInjector(
           builder: (BuildContext context, AsyncSnapshot<User> userSnapshot) {
         return MaterialApp(
           theme: ThemeData(primarySwatch: Colors.indigo),
           home: EmailLinkErrorPresenter.create(
             context,
-            child: AuthWidget(userSnapshot: userSnapshot),
+            child: InitialPageDecider(userSnapshot: userSnapshot),
           ),
         );
       }),

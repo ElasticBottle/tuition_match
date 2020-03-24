@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:apple_sign_in/apple_sign_in.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/services/firebase_auth_service.dart';
-import 'package:firebase_auth_demo_flutter/services/mock_auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/mock_auth_service.dart';
 import 'package:flutter/foundation.dart';
 
 enum AuthServiceType { firebase, mock }
@@ -117,10 +116,6 @@ class AuthServiceAdapter implements AuthService {
 
   @override
   Future<User> signInWithGoogle() => authService.signInWithGoogle();
-
-  @override
-  Future<User> signInWithApple({List<Scope> scopes}) =>
-      authService.signInWithApple();
 
   @override
   Future<void> signOut() => authService.signOut();

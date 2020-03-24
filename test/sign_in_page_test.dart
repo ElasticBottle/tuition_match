@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/app/sign_in/sign_in_page.dart';
-import 'package:firebase_auth_demo_flutter/services/apple_sign_in_available.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/services/firebase_email_link_handler.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -55,9 +54,6 @@ void main() {
           ),
           Provider<FirebaseEmailLinkHandler>(
             create: (_) => mockFirebaseEmailLinkHandler,
-          ),
-          Provider<AppleSignInAvailable>.value(
-            value: AppleSignInAvailable(false),
           ),
         ],
         child: MaterialApp(

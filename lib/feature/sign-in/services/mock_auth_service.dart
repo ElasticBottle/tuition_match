@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:apple_sign_in/apple_sign_in.dart';
-import 'package:firebase_auth_demo_flutter/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:random_string/random_string.dart' as random;

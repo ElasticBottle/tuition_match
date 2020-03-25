@@ -12,7 +12,25 @@ class OnboardInfoModel extends OnboardInfo {
           image: image,
         );
 
+  factory OnboardInfoModel.fromStringAndImage(
+      String details, AssetImage image) {
+    final Map<String, String> results = _parseStringDetails(details);
+    return OnboardInfoModel(
+        title: results[Keys.title],
+        description: results[Keys.desc],
+        image: image);
+  }
+
   factory OnboardInfoModel.fromString(String details) {
+    final Map<String, String> results = _parseStringDetails(details);
+
+    return OnboardInfoModel(
+        title: results[Keys.title],
+        description: results[Keys.desc],
+        image: null);
+  }
+
+  static Map<String, String> _parseStringDetails(String details) {
     final List<String> split = details.split(RegExp('\n'));
     // Removes "\r" from characters after newline
     for (int i = 0; i < split.length - 1; i++) {
@@ -23,7 +41,14 @@ class OnboardInfoModel extends OnboardInfo {
     // Newline between the strings is preserved
     final String description = split.sublist(2).join('\n');
 
-    return OnboardInfoModel(
-        title: title, description: description, image: null);
+    return {Keys.title: title, Keys.desc: description};
   }
+}
+
+class Keys {
+  static String titleKey = 'title';
+  static String descKey = 'descripetion';
+
+  static String get title => titleKey;
+  static String get desc => descKey;
 }

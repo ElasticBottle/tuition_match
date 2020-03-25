@@ -8,10 +8,10 @@ class OnboardInfo extends Equatable {
     @required this.image,
   })  : assert(title != null),
         assert(description != null);
-  final AssetImage image;
   final String title;
   final String description;
+  final AssetImage image;
 
   @override
-  List<Object> get props => [image, title, description];
+  List<Object> get props => [title, description, image];
 }

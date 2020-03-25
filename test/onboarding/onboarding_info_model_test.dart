@@ -5,19 +5,19 @@ import 'package:flutter_test/flutter_test.dart';
 import '../fixtures/fixture_reader.dart';
 
 void main() {
-  final tOnboardingInfoModel =
-      OnboardInfoModel(title: 'test', description: 'body', image: null);
+  final tOnboardingInfoModel = OnboardInfoModel(
+      title: 'test', description: 'body\nof description', image: null);
 
   test('should be a subclass of OnboardInfo entitiy', () async {
     expect(tOnboardingInfoModel, isA<OnboardInfo>());
   });
 
   test(
-      'Should convert text file'
-      'WITH title in first line'
-      'FOLLOWED BY newline'
-      'AND description in remainder of txt file'
-      'Into appropriate Title and Description'
+      'Should convert text file '
+      'WITH title in first line '
+      'FOLLOWED BY newline '
+      'AND description in remainder of txt file '
+      'Into appropriate Title and Description '
       'WITH image as null', () {
     // arrange
     final String details = fixture('onboardInfoSample.txt');
@@ -26,6 +26,7 @@ void main() {
     final OnboardInfoModel result = OnboardInfoModel.fromString(details);
 
     // assert
-    expect(result, tOnboardingInfoModel);
+    expect(result.title, tOnboardingInfoModel.title);
+    expect(result.description, tOnboardingInfoModel.description);
   });
 }

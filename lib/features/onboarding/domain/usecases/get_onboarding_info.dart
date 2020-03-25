@@ -4,8 +4,8 @@ import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/o
 import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 
-class getOnboardingInfo {
-  getOnboardingInfo({this.repository});
+class GetOnboardingInfo {
+  GetOnboardingInfo({this.repository});
   OnboardingRepository repository;
   ScreenNumber screenNum = ScreenNumber.zero;
 

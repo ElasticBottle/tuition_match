@@ -9,12 +9,12 @@ import 'package:mockito/mockito.dart';
 class MockOnboardingRepository extends Mock implements OnboardingRepository {}
 
 void main() {
-  getOnboardingInfo usecase;
+  GetOnboardingInfo usecase;
   MockOnboardingRepository mockRepo;
 
   setUp(() {
     mockRepo = MockOnboardingRepository();
-    usecase = getOnboardingInfo(repository: mockRepo);
+    usecase = GetOnboardingInfo(repository: mockRepo);
   });
 
   const ScreenNumber testScreenNumber = ScreenNumber.zero;

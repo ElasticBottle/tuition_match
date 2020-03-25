@@ -7,8 +7,7 @@ class OnboardInfo extends Equatable {
     @required this.description,
     @required this.image,
   })  : assert(title != null),
-        assert(description != null),
-        assert(image != null);
+        assert(description != null);
   final AssetImage image;
   final String title;
   final String description;

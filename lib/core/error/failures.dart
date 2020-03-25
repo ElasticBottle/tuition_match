@@ -6,3 +6,19 @@ abstract class Failure extends Equatable {
   const Failure({this.properties = const <dynamic>[]});
   final List properties;
 }
+
+// General failures
+class ServerFailure extends Failure {
+  @override
+  List<Object> get props => [];
+}
+
+class CacheFailure extends Failure {
+  @override
+  List<Object> get props => [];
+}
+
+class FileFailure extends Failure {
+  @override
+  List<Object> get props => [];
+}

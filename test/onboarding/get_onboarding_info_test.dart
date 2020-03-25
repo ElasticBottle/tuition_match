@@ -17,7 +17,7 @@ void main() {
     usecase = getOnboardingInfo(repository: mockRepo);
   });
 
-  const ScreenNumber testScreenNumber = ScreenNumber.one;
+  const ScreenNumber testScreenNumber = ScreenNumber.zero;
   const OnboardInfo testOnboardInfo =
       OnboardInfo(title: 'test', description: 'test', image: null);
   test(
@@ -28,13 +28,22 @@ void main() {
       // the Right "side" of Either containing a test NumberTrivia object.
       when(mockRepo.getOnboardingInfo(any)).thenAnswer(
           (_) async => Right<Failure, OnboardInfo>(testOnboardInfo));
+
       // The "act" phase of the test. Call the not-yet-existent method.
-      final result = await usecase(screenNumber: testScreenNumber);
+      final result = await usecase.next();
+      await usecase.next();
+      await usecase.next();
+      await usecase.next();
+
       // UseCase should simply return whatever was returned from the Repository
       expect(result, Right<Failure, OnboardInfo>(testOnboardInfo));
+      expect(usecase.screenNum, testScreenNumber);
+
       // Verify that the method has been called on the Repository
-      verify(mockRepo.getOnboardingInfo(testScreenNumber));
-      // Only the above method should be called and nothing more.
+      verify(mockRepo.getOnboardingInfo(testScreenNumber)).called(1);
+      verify(mockRepo.getOnboardingInfo(ScreenNumber.one)).called(1);
+      verify(mockRepo.getOnboardingInfo(ScreenNumber.two)).called(1);
+      verify(mockRepo.getOnboardingInfo(ScreenNumber.three)).called(1);
       verifyNoMoreInteractions(mockRepo);
     },
   );

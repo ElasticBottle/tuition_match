@@ -28,22 +28,22 @@ void main() {
         title: 'test', description: 'desc', image: AssetImage(''));
     final OnboardInfo tOnboardInfo = tOnBoardInfoModel;
 
-    test('Files for Onboard present', () {
+    test('Files for Onboard present', () async {
       // Arrange
       when(dataSource.getOnbaordInfo(any))
           .thenAnswer((realInvocation) async => tOnBoardInfoModel);
       // Act
-      final result = repo.getOnboardingInfo(number);
+      final result = await repo.getOnboardingInfo(number);
       // Assert
       verify(dataSource.getOnbaordInfo(number));
       expect(result, equals(Right<Failure, OnboardInfo>(tOnboardInfo)));
     });
 
-    test('Files for Onboard not present', () {
+    test('Files for Onboard not present', () async {
       // Arrange
       when(dataSource.getOnbaordInfo(any)).thenThrow(FileException());
       // Act
-      final result = repo.getOnboardingInfo(number);
+      final result = await repo.getOnboardingInfo(number);
       // Assert
       verify(dataSource.getOnbaordInfo(number));
       expect(result, equals(Left<Failure, OnboardInfo>(FileFailure())));

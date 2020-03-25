@@ -5,9 +5,9 @@ import 'package:firebase_auth_demo_flutter/common_widgets/platform_alert_dialog.
 import 'package:firebase_auth_demo_flutter/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:firebase_auth_demo_flutter/constants/constants.dart';
 import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/app/sign_in/validator.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/feature/sign-in/services/firebase_email_link_handler.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/validator.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
+import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';

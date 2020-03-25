@@ -1,17 +1,19 @@
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:firebase_auth_demo_flutter/core/error/failures.dart';
+import 'package:firebase_auth_demo_flutter/core/usecases/usecase.dart';
 import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 
-class GetOnboardingInfo {
+class GetOnboardingInfo extends UseCase<OnboardInfo, Params> {
   GetOnboardingInfo({this.repository});
   OnboardingRepository repository;
   ScreenNumber screenNum = ScreenNumber.zero;
 
-  Future<Either<Failure, OnboardInfo>> call(
-      {@required ScreenNumber screenNumber}) async {
-    return await repository.getOnboardingInfo(screenNumber);
+  @override
+  Future<Either<Failure, OnboardInfo>> call(Params params) async {
+    return await repository.getOnboardingInfo(params.screenNumber);
   }
 
   /// Returns current OnboardingInfo and increments the ScreenNumber
@@ -25,4 +27,12 @@ class GetOnboardingInfo {
     }
     return result;
   }
+}
+
+class Params extends Equatable {
+  const Params({@required this.screenNumber});
+  final ScreenNumber screenNumber;
+
+  @override
+  List<Object> get props => [screenNumber];
 }

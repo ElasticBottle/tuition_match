@@ -66,8 +66,8 @@ flutter:
     - assets/sign_in/fb-logo.png
     - assets/sign_in/go-logo.png
     - assets/sign_in/user.png
-    - assets/onboarding/texts
-    - assets/onboarding/images
+    - assets/onboarding/texts/
+    - assets/onboarding/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

@@ -15,44 +15,38 @@ class OnboardInfoDataSourceImpl implements OnboardInfoDataSource {
 
   @override
   Future<OnboardInfoModel> getOnbaordInfo(ScreenNumber number) async {
-    String details;
-    AssetImage image;
+    List<dynamic> result;
+
     switch (number) {
       case ScreenNumber.zero:
-        try {
-          details = await assetBundle.loadString('key');
-          image = AssetImage('');
-        } catch (e) {
-          throw FileException();
-        }
+        result = await _retrieveDetailsAndImage('', '');
         break;
       case ScreenNumber.one:
-        try {
-          details = await assetBundle.loadString('key');
-          image = AssetImage('');
-        } catch (e) {
-          throw FileException();
-        }
+        result = await _retrieveDetailsAndImage('', '');
         break;
       case ScreenNumber.two:
-        try {
-          details = await assetBundle.loadString('key');
-          image = AssetImage('');
-        } catch (e) {
-          throw FileException();
-        }
+        result = await _retrieveDetailsAndImage('', '');
         break;
       case ScreenNumber.three:
-        try {
-          details = await assetBundle.loadString('key');
-          image = AssetImage('');
-        } catch (e) {
-          throw FileException();
-        }
+        result = await _retrieveDetailsAndImage('', '');
         break;
       default:
         break;
     }
-    return Future.value(OnboardInfoModel.fromStringAndImage(details, image));
+    return Future.value(
+        OnboardInfoModel.fromStringAndImage(result[0], result[1]));
+  }
+
+  Future<List<dynamic>> _retrieveDetailsAndImage(
+      String detailsPath, String imagePath) async {
+    String details;
+    AssetImage image;
+    try {
+      details = await assetBundle.loadString(detailsPath);
+      image = AssetImage(imagePath);
+    } catch (e) {
+      throw FileException();
+    }
+    return <dynamic>[details, image];
   }
 }

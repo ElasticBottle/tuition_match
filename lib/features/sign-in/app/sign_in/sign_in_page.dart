@@ -148,7 +148,7 @@ class SignInPage extends StatelessWidget {
             SizedBox(height: 32.0),
             SocialSignInButton(
               key: googleButtonKey,
-              assetName: 'assets/go-logo.png',
+              assetName: 'assets/sign_in/go-logo.png',
               text: Strings.signInWithGoogle,
               onPressed: isLoading ? null : () => _signInWithGoogle(context),
               color: Colors.white,
@@ -156,7 +156,7 @@ class SignInPage extends StatelessWidget {
             SizedBox(height: 8),
             SocialSignInButton(
               key: facebookButtonKey,
-              assetName: 'assets/fb-logo.png',
+              assetName: 'assets/sign_in/fb-logo.png',
               text: Strings.signInWithFacebook,
               textColor: Colors.white,
               onPressed: isLoading ? null : () => _signInWithFacebook(context),

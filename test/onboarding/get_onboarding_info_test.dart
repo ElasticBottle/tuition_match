@@ -47,4 +47,12 @@ void main() {
       verifyNoMoreInteractions(mockRepo);
     },
   );
+
+  test(
+      'Total screen retrieved should be the same as number of values in ScreenNumber',
+      () {
+    final int result = usecase.total();
+
+    expect(result, ScreenNumber.end.index);
+  });
 }

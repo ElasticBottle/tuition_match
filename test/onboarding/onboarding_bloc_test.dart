@@ -21,12 +21,17 @@ void main() {
     expect(bloc.initialState, InitialOnboardingState());
   });
 
-  group('GetOnboardingInfo', () {
+  group('GetOnboardingInfo Event', () {
     final OnboardInfo tOnboardInfo =
         OnboardInfo(title: 'test', description: 'desc', image: null);
-    test('Should call GetOnboardingInfo', () async {
+
+    void _setUpMockUseCaseSuccess() {
       when(mockOnboardInfo.next()).thenAnswer(
           (realInvocation) async => Right<Failure, OnboardInfo>(tOnboardInfo));
+    }
+
+    test('Should call GetNextOnboardingInfo', () async {
+      _setUpMockUseCaseSuccess();
 
       bloc.add(GetNextOnboardingInfo());
       await untilCalled(mockOnboardInfo.next());
@@ -36,29 +41,30 @@ void main() {
 
     test(
         'Should return Loading and Loaded state on successful retrieval of files',
-        () {
-      when(mockOnboardInfo.next()).thenAnswer((_) async => Right(tOnboardInfo));
+        () async {
+      _setUpMockUseCaseSuccess();
       // assert later
       final expected = [
         InitialOnboardingState(),
         Loading(),
         Loaded(info: tOnboardInfo),
       ];
-      expectLater(bloc.state, emitsInOrder(expected));
+      expectLater(bloc, emitsInOrder(expected));
       // act
       bloc.add(GetNextOnboardingInfo());
     });
     test(
         'Should return Loading and Error state on unsuccessful retrieval of files',
-        () {
-      when(mockOnboardInfo.next()).thenAnswer((_) async => Left(FileFailure()));
+        () async {
+      when(mockOnboardInfo.next())
+          .thenAnswer((_) async => Left<Failure, OnboardInfo>(FileFailure()));
       // assert later
       final expected = [
         InitialOnboardingState(),
         Loading(),
-        Loaded(info: tOnboardInfo),
+        Error(message: FILE_FAILURE_MESSAGE),
       ];
-      expectLater(bloc.state, emitsInOrder(expected));
+      expectLater(bloc, emitsInOrder(expected));
       // act
       bloc.add(GetNextOnboardingInfo());
     });

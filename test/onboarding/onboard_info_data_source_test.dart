@@ -35,7 +35,8 @@ void main() {
     final result = await data.getOnbaordInfo(tScreenNum);
 
     // Assert
-    expect(result, equals(tOnboardInfoModel));
+    expect(result.title, equals(tOnboardInfoModel.title));
+    expect(result.description, equals(tOnboardInfoModel.description));
     verify(assetBundle.loadString(any));
     verifyNoMoreInteractions(assetBundle);
   });

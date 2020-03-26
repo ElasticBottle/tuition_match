@@ -7,6 +7,7 @@ enum ScreenNumber {
   one,
   two,
   three,
+  end,
 }
 
 abstract class OnboardingRepository {

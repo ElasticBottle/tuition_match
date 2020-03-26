@@ -37,7 +37,7 @@ void main() {
 
       // UseCase should simply return whatever was returned from the Repository
       expect(result, Right<Failure, OnboardInfo>(testOnboardInfo));
-      expect(usecase.screenNum, testScreenNumber);
+      expect(usecase.screenNum, ScreenNumber.end);
 
       // Verify that the method has been called on the Repository
       verify(mockRepo.getOnboardingInfo(testScreenNumber)).called(1);

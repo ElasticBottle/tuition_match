@@ -31,6 +31,10 @@ class GetOnboardingInfo extends UseCase<OnboardInfo, Params> {
   int total() {
     return ScreenNumber.end.index;
   }
+
+  int current() {
+    return screenNum.index;
+  }
 }
 
 class Params extends Equatable {

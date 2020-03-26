@@ -7,8 +7,10 @@ abstract class OnboardingState extends Equatable {
 }
 
 class InitialOnboardingState extends OnboardingState {
+  const InitialOnboardingState({this.total});
+  final int total;
   @override
-  List<Object> get props => [];
+  List<Object> get props => [total];
 }
 
 class Loading extends OnboardingState {
@@ -17,8 +19,9 @@ class Loading extends OnboardingState {
 }
 
 class Loaded extends OnboardingState {
-  const Loaded({@required this.info});
+  const Loaded({@required this.info, this.current});
   final OnboardInfo info;
+  final int current;
 
   @override
   List<Object> get props => [info];

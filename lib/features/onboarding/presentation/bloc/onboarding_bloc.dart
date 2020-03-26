@@ -16,7 +16,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final GetOnboardingInfo getOnboardingInfo;
 
   @override
-  OnboardingState get initialState => InitialOnboardingState();
+  OnboardingState get initialState => InitialOnboardingState(
+        total: getOnboardingInfo.total(),
+      );
 
   @override
   Stream<OnboardingState> mapEventToState(
@@ -27,7 +29,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       final failureOrOnboardInfo = await getOnboardingInfo.next();
       yield failureOrOnboardInfo.fold(
           (Failure failure) => Error(message: _mapFailureToMessage(failure)),
-          (OnboardInfo onboardInfo) => Loaded(info: onboardInfo));
+          (OnboardInfo onboardInfo) => Loaded(
+                info: onboardInfo,
+                current: getOnboardingInfo.current(),
+              ));
     }
   }
 

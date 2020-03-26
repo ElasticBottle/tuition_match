@@ -55,4 +55,15 @@ void main() {
 
     expect(result, ScreenNumber.end.index);
   });
+
+  test('Index should increment after being called', () async {
+    when(mockRepo.getOnboardingInfo(any))
+        .thenAnswer((_) async => Right<Failure, OnboardInfo>(testOnboardInfo));
+
+    expect(testScreenNumber.index, usecase.current());
+    // The "act" phase of the test. Call the not-yet-existent method.
+    await usecase.next();
+
+    expect(testScreenNumber.index + 1, usecase.current());
+  });
 }

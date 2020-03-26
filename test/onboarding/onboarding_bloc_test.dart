@@ -22,9 +22,9 @@ void main() {
   });
 
   group('GetOnboardingInfo', () {
+    final OnboardInfo tOnboardInfo =
+        OnboardInfo(title: 'test', description: 'desc', image: null);
     test('Should call GetOnboardingInfo', () async {
-      final OnboardInfo tOnboardInfo =
-          OnboardInfo(title: 'test', description: 'desc', image: null);
       when(mockOnboardInfo.next()).thenAnswer(
           (realInvocation) async => Right<Failure, OnboardInfo>(tOnboardInfo));
 
@@ -36,9 +36,31 @@ void main() {
 
     test(
         'Should return Loading and Loaded state on successful retrieval of files',
-        () {});
+        () {
+      when(mockOnboardInfo.next()).thenAnswer((_) async => Right(tOnboardInfo));
+      // assert later
+      final expected = [
+        InitialOnboardingState(),
+        Loading(),
+        Loaded(info: tOnboardInfo),
+      ];
+      expectLater(bloc.state, emitsInOrder(expected));
+      // act
+      bloc.add(GetNextOnboardingInfo());
+    });
     test(
         'Should return Loading and Error state on unsuccessful retrieval of files',
-        () {});
+        () {
+      when(mockOnboardInfo.next()).thenAnswer((_) async => Left(FileFailure()));
+      // assert later
+      final expected = [
+        InitialOnboardingState(),
+        Loading(),
+        Loaded(info: tOnboardInfo),
+      ];
+      expectLater(bloc.state, emitsInOrder(expected));
+      // act
+      bloc.add(GetNextOnboardingInfo());
+    });
   });
 }

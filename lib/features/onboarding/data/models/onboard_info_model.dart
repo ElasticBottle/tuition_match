@@ -1,6 +1,9 @@
 import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:flutter/cupertino.dart';
 
+const String titleKey = 'title';
+const String descKey = 'descripetion';
+
 class OnboardInfoModel extends OnboardInfo {
   const OnboardInfoModel({
     @required String title,
@@ -16,18 +19,14 @@ class OnboardInfoModel extends OnboardInfo {
       String details, AssetImage image) {
     final Map<String, String> results = _parseStringDetails(details);
     return OnboardInfoModel(
-        title: results[Keys.title],
-        description: results[Keys.desc],
-        image: image);
+        title: results[titleKey], description: results[descKey], image: image);
   }
 
   factory OnboardInfoModel.fromString(String details) {
     final Map<String, String> results = _parseStringDetails(details);
 
     return OnboardInfoModel(
-        title: results[Keys.title],
-        description: results[Keys.desc],
-        image: null);
+        title: results[titleKey], description: results[descKey], image: null);
   }
 
   static Map<String, String> _parseStringDetails(String details) {
@@ -41,14 +40,6 @@ class OnboardInfoModel extends OnboardInfo {
     // Newline between the strings is preserved
     final String description = split.sublist(2).join('\n');
 
-    return {Keys.title: title, Keys.desc: description};
+    return {titleKey: title, descKey: description};
   }
-}
-
-class Keys {
-  static String titleKey = 'title';
-  static String descKey = 'descripetion';
-
-  static String get title => titleKey;
-  static String get desc => descKey;
 }

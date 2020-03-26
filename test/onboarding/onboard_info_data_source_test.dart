@@ -19,40 +19,41 @@ void main() {
     assetBundle = MockRootBundle();
     data = OnboardInfoDataSourceImpl(assetBundle);
   });
+  group('dateSource', () async {
+    test('Retrieves an OnboardInfo', () async {
+      const ScreenNumber tScreenNum = ScreenNumber.zero;
+      final OnboardInfoModel tOnboardInfoModel = OnboardInfoModel(
+          title: 'test',
+          description: 'body\nof description',
+          image: AssetImage(''));
 
-  test('Retrieves an OnboardInfo', () async {
-    const ScreenNumber tScreenNum = ScreenNumber.zero;
-    final OnboardInfoModel tOnboardInfoModel = OnboardInfoModel(
-        title: 'test',
-        description: 'body\nof description',
-        image: AssetImage(''));
+      // Arrange
+      when(assetBundle.loadString(any)).thenAnswer(
+          (realInvocation) => Future.value(fixture('onboardInfoSample.txt')));
 
-    // Arrange
-    when(assetBundle.loadString(any)).thenAnswer(
-        (realInvocation) => Future.value(fixture('onboardInfoSample.txt')));
+      // Act
+      final result = await data.getOnbaordInfo(tScreenNum);
 
-    // Act
-    final result = await data.getOnbaordInfo(tScreenNum);
+      // Assert
+      expect(result.title, equals(tOnboardInfoModel.title));
+      expect(result.description, equals(tOnboardInfoModel.description));
+      verify(assetBundle.loadString(any));
+      verifyNoMoreInteractions(assetBundle);
+    });
 
-    // Assert
-    expect(result.title, equals(tOnboardInfoModel.title));
-    expect(result.description, equals(tOnboardInfoModel.description));
-    verify(assetBundle.loadString(any));
-    verifyNoMoreInteractions(assetBundle);
-  });
+    test('Not able to retrieve OnboardInfo', () async {
+      const ScreenNumber tScreenNum = ScreenNumber.zero;
 
-  test('Not able to retrieve OnboardInfo', () async {
-    const ScreenNumber tScreenNum = ScreenNumber.zero;
+      // Arrange
+      when(assetBundle.loadString(any)).thenThrow(Exception());
 
-    // Arrange
-    when(assetBundle.loadString(any)).thenThrow(Exception());
+      // Act
+      final call = data.getOnbaordInfo;
 
-    // Act
-    final call = data.getOnbaordInfo;
-
-    // Assert
-    expect(() => call(tScreenNum), throwsA(isInstanceOf<FileException>()));
-    verify(assetBundle.loadString(any));
-    verifyNoMoreInteractions(assetBundle);
+      // Assert
+      expect(() => call(tScreenNum), throwsA(isInstanceOf<FileException>()));
+      verify(assetBundle.loadString(any));
+      verifyNoMoreInteractions(assetBundle);
+    });
   });
 }

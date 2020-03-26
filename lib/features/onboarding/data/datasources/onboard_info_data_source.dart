@@ -1,3 +1,4 @@
+import 'package:firebase_auth_demo_flutter/core/error/exception.dart';
 import 'package:firebase_auth_demo_flutter/features/onboarding/data/models/onboard_info_model.dart';
 import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,20 +19,36 @@ class OnboardInfoDataSourceImpl implements OnboardInfoDataSource {
     AssetImage image;
     switch (number) {
       case ScreenNumber.zero:
-        details = await assetBundle.loadString('key');
-        image = AssetImage('');
+        try {
+          details = await assetBundle.loadString('key');
+          image = AssetImage('');
+        } catch (e) {
+          throw FileException();
+        }
         break;
       case ScreenNumber.one:
-        details = await assetBundle.loadString('key');
-        image = AssetImage('');
+        try {
+          details = await assetBundle.loadString('key');
+          image = AssetImage('');
+        } catch (e) {
+          throw FileException();
+        }
         break;
       case ScreenNumber.two:
-        details = await assetBundle.loadString('key');
-        image = AssetImage('');
+        try {
+          details = await assetBundle.loadString('key');
+          image = AssetImage('');
+        } catch (e) {
+          throw FileException();
+        }
         break;
       case ScreenNumber.three:
-        details = await assetBundle.loadString('key');
-        image = AssetImage('');
+        try {
+          details = await assetBundle.loadString('key');
+          image = AssetImage('');
+        } catch (e) {
+          throw FileException();
+        }
         break;
       default:
         break;

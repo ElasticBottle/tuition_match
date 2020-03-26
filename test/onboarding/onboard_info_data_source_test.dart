@@ -42,19 +42,15 @@ void main() {
 
   test('Not able to retrieve OnboardInfo', () async {
     const ScreenNumber tScreenNum = ScreenNumber.zero;
-    final OnboardInfoModel tOnboardInfoModel = OnboardInfoModel(
-        title: 'test',
-        description: 'body\nof description',
-        image: AssetImage(''));
 
     // Arrange
-    when(assetBundle.loadString(any)).thenThrow(FileException());
+    when(assetBundle.loadString(any)).thenThrow(Exception());
 
     // Act
-    final result = await data.getOnbaordInfo(tScreenNum);
+    final call = data.getOnbaordInfo;
 
     // Assert
-    expect(result, equals(tOnboardInfoModel));
+    expect(() => call(tScreenNum), throwsA(isInstanceOf<FileException>()));
     verify(assetBundle.loadString(any));
     verifyNoMoreInteractions(assetBundle);
   });

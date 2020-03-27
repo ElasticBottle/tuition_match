@@ -33,7 +33,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           (Failure failure) => Error(message: _mapFailureToMessage(failure)),
           (OnboardInfo onboardInfo) => Loaded(
                 info: onboardInfo,
-                current: getOnboardingInfo.current(),
+                current: event.index,
               ));
     }
   }

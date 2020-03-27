@@ -8,6 +8,7 @@ class CustomRaisedButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.height = 50.0,
+    this.width = 100.0,
     this.borderRadius = 4.0,
     this.loading = false,
     this.onPressed,
@@ -16,6 +17,7 @@ class CustomRaisedButton extends StatelessWidget {
   final Color color;
   final Color textColor;
   final double height;
+  final double width;
   final double borderRadius;
   final bool loading;
   final VoidCallback onPressed;
@@ -38,6 +40,7 @@ class CustomRaisedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
+      width: width,
       child: RaisedButton(
         child: loading ? buildSpinner(context) : child,
         shape: RoundedRectangleBorder(

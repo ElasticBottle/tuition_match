@@ -9,19 +9,10 @@ import 'package:provider/provider.dart';
 /// Listens to [errorStream] and shows an alert dialog each time an error is received.
 /// This widget should live for the entire lifecycle of the app, so that all errors are reported.
 class EmailLinkErrorPresenter extends StatefulWidget {
-  const EmailLinkErrorPresenter({Key key, this.child, this.errorStream})
+  const EmailLinkErrorPresenter({Key key, this.context, this.child})
       : super(key: key);
   final Widget child;
-  final Stream<EmailLinkError> errorStream;
-
-  static Widget create(BuildContext context, {Widget child}) {
-    final FirebaseEmailLinkHandler linkHandler =
-        Provider.of<FirebaseEmailLinkHandler>(context, listen: false);
-    return EmailLinkErrorPresenter(
-      child: child,
-      errorStream: linkHandler.errorStream,
-    );
-  }
+  final BuildContext context;
 
   @override
   _EmailLinkErrorPresenterState createState() =>
@@ -34,7 +25,9 @@ class _EmailLinkErrorPresenterState extends State<EmailLinkErrorPresenter> {
   @override
   void initState() {
     super.initState();
-    _onEmailLinkErrorSubscription = widget.errorStream.listen((error) {
+    final FirebaseEmailLinkHandler linkHandler =
+        Provider.of<FirebaseEmailLinkHandler>(widget.context, listen: false);
+    _onEmailLinkErrorSubscription = linkHandler.errorStream.listen((error) {
       PlatformAlertDialog(
         title: Strings.activationLinkError,
         content: error.message,

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth_demo_flutter/core/error/failures.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/usecases/get_onboarding_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/presentation/bloc/bloc.dart';
+import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
+import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
+import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
+import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 
 const String FILE_FAILURE_MESSAGE = 'File Failure';
@@ -26,7 +27,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async* {
     if (event is GetNextOnboardingInfo) {
       yield Loading();
-      final failureOrOnboardInfo = await getOnboardingInfo.next();
+      final failureOrOnboardInfo = await getOnboardingInfo(
+          Params(screenNumber: ScreenNumber.values[event.index]));
       yield failureOrOnboardInfo.fold(
           (Failure failure) => Error(message: _mapFailureToMessage(failure)),
           (OnboardInfo onboardInfo) => Loaded(

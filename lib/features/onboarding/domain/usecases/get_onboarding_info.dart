@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth_demo_flutter/core/error/failures.dart';
-import 'package:firebase_auth_demo_flutter/core/usecases/usecase.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/core/usecases/usecase.dart';
+import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
+import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/material.dart';
 
 class GetOnboardingInfo extends UseCase<OnboardInfo, Params> {
@@ -13,7 +13,8 @@ class GetOnboardingInfo extends UseCase<OnboardInfo, Params> {
 
   @override
   Future<Either<Failure, OnboardInfo>> call(Params params) async {
-    return await repository.getOnboardingInfo(params.screenNumber);
+    screenNum = params.screenNumber;
+    return await repository.getOnboardingInfo(screenNum);
   }
 
   /// Returns current OnboardingInfo and increments the ScreenNumber

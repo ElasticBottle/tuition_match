@@ -1,8 +1,8 @@
 //..lib/main.dart
 
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/presentation/bloc/bloc.dart';
-import 'package:firebase_auth_demo_flutter/injection_container.dart';
+import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
+import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
+import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
@@ -29,42 +29,56 @@ class OnboardPageSlide extends StatefulWidget {
 
 class OnboardPageSlideState extends State<OnboardPageSlide> {
   final IndexController controller = IndexController();
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (BuildContext context, OnboardingState state) {
-        return TransformerPageView(
-            pageSnapping: true,
-            onPageChanged: (index) {
-              BlocProvider.of<OnboardingBloc>(context)
-                  .add(GetNextOnboardingInfo());
-            },
-            loop: false,
-            controller: controller,
-            transformer: PageTransformerBuilder(
-                builder: (Widget child, TransformInfo info) {
-              Widget mainbody = Container();
-              int currentIndex;
-              if (state is InitialOnboardingState) {
-              } else if (state is Loading) {
-                mainbody = LoadingWidget();
-              } else if (state is Loaded) {
-                currentIndex = state.current;
-                mainbody = OnboardInfoDisplay(
-                  onboardInfo: state.info,
-                  transformInfo: info,
+        return Stack(
+          children: <Widget>[
+            TransformerPageView(
+              pageSnapping: true,
+              onPageChanged: (index) {
+                BlocProvider.of<OnboardingBloc>(context)
+                    .add(GetNextOnboardingInfo(index: index));
+              },
+              loop: false,
+              controller: controller,
+              transformer: PageTransformerBuilder(
+                  builder: (Widget child, TransformInfo info) {
+                Widget mainbody = Container();
+                if (state is InitialOnboardingState) {
+                  BlocProvider.of<OnboardingBloc>(context)
+                      .add(GetNextOnboardingInfo(index: 0));
+                } else if (state is Loading) {
+                  mainbody = LoadingWidget();
+                } else if (state is Loaded) {
+                  currentIndex = state.current;
+                  mainbody = OnboardInfoDisplay(
+                    onboardInfo: state.info,
+                    transformInfo: info,
+                  );
+                } else if (state is Error) {}
+                return PageViewBody(
+                  currentIndex: currentIndex,
+                  mainBody: mainbody,
+                  info: info,
+                  totalLength: BlocProvider.of<OnboardingBloc>(context)
+                      .initialState
+                      .props[0],
+                  controller: controller,
                 );
-              } else if (state is Error) {}
-              return PageViewBody(
-                currentIndex: currentIndex,
-                mainBody: mainbody,
-                info: info,
-                totalLength: BlocProvider.of(context).initialState.total,
-                controller: controller,
-              );
-            }),
-            itemCount: BlocProvider.of(context).initialState.total);
+              }),
+              itemCount: BlocProvider.of<OnboardingBloc>(context)
+                  .initialState
+                  .props[0],
+            ),
+            if (currentIndex ==
+                BlocProvider.of<OnboardingBloc>(context).initialState.props[0])
+              CustomRaised
+          ],
+        );
       },
     );
   }
@@ -100,7 +114,7 @@ class PageViewBody extends StatelessWidget {
             mainBody,
             ParallaxContainer(
               position: info.position,
-              translationFactor: 500.0,
+              translationFactor: 600.0,
               child: Dots(
                 controller: controller,
                 slideIndex: currentIndex,
@@ -151,7 +165,7 @@ class OnboardInfoDisplay extends StatelessWidget {
           ),
           position: transformInfo.position,
           opacityFactor: .8,
-          translationFactor: 400.0,
+          translationFactor: 200.0,
         ),
         SizedBox(
           height: 45.0,
@@ -174,12 +188,12 @@ class OnboardInfoDisplay extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.blueGrey,
-                fontSize: 28.0,
+                fontSize: 24.0,
                 fontFamily: 'Quicksand',
                 fontWeight: FontWeight.bold),
           ),
           position: transformInfo.position,
-          translationFactor: 300.0,
+          translationFactor: 250.0,
         ),
         SizedBox(
           height: 55.0,

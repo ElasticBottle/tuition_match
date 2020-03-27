@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:cotor/features/sign-in/app/email_link_error_presenter.dart';
 import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:cotor/features/sign-in/services/auth_service_adapter.dart';

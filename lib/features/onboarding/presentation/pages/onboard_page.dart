@@ -1,5 +1,6 @@
 //..lib/main.dart
 
+import 'package:auto_route/auto_route.dart';
 import 'package:cotor/common_widgets/custom_raised_button.dart';
 import 'package:cotor/constants/keys.dart';
 import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
@@ -8,6 +9,7 @@ import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
+import 'package:cotor/routing/router.gr.dart';
 
 const Color BLUE_GRAY = Colors.blueGrey;
 const Color ORANGE_ACCENT = Colors.orangeAccent;
@@ -93,7 +95,8 @@ class OnboardPageSlideState extends State<OnboardPageSlide> {
                     height: 50.0,
                     textColor: BLUE_GRAY,
                     color: ORANGE_ACCENT,
-                    onPressed: () => print('go ot login screen'),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pushNamed(Routes.signInPageBuilder),
                   ),
                 ),
               ),

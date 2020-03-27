@@ -1,4 +1,4 @@
-package com.codingwithflutter.firebase_auth_demo_flutter
+package com.elastic.cotor
 
 import android.os.Bundle
 

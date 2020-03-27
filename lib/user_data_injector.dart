@@ -1,4 +1,4 @@
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

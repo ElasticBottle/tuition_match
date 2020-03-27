@@ -10,7 +10,7 @@
 // - Don't import any flutter code (e.g. material.dart)
 // - Don't import flutter_test.dart
 
-import 'package:firebase_auth_demo_flutter/constants/keys.dart';
+import 'package:cotor/constants/keys.dart';
 // Imports the Flutter Driver API.
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';

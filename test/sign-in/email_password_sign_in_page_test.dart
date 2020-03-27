@@ -1,6 +1,6 @@
-import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/email_password/email_password_sign_in_page.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
+import 'package:cotor/constants/strings.dart';
+import 'package:cotor/features/sign-in/app/sign_in/email_password/email_password_sign_in_page.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

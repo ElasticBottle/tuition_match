@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:firebase_auth_demo_flutter/common_widgets/platform_widget.dart';
-import 'package:firebase_auth_demo_flutter/constants/keys.dart';
+import 'package:cotor/common_widgets/platform_widget.dart';
+import 'package:cotor/constants/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 

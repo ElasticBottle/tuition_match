@@ -1,7 +1,7 @@
-import 'package:firebase_auth_demo_flutter/core/error/exception.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/data/datasources/onboard_info_data_source.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/data/models/onboard_info_model.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:cotor/core/error/exception.dart';
+import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
+import 'package:cotor/features/onboarding/data/models/onboard_info_model.dart';
+import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

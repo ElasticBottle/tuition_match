@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/common_widgets/form_submit_button.dart';
-import 'package:firebase_auth_demo_flutter/common_widgets/platform_alert_dialog.dart';
-import 'package:firebase_auth_demo_flutter/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:firebase_auth_demo_flutter/constants/constants.dart';
-import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/validator.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
+import 'package:cotor/common_widgets/form_submit_button.dart';
+import 'package:cotor/common_widgets/platform_alert_dialog.dart';
+import 'package:cotor/common_widgets/platform_exception_alert_dialog.dart';
+import 'package:cotor/constants/constants.dart';
+import 'package:cotor/constants/strings.dart';
+import 'package:cotor/features/sign-in/app/sign_in/validator.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';

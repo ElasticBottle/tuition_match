@@ -1,7 +1,7 @@
-import 'package:firebase_auth_demo_flutter/features/onboarding/data/datasources/onboard_info_data_source.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/data/repositories/onboarding_repository_adapter.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/usecases/get_onboarding_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/presentation/bloc/bloc.dart';
+import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
+import 'package:cotor/features/onboarding/data/repositories/onboarding_repository_adapter.dart';
+import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
+import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 

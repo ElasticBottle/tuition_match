@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/common_widgets/platform_alert_dialog.dart';
-import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
+import 'package:cotor/common_widgets/platform_alert_dialog.dart';
+import 'package:cotor/constants/strings.dart';
+import 'package:cotor/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

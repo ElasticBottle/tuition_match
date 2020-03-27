@@ -1,6 +1,6 @@
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/email_secure_store.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/services/email_secure_store.dart';
+import 'package:cotor/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:mockito/mockito.dart';
 

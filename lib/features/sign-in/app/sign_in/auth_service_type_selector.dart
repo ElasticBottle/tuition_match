@@ -1,7 +1,7 @@
-import 'package:firebase_auth_demo_flutter/common_widgets/segmented_control.dart';
-import 'package:firebase_auth_demo_flutter/constants/strings.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service_adapter.dart';
+import 'package:cotor/common_widgets/segmented_control.dart';
+import 'package:cotor/constants/strings.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/services/auth_service_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

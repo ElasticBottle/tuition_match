@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/user_data_injector.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/user_data_injector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

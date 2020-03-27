@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/sign_in_page.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/firebase_email_link_handler.dart';
+import 'package:cotor/features/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/services/firebase_email_link_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

@@ -1,4 +1,4 @@
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
+import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:flutter/cupertino.dart';
 
 const String titleKey = 'title';

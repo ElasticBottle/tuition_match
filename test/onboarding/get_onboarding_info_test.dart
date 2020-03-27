@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth_demo_flutter/core/error/failures.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/entities/onboard_info.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/repositories/onboarding_repository.dart';
-import 'package:firebase_auth_demo_flutter/features/onboarding/domain/usecases/get_onboarding_info.dart';
+import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
+import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 

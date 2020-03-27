@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth_demo_flutter/core/error/failures.dart';
+import 'package:cotor/core/error/failures.dart';
 
 // Parameters have to be put into a container object so that they can be
 // included in this abstract base class method definition.

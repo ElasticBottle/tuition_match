@@ -1,5 +1,5 @@
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/email_password/email_password_sign_in_model.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/mock_auth_service.dart';
+import 'package:cotor/features/sign-in/app/sign_in/email_password/email_password_sign_in_model.dart';
+import 'package:cotor/features/sign-in/services/mock_auth_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/sign_in_manager.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/sign-in/app/sign_in/sign_in_manager.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

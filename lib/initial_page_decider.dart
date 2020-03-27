@@ -1,6 +1,7 @@
-import 'package:firebase_auth_demo_flutter/features/sign-in/app/sign_in/sign_in_page.dart';
-import 'package:firebase_auth_demo_flutter/features/sign-in/services/auth_service.dart';
-import 'package:firebase_auth_demo_flutter/home_page.dart';
+import 'package:cotor/features/onboarding/presentation/pages/onboard_page.dart';
+import 'package:cotor/features/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/home_page.dart';
 import 'package:flutter/material.dart';
 
 /// Builds the signed-in or non signed-in UI, depending on the user snapshot.
@@ -15,7 +16,7 @@ class InitialPageDecider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (userSnapshot.connectionState == ConnectionState.active) {
-      return userSnapshot.hasData ? HomePage() : SignInPageBuilder();
+      return userSnapshot.hasData ? HomePage() : OnboardPage();
     }
     return Scaffold(
       body: Center(

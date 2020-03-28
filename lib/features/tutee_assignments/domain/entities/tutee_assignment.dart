@@ -34,44 +34,85 @@ enum Level {
   all,
 }
 
-enum Subject {
-  priEnglish,
-  priChinese,
-  priMalay,
-  priTamil,
-  priHindi,
-  priMath,
-  priScience,
-  priAll,
-  secEnglish,
-  secChinese,
-  secMalay,
-  secTamil,
-  secHindi,
-  secMath,
-  secAMath,
-  secChem,
-  secBio,
-  secPhy,
-  secHist,
-  secGeog,
-  secLit,
-  secPOA,
-  secSS,
-  secArt,
-  secAll,
-  jcMath,
-  jcFMath,
-  jcChem,
-  jcBio,
-  jcPhy,
-  jcHist,
-  jcGeog,
-  jcLit,
-  jcGp,
-  jcArt,
-  jcAll,
-  all,
+class Subject {
+  Subject({this.level, this.subjectArea});
+
+  Level level;
+  String subjectArea;
+}
+
+class Science {
+  final String _science = 'Science';
+  final String _chem = 'Chem';
+  final String _bio = 'Bio';
+  final String _phy = 'Phy';
+
+  String get science => _science;
+  String get bio => _bio;
+  String get chem => _chem;
+  String get phy => _phy;
+}
+
+class Math {
+  final String _math = 'Math';
+  final String _aMath = 'AMath';
+  final String _fMath = 'FMath';
+
+  String get math => _math;
+  String get aMath => _aMath;
+  String get fMath => _fMath;
+}
+
+class Humans {
+  final String _hist = 'Hist';
+  final String _geog = 'Geog';
+  final String _lit = 'Lit';
+  final String _poa = 'POA';
+  final String _ss = 'SS';
+  final String _art = 'Art';
+  final String _gp = 'Gp';
+
+  String get hist => _hist;
+  String get geog => _geog;
+  String get lit => _lit;
+  String get poa => _poa;
+  String get ss => _ss;
+  String get art => _art;
+  String get gp => _gp;
+}
+
+class Music {
+  final String _piano = 'Piano';
+
+  String get paino => _piano;
+}
+
+class Languages {
+  final String _eng = 'English';
+  final String _chi = 'Chinese';
+  final String _malay = 'Malay';
+  final String _tamil = 'Tamil';
+  final String _hindi = 'Hindi';
+
+  String get eng => _eng;
+  String get chi => _chi;
+  String get malay => _malay;
+  String get tamil => _tamil;
+  String get hindi => _hindi;
+}
+
+class SubjectArea {
+  Science _science;
+  Math _math;
+  Humans _humans;
+  Languages _languages;
+  Music _music;
+
+  Science get science => _science;
+  Math get math => _math;
+  Humans get humans => _humans;
+  Languages get languages => _languages;
+  Music get music => _music;
 }
 
 enum ClassFormat {

@@ -13,19 +13,24 @@ class GetTuteeAssignmentsByCriterion
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> call(params) async {
-    return await repo.getByCriterion(
+    final Either<Failure, List<TuteeAssignment>> result =
+        await repo.getByCriterion(
       level: params.level,
       subject: params.subject,
       rateMin: params.rateMin,
       rateMax: params.rateMax,
     );
+    return result;
   }
 }
 
 class Params extends Equatable {
   const Params({
     this.level = Level.all,
-    this.subject = Subject.all,
+    this.subject = const Subject(
+      level: Level.all,
+      subjectArea: SubjectArea.ANY,
+    ),
     this.rateMin = 0,
     this.rateMax = 999,
   });

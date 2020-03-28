@@ -59,8 +59,12 @@ void main() {
       _setUpSuccessfulMockRepo();
 
       final result = await usecase(Params());
+      final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
+      final List<Object> expected =
+          Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+              .fold((l) => null, (r) => r[0].props);
 
-      expect(result, [tTuteeAssignment]);
+      expect(remarks, expected);
     });
 
     test('Should return Failure on unsuccessful search', () async {

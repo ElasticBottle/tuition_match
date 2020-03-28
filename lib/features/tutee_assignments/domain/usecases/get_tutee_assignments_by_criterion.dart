@@ -5,14 +5,15 @@ import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assig
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class GetTuteeAssignmentsByCriterion extends UseCase<TuteeAssignment, Params> {
+class GetTuteeAssignmentsByCriterion
+    extends UseCase<List<TuteeAssignment>, Params> {
   GetTuteeAssignmentsByCriterion({this.repo});
 
   TuteeAssignmentRepo repo;
 
   @override
-  Future<Either<Failure, TuteeAssignment>> call(params) {
-    repo.getByCriterion();
+  Future<Either<Failure, List<TuteeAssignment>>> call(params) async {
+    return await repo.getByCriterion();
   }
 }
 

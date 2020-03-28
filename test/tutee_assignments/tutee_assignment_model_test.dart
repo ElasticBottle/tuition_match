@@ -7,7 +7,25 @@ import 'package:flutter_test/flutter_test.dart';
 import '../fixtures/fixture_reader.dart';
 
 void main() {
-  final tTuteeAssignmentModel = TuteeAssignmentModel();
+  final tTuteeAssignmentModel = TuteeAssignmentModel(
+    postId: 'postId',
+    additionalRemarks: 'addtionalRemarks',
+    applied: 1,
+    format: ClassFormat.values[1],
+    gender: Gender.values[1],
+    level: Level.values[2],
+    subjectModel: SubjectModel(level: Level.values[2], sbjArea: 'science'),
+    timing: 'timing',
+    rateMax: 80.0,
+    rateMin: 60.0,
+    location: 'location',
+    freq: 'freq',
+    tutorOccupation: TutorOccupation.values[0],
+    status: Status.values[0],
+    username: 'username',
+    tuteeNameModel: NameModel(firstName: 'john', lastName: 'doe'),
+    liked: const ['username1', 'username2'],
+  );
 
   test(
     'should be a subclass of NumberTrivia entity',
@@ -19,15 +37,15 @@ void main() {
 
   group('fromJson', () {
     test(
-      'should return a valid model when the JSON number is an integer',
+      'should return a valid model from JSON',
       () async {
         // arrange
         final Map<String, dynamic> jsonMap =
-            json.decode(fixture('trivia.json'));
+            json.decode(fixture('tuteeAssignment.txt'));
         // act
         final result = TuteeAssignmentModel.fromJson(jsonMap);
         // assert
-        expect(result, tTuteeAssignmentModel);
+        expect(result, isA<TuteeAssignment>());
       },
     );
   });
@@ -39,7 +57,26 @@ void main() {
         // act
         final result = tTuteeAssignmentModel.toJson();
         // assert
-        final expectedJsonMap = <String, dynamic>{};
+        final expectedJsonMap = <String, dynamic>{
+          'postId': {
+            'level': 2,
+            'subject': {'level': 2, 'subjectArea': 'science'},
+            'timing': 'timing',
+            'location': 'location',
+            'rateMin': 60.0,
+            'rateMax': 80.0,
+            'gender': 1,
+            'freq': 'freq',
+            'tutorOccupation': 0,
+            'format': 1,
+            'additionalRemarks': 'addtionalRemarks',
+            'applied': 1,
+            'liked': ['username1', 'username2'],
+            'status': 0,
+            'username': 'username',
+            'tuteeName': {'firstName': 'john', 'lastName': 'doe'}
+          }
+        };
         expect(result, expectedJsonMap);
       },
     );

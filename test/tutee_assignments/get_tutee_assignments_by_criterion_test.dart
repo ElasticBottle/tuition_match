@@ -54,12 +54,13 @@ void main() {
       verify(mockRepo.getByCriterion());
       verifyNoMoreInteractions(mockRepo);
     });
+
     test('Should return List<TuteeAssignemnt> on successful search', () async {
       _setUpSuccessfulMockRepo();
 
       final result = await usecase(Params());
 
-      expect(result, tTuteeAssignment);
+      expect(result, [tTuteeAssignment]);
     });
 
     test('Should return Failure on unsuccessful search', () async {

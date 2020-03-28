@@ -41,7 +41,7 @@ class Subject {
   final String subjectArea;
 }
 
-class Science {
+class Science extends SubjectArea {
   const Science();
   static const String SCIENCE = 'Science';
   static const String CHEM = 'Chem';
@@ -49,14 +49,14 @@ class Science {
   static const String PHY = 'Phy';
 }
 
-class Math {
+class Math extends SubjectArea {
   const Math();
   static const String MATH = 'Math';
   static const String AMATH = 'AMath';
   static const String FMATH = 'FMath';
 }
 
-class Humans {
+class Humans extends SubjectArea {
   const Humans();
   static const String HIST = 'Hist';
   static const String GEOG = 'Geog';
@@ -67,12 +67,12 @@ class Humans {
   static const String GP = 'Gp';
 }
 
-class Music {
+class Music extends SubjectArea {
   const Music();
   static const String PIANO = 'Piano';
 }
 
-class Languages {
+class Languages extends SubjectArea {
   const Languages();
   static const String ENG = 'English';
   static const String CHI = 'Chinese';
@@ -83,12 +83,6 @@ class Languages {
 
 class SubjectArea {
   const SubjectArea();
-  static const Science SCIENCE = Science();
-  static const Math MATH = Math();
-  static const Humans HUMANS = Humans();
-  static const Languages LANGUAGES = Languages();
-  static const Music MUSIC = Music();
-
   static const String ANY = 'Any';
 }
 

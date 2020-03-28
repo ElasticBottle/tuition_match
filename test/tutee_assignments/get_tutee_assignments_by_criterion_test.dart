@@ -20,7 +20,10 @@ void main() {
   group('Retrieving tutee assingments based on various criterion', () {
     final TuteeAssignment tTuteeAssignment = TuteeAssignment(
       level: Level.pri2,
-      subject: Subject.priChinese,
+      subject: Subject(
+        level: Level.pri2,
+        subjectArea: Languages.CHI,
+      ),
       timing: 'Mon-Fri 7pm Onwards',
       format: ClassFormat.private,
       applied: 20,
@@ -36,18 +39,19 @@ void main() {
       username: 'test',
     );
 
-    void _setUpSuccessfulMockRepo() {
+    void _setUpMockRepoCriterionCall({bool success}) {
       when(mockRepo.getByCriterion(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
         rateMin: anyNamed('rateMin'),
-      )).thenAnswer((realInvocation) async =>
-          Right<Failure, List<TuteeAssignment>>([tTuteeAssignment]));
+      )).thenAnswer((realInvocation) async => success
+          ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+          : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     }
 
     test('Should call MockTuteeAssignmentRepo', () async {
-      _setUpSuccessfulMockRepo();
+      _setUpMockRepoCriterionCall(success: true);
 
       await usecase(Params());
 
@@ -56,12 +60,12 @@ void main() {
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
         rateMin: anyNamed('rateMin'),
-      ));
-      verifyNoMoreInteractions(mockRepo);
+      )).called(1);
     });
 
-    test('Should return List<TuteeAssignemnt> on successful search', () async {
-      _setUpSuccessfulMockRepo();
+    test('Should return Right(List<TuteeAssignemnt>) on successful search',
+        () async {
+      _setUpMockRepoCriterionCall(success: true);
 
       final result = await usecase(Params());
       final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
@@ -72,14 +76,8 @@ void main() {
       expect(remarks, expected);
     });
 
-    test('Should return Failure on unsuccessful search', () async {
-      when(mockRepo.getByCriterion(
-        level: anyNamed('level'),
-        subject: anyNamed('subject'),
-        rateMax: anyNamed('rateMax'),
-        rateMin: anyNamed('rateMin'),
-      )).thenAnswer((realInvocation) async =>
-          Left<Failure, List<TuteeAssignment>>(ServerFailure()));
+    test('Should return Left(Failure) on unsuccessful search', () async {
+      _setUpMockRepoCriterionCall(success: false);
 
       final result = await usecase(Params());
 
@@ -96,7 +94,7 @@ void main() {
 
       final result = await usecase(Params(
         level: Level.all,
-        subject: Subject.all,
+        subject: Subject(level: Level.all, subjectArea: SubjectArea.ANY),
         rateMin: 0,
         rateMax: 900,
       ));

@@ -54,5 +54,26 @@ void main() {
       verify(mockRepo.getByCriterion());
       verifyNoMoreInteractions(mockRepo);
     });
+    test('Should return List<TuteeAssignemnt> on successful search', () async {
+      _setUpSuccessfulMockRepo();
+
+      final result = await usecase(Params());
+
+      expect(result, tTuteeAssignment);
+    });
+
+    test('Should return Failure on unsuccessful search', () async {
+      when(mockRepo.getByCriterion(
+        level: anyNamed('level'),
+        subject: anyNamed('subject'),
+        rateMax: anyNamed('rateMax'),
+        rateMin: anyNamed('rateMin'),
+      )).thenAnswer((realInvocation) async =>
+          Left<Failure, List<TuteeAssignment>>(ServerFailure()));
+
+      final result = await usecase(Params());
+
+      expect(result, ServerFailure());
+    });
   });
 }

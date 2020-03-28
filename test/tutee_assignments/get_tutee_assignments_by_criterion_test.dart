@@ -51,7 +51,12 @@ void main() {
 
       await usecase(Params());
 
-      verify(mockRepo.getByCriterion());
+      verify(mockRepo.getByCriterion(
+        level: anyNamed('level'),
+        subject: anyNamed('subject'),
+        rateMax: anyNamed('rateMax'),
+        rateMin: anyNamed('rateMin'),
+      ));
       verifyNoMoreInteractions(mockRepo);
     });
 
@@ -85,14 +90,21 @@ void main() {
       when(mockRepo.getByCriterion(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
-        rateMax: 900,
         rateMin: anyNamed('rateMin'),
-      )).thenAnswer(
-          (realInvocation) async => Right<Failure, List<TuteeAssignment>>([]));
+        rateMax: 900,
+      )).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
-      final result = await usecase(Params());
+      final result = await usecase(Params(
+        level: Level.all,
+        subject: Subject.all,
+        rateMin: 0,
+        rateMax: 900,
+      ));
 
-      expect(result, Right<Failure, List<TuteeAssignment>>([]));
+      final bool actual = result.fold((l) => null, (r) => r.isEmpty);
+      final bool expected = Right<Failure, List<TuteeAssignment>>([])
+          .fold((l) => null, (r) => r.isEmpty);
+      expect(actual, expected);
     });
   });
 }

@@ -13,7 +13,12 @@ class GetTuteeAssignmentsByCriterion
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> call(params) async {
-    return await repo.getByCriterion();
+    return await repo.getByCriterion(
+      level: params.level,
+      subject: params.subject,
+      rateMin: params.rateMin,
+      rateMax: params.rateMax,
+    );
   }
 }
 

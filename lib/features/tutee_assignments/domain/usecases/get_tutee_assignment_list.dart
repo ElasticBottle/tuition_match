@@ -9,8 +9,8 @@ class GetTuteeAssignmentList extends UseCase<List<TuteeAssignment>, NoParams> {
   TuteeAssignmentRepo repo;
 
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> call(NoParams params) {
-    // TODO: implement call
-    throw UnimplementedError();
+  Future<Either<Failure, List<TuteeAssignment>>> call(NoParams params) async {
+    final result = await repo.getAssignmentList();
+    return result;
   }
 }

@@ -9,4 +9,6 @@ abstract class TuteeAssignmentRepo {
     int rateMin,
     int rateMax,
   });
+
+  Future<Either<Failure, List<TuteeAssignment>>> getAssignmentList();
 }

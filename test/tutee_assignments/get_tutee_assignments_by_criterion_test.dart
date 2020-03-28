@@ -78,7 +78,21 @@ void main() {
 
       final result = await usecase(Params());
 
-      expect(result, ServerFailure());
+      expect(result, Left<Failure, List<TuteeAssignment>>(ServerFailure()));
+    });
+
+    test('Should return empty list if no result match criteria', () async {
+      when(mockRepo.getByCriterion(
+        level: anyNamed('level'),
+        subject: anyNamed('subject'),
+        rateMax: 900,
+        rateMin: anyNamed('rateMin'),
+      )).thenAnswer(
+          (realInvocation) async => Right<Failure, List<TuteeAssignment>>([]));
+
+      final result = await usecase(Params());
+
+      expect(result, Right<Failure, List<TuteeAssignment>>([]));
     });
   });
 }

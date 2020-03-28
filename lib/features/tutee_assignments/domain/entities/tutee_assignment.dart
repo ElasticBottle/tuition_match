@@ -41,6 +41,11 @@ class Subject {
   final String subjectArea;
 }
 
+class SubjectArea {
+  const SubjectArea();
+  static const String ANY = 'Any';
+}
+
 class Science extends SubjectArea {
   const Science();
   static const String SCIENCE = 'Science';
@@ -81,11 +86,6 @@ class Languages extends SubjectArea {
   static const String HINDI = 'Hindi';
 }
 
-class SubjectArea {
-  const SubjectArea();
-  static const String ANY = 'Any';
-}
-
 enum ClassFormat {
   online,
   private,
@@ -118,7 +118,7 @@ class TuteeAssignment extends Equatable {
     this.location,
     this.freq,
     this.tutorOccupation,
-    this.addtionalRemarks,
+    this.additionalRemarks,
     this.status,
     this.applied,
     this.liked,
@@ -134,7 +134,7 @@ class TuteeAssignment extends Equatable {
   final String location;
   final String freq;
   final TutorOccupation tutorOccupation;
-  final String addtionalRemarks;
+  final String additionalRemarks;
   final Status status;
   final String username;
   final Name tuteeName;
@@ -154,7 +154,7 @@ class TuteeAssignment extends Equatable {
         location,
         freq,
         tutorOccupation,
-        addtionalRemarks,
+        additionalRemarks,
         status,
         applied,
         username,

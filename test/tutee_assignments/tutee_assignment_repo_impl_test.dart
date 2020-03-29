@@ -65,15 +65,19 @@ void main() {
     );
     final TuteeAssignment tTuteeAssignment = tTuteeAssignmentModel;
 
-    test('should check if the device is online', () {
-      //arrange
-      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      // act
-      repository.getByCriterion(
+    Future<Either<Failure, List<TuteeAssignment>>> _repoCiterionAct() {
+      return repository.getByCriterion(
           level: tLevelSearch,
           subject: tSubjectSearch,
           rateMax: tRateMax,
           rateMin: tRateMin);
+    }
+
+    test('should check if the device is online', () {
+      //arrange
+      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      // act
+      _repoCiterionAct();
       // assert
       verify(mockNetworkInfo.isConnected);
     });
@@ -99,11 +103,7 @@ void main() {
           // arrange
           _setUpRemoteDs();
           // act
-          final result = await repository.getByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin);
+          final result = await _repoCiterionAct();
           // assert
           verify(mockRemoteDataSource.getAssignmentByCriterion(
               level: tLevelSearch,
@@ -124,11 +124,7 @@ void main() {
           // arrange
           _setUpRemoteDs();
           // act
-          await repository.getByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin);
+          await _repoCiterionAct();
           // assert
           verify(mockRemoteDataSource.getAssignmentByCriterion(
               level: tLevelSearch,
@@ -149,11 +145,7 @@ void main() {
                   rateMin: tRateMin))
               .thenThrow(ServerException());
           // act
-          final result = await repository.getByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin);
+          final result = await _repoCiterionAct();
           // assert
           verify(mockRemoteDataSource.getAssignmentByCriterion(
               level: tLevelSearch,
@@ -162,6 +154,43 @@ void main() {
               rateMin: tRateMin));
           verifyZeroInteractions(mockLocalDataSource);
           expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
+        },
+      );
+    });
+    group('device is offline', () {
+      setUp(() {
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+      });
+
+      test(
+        'should return last locally cached data when the cached data is present',
+        () async {
+          // arrange
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenAnswer((_) async => [tTuteeAssignmentModel]);
+          // act
+          final result = await _repoCiterionAct();
+          // assert
+          verifyZeroInteractions(mockRemoteDataSource);
+          verify(mockLocalDataSource.getLastAssignmentList());
+          expect(
+              result,
+              equals(
+                  Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])));
+        },
+      );
+      test(
+        'should return CacheFailure when there is no cached data present',
+        () async {
+          // arrange
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenThrow(CacheException());
+          // act
+          final result = await _repoCiterionAct();
+          // assert
+          verifyZeroInteractions(mockRemoteDataSource);
+          verify(mockLocalDataSource.getLastAssignmentList());
+          expect(result, equals(Left<Failure, dynamic>(CacheFailure())));
         },
       );
     });

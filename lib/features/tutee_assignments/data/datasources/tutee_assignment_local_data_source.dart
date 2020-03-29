@@ -6,7 +6,7 @@ abstract class TuteeAssignmentLocalDataSource {
   /// the user had an internet connection.
   ///
   /// Throws [NoLocalDataException] if no cached data is present.
-  Future<TuteeAssignmentModel> getLastAssignmentList();
+  Future<List<TuteeAssignmentModel>> getLastAssignmentList();
 
   Future<void> cacheAssignmentList(
       List<TuteeAssignmentModel> assignmnetsToCache);

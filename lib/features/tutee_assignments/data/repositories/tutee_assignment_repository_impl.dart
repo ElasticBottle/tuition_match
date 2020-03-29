@@ -21,7 +21,11 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         result = await remoteDs.getAssignmentList();
         localDs.cacheAssignmentList(result);
       } on ServerException {
-        return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+        try {
+          result = await localDs.getLastAssignmentList();
+        } on CacheException {
+          return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+        }
       }
     } else {
       try {

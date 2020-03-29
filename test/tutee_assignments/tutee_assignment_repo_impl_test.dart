@@ -138,18 +138,6 @@ void main() {
         },
       );
       test(
-        'should cache the data locally when the call to remote data source is successful',
-        () async {
-          // arrange
-          _setUpRemoteDs();
-          // act
-          await _repoCiterionAct();
-          // assert
-          verify(_remoteDsAct());
-          verify(mockLocalDataSource.cacheAssignmentList([tTuteeAssignment]));
-        },
-      );
-      test(
         'should return server failure when the call to remote data source is unsuccessful',
         () async {
           // arrange
@@ -171,34 +159,12 @@ void main() {
 
     runTestsOffline(() {
       test(
-        'should return last locally cached data when the cached data is present',
+        'should return CacheFailure when there is no internet conection',
         () async {
-          // arrange
-          when(mockLocalDataSource.getLastAssignmentList())
-              .thenAnswer((_) async => [tTuteeAssignmentModel]);
           // act
           final result = await _repoCiterionAct();
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
-          verify(mockLocalDataSource.getLastAssignmentList());
-          final actual = result.fold((l) => null, (r) => r[0].props);
-          final expected =
-              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
-                  .fold((l) => null, (r) => r[0].props);
-          expect(actual, equals(expected));
-        },
-      );
-      test(
-        'should return CacheFailure when there is no cached data present',
-        () async {
-          // arrange
-          when(mockLocalDataSource.getLastAssignmentList())
-              .thenThrow(CacheException());
-          // act
-          final result = await _repoCiterionAct();
-          // assert
-          verifyZeroInteractions(mockRemoteDataSource);
-          verify(mockLocalDataSource.getLastAssignmentList());
           expect(result, equals(Left<Failure, dynamic>(CacheFailure())));
         },
       );

@@ -1,3 +1,4 @@
+import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_remote_data_source.dart';
@@ -20,8 +21,20 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCriterion(
-      {Level level, Subject subject, double rateMin, double rateMax}) {
-    // TODO: implement getByCriterion
-    throw UnimplementedError();
+      {Level level, Subject subject, double rateMin, double rateMax}) async {
+    networkInfo.isConnected;
+    List<TuteeAssignment> result;
+    try {
+      result = await remoteDs.getAssignmentByCriterion(
+        level: level,
+        subject: subject,
+        rateMax: rateMax,
+        rateMin: rateMin,
+      );
+      localDs.cacheAssignmentList(result);
+      return Right<Failure, List<TuteeAssignment>>(result);
+    } on ServerException {
+      return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+    }
   }
 }

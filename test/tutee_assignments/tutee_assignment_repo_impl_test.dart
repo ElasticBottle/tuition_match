@@ -110,10 +110,12 @@ void main() {
               subject: tSubjectSearch,
               rateMax: tRateMax,
               rateMin: tRateMin));
-          expect(
-              result,
-              equals(
-                  Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])));
+
+          final actual = result.fold((l) => null, (r) => r[0].props);
+          final expected =
+              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+                  .fold((l) => null, (r) => r[0].props);
+          expect(actual, equals(expected));
         },
       );
       test(

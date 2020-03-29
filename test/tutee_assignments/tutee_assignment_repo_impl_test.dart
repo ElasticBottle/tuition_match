@@ -287,17 +287,40 @@ void main() {
           verify(mockLocalDataSource.cacheAssignmentList([tTuteeAssignment]));
         },
       );
+
       test(
-        'should return server failure when the call to remote data source is unsuccessful',
+        'should return cached data when the call to remote data source is unsuccessful.',
         () async {
           // arrange
           when(mockRemoteDataSource.getAssignmentList())
               .thenThrow(ServerException());
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenAnswer((_) async => [tTuteeAssignmentModel]);
           // act
           final result = await _repoGetAssignmentAct();
           // assert
           verify(_remoteDsAct());
-          verifyZeroInteractions(mockLocalDataSource);
+          verify(mockLocalDataSource.getLastAssignmentList());
+          final actual = result.fold((l) => null, (r) => r[0].props);
+          final expected =
+              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+                  .fold((l) => null, (r) => r[0].props);
+          expect(actual, equals(expected));
+        },
+      );
+      test(
+        'should return server failure when the call to remote data source is unsuccessful and No Local Cached data.',
+        () async {
+          // arrange
+          when(mockRemoteDataSource.getAssignmentList())
+              .thenThrow(ServerException());
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenThrow(CacheException());
+          // act
+          final result = await _repoGetAssignmentAct();
+          // assert
+          verify(_remoteDsAct());
+          verify(mockLocalDataSource.getLastAssignmentList());
           expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
         },
       );

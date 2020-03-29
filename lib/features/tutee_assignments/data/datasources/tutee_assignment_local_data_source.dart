@@ -1,5 +1,6 @@
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
 
 abstract class TuteeAssignmentLocalDataSource {
   /// Gets the cached [TuteeAssignmnetModel] which was gotten the last time
@@ -18,4 +19,8 @@ abstract class TuteeAssignmentLocalDataSource {
     double rateMin,
     double rateMax,
   });
+
+  Future<Params> getCachedParams() async {
+    return Params();
+  }
 }

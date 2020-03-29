@@ -207,6 +207,13 @@ void main() {
     test('should check if the device is online', () {
       //arrange
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      // arrange
+      when(mockLocalDataSource.getCachedParams()).thenAnswer(
+          (realInvocation) async => Params(
+              level: tLevelSearch,
+              subject: tSubjectSearch,
+              rateMax: tRateMax,
+              rateMin: tRateMin));
       // act
       repository.getByCachedCriterion();
       // assert
@@ -215,6 +222,14 @@ void main() {
 
     runTestsOnline(() {
       test('should retrieve cached params from local data source', () async {
+        // arrange
+        when(mockLocalDataSource.getCachedParams()).thenAnswer(
+            (realInvocation) async => Params(
+                level: tLevelSearch,
+                subject: tSubjectSearch,
+                rateMax: tRateMax,
+                rateMin: tRateMin));
+
         // act
         await repository.getByCachedCriterion();
         // assert
@@ -223,63 +238,18 @@ void main() {
       test('should return [CacheFailure] if there is no cached params',
           () async {
         // arrange
-        when(mockLocalDataSource.getCachedParams()).thenThrow(CacheFailure());
+        when(mockLocalDataSource.getCachedParams()).thenThrow(CacheException());
         // act
         final result = await repository.getByCachedCriterion();
         // assert
         verify(mockLocalDataSource.getCachedParams());
         expect(result, Left<Failure, dynamic>(CacheFailure()));
       });
-      test(
-        'should return remote data when the call to remote data source is successful',
-        () async {
-          // arrange
-          when(mockRemoteDataSource.getAssignmentByCriterion(
-                  level: tLevelSearch,
-                  subject: tSubjectSearch,
-                  rateMax: tRateMax,
-                  rateMin: tRateMin))
-              .thenAnswer((_) async => [tTuteeAssignmentModel]);
-          // act
-          final result = await repository.getByCachedCriterion();
-          // assert
-          verify(mockRemoteDataSource.getAssignmentByCriterion());
-
-          final actual = result.fold((l) => null, (r) => r[0].props);
-          final expected =
-              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
-                  .fold((l) => null, (r) => r[0].props);
-          expect(actual, equals(expected));
-        },
-      );
-
-      test(
-        'should cache citeria params and return [ServerFailure] when the call to remote data source is unsuccessful',
-        () async {
-          // arrange
-          when(mockRemoteDataSource.getAssignmentByCriterion(
-                  level: tLevelSearch,
-                  subject: tSubjectSearch,
-                  rateMax: tRateMax,
-                  rateMin: tRateMin))
-              .thenThrow(ServerException());
-          // act
-          final result = await repository.getByCachedCriterion();
-          // assert
-          verify(mockRemoteDataSource.getAssignmentByCriterion());
-          verify(mockLocalDataSource.cacheCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin));
-          expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
-        },
-      );
     });
     runTestsOffline(() {
       test('should return NetworkFailure', () async {
         final result = await repository.getByCachedCriterion();
-        expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
+        expect(result, equals(Left<Failure, dynamic>(NetworkFailure())));
       });
     });
   });
@@ -358,7 +328,7 @@ void main() {
     runTestsOffline(() {
       test('should return NetworkFailure', () async {
         final result = await _repoGetAssignmentAct();
-        expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
+        expect(result, equals(Left<Failure, dynamic>(NetworkFailure())));
       });
     });
   });
@@ -371,24 +341,6 @@ void main() {
       repository.getCachedAssignmentList();
       // assert
       verify(mockNetworkInfo.isConnected);
-    });
-    runTestsOnline(() {
-      test('should call getAssignmentList', () async {
-        // arrange
-        when(repository.getAssignmentList()).thenAnswer(
-            (realInvocation) async =>
-                Right<Failure, List<TuteeAssignment>>([tTuteeAssignmentModel]));
-
-        // act
-        final result = await repository.getCachedAssignmentList();
-
-        // assert
-        final actual = result.fold((l) => null, (r) => r[0].props);
-        final expected =
-            Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
-                .fold((l) => null, (r) => r[0].props);
-        expect(actual, equals(expected));
-      });
     });
 
     runTestsOffline(() {

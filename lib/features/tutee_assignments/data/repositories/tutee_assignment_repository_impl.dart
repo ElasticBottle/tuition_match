@@ -15,26 +15,28 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getAssignmentList() async {
-    List<TuteeAssignment> result;
     if (await networkInfo.isConnected) {
       try {
-        result = await remoteDs.getAssignmentList();
+        final List<TuteeAssignment> result = await remoteDs.getAssignmentList();
         localDs.cacheAssignmentList(result);
+        return Right<Failure, List<TuteeAssignment>>(result);
       } on ServerException {
-        try {
-          result = await localDs.getLastAssignmentList();
-        } on CacheException {
-          return Left<Failure, List<TuteeAssignment>>(ServerFailure());
-        }
+        return await _attemptAssignmentListRetrievalFromCache(ServerFailure());
       }
     } else {
-      try {
-        result = await localDs.getLastAssignmentList();
-      } on CacheException {
-        return Left<Failure, List<TuteeAssignment>>(CacheFailure());
-      }
+      return await _attemptAssignmentListRetrievalFromCache(CacheFailure());
     }
-    return Right<Failure, List<TuteeAssignment>>(result);
+  }
+
+  Future<Either<Failure, List<TuteeAssignment>>>
+      _attemptAssignmentListRetrievalFromCache(Failure failure) async {
+    try {
+      final List<TuteeAssignment> result =
+          await localDs.getLastAssignmentList();
+      return Right<Failure, List<TuteeAssignment>>(result);
+    } on CacheException {
+      return Left<Failure, List<TuteeAssignment>>(failure);
+    }
   }
 
   @override
@@ -53,7 +55,6 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
           rateMax: rateMax,
           rateMin: rateMin,
         );
-        localDs.cacheAssignmentList(result);
         return Right<Failure, List<TuteeAssignment>>(result);
       } on ServerException {
         return Left<Failure, List<TuteeAssignment>>(ServerFailure());

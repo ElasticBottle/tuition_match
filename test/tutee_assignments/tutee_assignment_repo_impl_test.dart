@@ -35,6 +35,26 @@ void main() {
     );
   });
 
+  void runTestsOnline(Function body) {
+    group('device is online', () {
+      setUp(() {
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      });
+
+      body();
+    });
+  }
+
+  void runTestsOffline(Function body) {
+    group('device is offline', () {
+      setUp(() {
+        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
+      });
+
+      body();
+    });
+  }
+
   group('getAssignmentListByCriterion', () {
     // DATA FOR THE MOCKS AND ASSERTIONS
     // We'll use these three variables throughout all the tests
@@ -73,6 +93,14 @@ void main() {
           rateMin: tRateMin);
     }
 
+    Future<List<TuteeAssignment>> _remoteDsAct() {
+      return mockRemoteDataSource.getAssignmentByCriterion(
+          level: tLevelSearch,
+          subject: tSubjectSearch,
+          rateMax: tRateMax,
+          rateMin: tRateMin);
+    }
+
     test('should check if the device is online', () {
       //arrange
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -82,12 +110,7 @@ void main() {
       verify(mockNetworkInfo.isConnected);
     });
 
-    group('device is online', () {
-      // This setUp applies only to the 'device is online' group
-      setUp(() {
-        when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      });
-
+    runTestsOnline(() {
       void _setUpRemoteDs() {
         when(mockRemoteDataSource.getAssignmentByCriterion(
                 level: tLevelSearch,
@@ -105,11 +128,7 @@ void main() {
           // act
           final result = await _repoCiterionAct();
           // assert
-          verify(mockRemoteDataSource.getAssignmentByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin));
+          verify(_remoteDsAct());
 
           final actual = result.fold((l) => null, (r) => r[0].props);
           final expected =
@@ -126,11 +145,7 @@ void main() {
           // act
           await _repoCiterionAct();
           // assert
-          verify(mockRemoteDataSource.getAssignmentByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin));
+          verify(_remoteDsAct());
           verify(mockLocalDataSource.cacheAssignmentList([tTuteeAssignment]));
         },
       );
@@ -147,21 +162,14 @@ void main() {
           // act
           final result = await _repoCiterionAct();
           // assert
-          verify(mockRemoteDataSource.getAssignmentByCriterion(
-              level: tLevelSearch,
-              subject: tSubjectSearch,
-              rateMax: tRateMax,
-              rateMin: tRateMin));
+          verify(_remoteDsAct());
           verifyZeroInteractions(mockLocalDataSource);
           expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
         },
       );
     });
-    group('device is offline', () {
-      setUp(() {
-        when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
-      });
 
+    runTestsOffline(() {
       test(
         'should return last locally cached data when the cached data is present',
         () async {

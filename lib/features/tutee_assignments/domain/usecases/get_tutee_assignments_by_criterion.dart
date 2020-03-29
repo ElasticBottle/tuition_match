@@ -36,8 +36,8 @@ class Params extends Equatable {
   });
   final Level level;
   final Subject subject;
-  final int rateMin;
-  final int rateMax;
+  final double rateMin;
+  final double rateMax;
 
   @override
   List<Object> get props => [];

@@ -40,5 +40,10 @@ class Params extends Equatable {
   final double rateMax;
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [
+        level,
+        subject,
+        rateMin,
+        rateMax,
+      ];
 }

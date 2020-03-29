@@ -5,7 +5,7 @@ abstract class TuteeAssignmentRemoteDataSource {
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<TuteeAssignmentModel> getAssignmentByCriterion({
+  Future<List<TuteeAssignmentModel>> getAssignmentByCriterion({
     Level level,
     Subject subject,
     double rateMin,

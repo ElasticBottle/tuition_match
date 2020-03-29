@@ -90,7 +90,7 @@ void main() {
                 subject: tSubjectSearch,
                 rateMax: tRateMax,
                 rateMin: tRateMin))
-            .thenAnswer((_) async => tTuteeAssignmentModel);
+            .thenAnswer((_) async => [tTuteeAssignmentModel]);
       }
 
       test(
@@ -110,8 +110,10 @@ void main() {
               subject: tSubjectSearch,
               rateMax: tRateMax,
               rateMin: tRateMin));
-          expect(result,
-              equals(Right<Failure, TuteeAssignment>(tTuteeAssignment)));
+          expect(
+              result,
+              equals(
+                  Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])));
         },
       );
       test(

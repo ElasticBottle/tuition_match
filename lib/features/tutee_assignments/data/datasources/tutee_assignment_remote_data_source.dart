@@ -15,5 +15,5 @@ abstract class TuteeAssignmentRemoteDataSource {
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<TuteeAssignmentModel> getAssignmentList();
+  Future<List<TuteeAssignmentModel>> getAssignmentList();
 }

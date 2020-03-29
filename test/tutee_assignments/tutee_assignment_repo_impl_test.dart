@@ -204,4 +204,138 @@ void main() {
       );
     });
   });
+
+  group('getAssignmentList', () {
+    // DATA FOR THE MOCKS AND ASSERTIONS
+    // We'll use these three variables throughout all the tests
+    final tLevelSearch = Level.values[2];
+    final tSubjectSearch =
+        SubjectModel(level: Level.values[2], sbjArea: 'science');
+    const double tRateMin = 60.0;
+    const double tRateMax = 80.0;
+
+    final TuteeAssignmentModel tTuteeAssignmentModel = TuteeAssignmentModel(
+      postId: 'postId',
+      additionalRemarks: 'addtionalRemarks',
+      applied: 1,
+      format: ClassFormat.values[1],
+      gender: Gender.values[1],
+      level: tLevelSearch,
+      subjectModel: tSubjectSearch,
+      timing: 'timing',
+      rateMax: tRateMax,
+      rateMin: tRateMin,
+      location: 'location',
+      freq: 'freq',
+      tutorOccupation: TutorOccupation.values[0],
+      status: Status.values[0],
+      username: 'username',
+      tuteeNameModel: NameModel(firstName: 'john', lastName: 'doe'),
+      liked: const ['username1', 'username2'],
+    );
+    final TuteeAssignment tTuteeAssignment = tTuteeAssignmentModel;
+
+    Future<Either<Failure, List<TuteeAssignment>>> _repoGetAssignmentAct() {
+      return repository.getAssignmentList();
+    }
+
+    Future<List<TuteeAssignment>> _remoteDsAct() {
+      return mockRemoteDataSource.getAssignmentList();
+    }
+
+    test('should check if the device is online', () {
+      //arrange
+      when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
+      // act
+      _repoGetAssignmentAct();
+      // assert
+      verify(mockNetworkInfo.isConnected);
+    });
+
+    runTestsOnline(() {
+      void _setUpRemoteDs() {
+        when(mockRemoteDataSource.getAssignmentList())
+            .thenAnswer((_) async => [tTuteeAssignmentModel]);
+      }
+
+      test(
+        'should return remote data when the call to remote data source is successful',
+        () async {
+          // arrange
+          _setUpRemoteDs();
+          // act
+          final result = await _repoGetAssignmentAct();
+          // assert
+          verify(_remoteDsAct());
+
+          final actual = result.fold((l) => null, (r) => r[0].props);
+          final expected =
+              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+                  .fold((l) => null, (r) => r[0].props);
+          expect(actual, equals(expected));
+        },
+      );
+      test(
+        'should cache the data locally when the call to remote data source is successful',
+        () async {
+          // arrange
+          _setUpRemoteDs();
+          // act
+          await _repoGetAssignmentAct();
+          // assert
+          verify(_remoteDsAct());
+          verify(mockLocalDataSource.cacheAssignmentList([tTuteeAssignment]));
+        },
+      );
+      test(
+        'should return server failure when the call to remote data source is unsuccessful',
+        () async {
+          // arrange
+          when(mockRemoteDataSource.getAssignmentList())
+              .thenThrow(ServerException());
+          // act
+          final result = await _repoGetAssignmentAct();
+          // assert
+          verify(_remoteDsAct());
+          verifyZeroInteractions(mockLocalDataSource);
+          expect(result, equals(Left<Failure, dynamic>(ServerFailure())));
+        },
+      );
+    });
+
+    runTestsOffline(() {
+      test(
+        'should return last locally cached data when the cached data is present',
+        () async {
+          // arrange
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenAnswer((_) async => [tTuteeAssignmentModel]);
+          // act
+          final result = await _repoGetAssignmentAct();
+          // assert
+          verifyZeroInteractions(mockRemoteDataSource);
+          verify(mockLocalDataSource.getLastAssignmentList());
+          final actual = result.fold((l) => null, (r) => r[0].props);
+          final expected =
+              Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+                  .fold((l) => null, (r) => r[0].props);
+          expect(actual, equals(expected));
+        },
+      );
+      test(
+        'should return CacheFailure when there is no cached data present',
+        () async {
+          // arrange
+          when(mockLocalDataSource.getLastAssignmentList())
+              .thenThrow(CacheException());
+          // act
+          final result = await _repoGetAssignmentAct();
+          // assert
+          verifyZeroInteractions(mockRemoteDataSource);
+          verify(mockLocalDataSource.getLastAssignmentList());
+          expect(result, equals(Left<Failure, dynamic>(CacheFailure())));
+        },
+      );
+    });
+  });
 }

@@ -69,4 +69,21 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
       return Left<Failure, List<TuteeAssignment>>(NetworkFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion({
+    Level level,
+    Subject subject,
+    double rateMin,
+    double rateMax,
+  }) {
+    // TODO: implement getByCachedCriterion
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, List<TuteeAssignment>>> getCachedAssignmentList() {
+    // TODO: implement getCachedAssignmentList
+    throw UnimplementedError();
+  }
 }

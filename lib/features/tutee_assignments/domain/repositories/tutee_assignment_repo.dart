@@ -11,4 +11,13 @@ abstract class TuteeAssignmentRepo {
   });
 
   Future<Either<Failure, List<TuteeAssignment>>> getAssignmentList();
+
+  Future<Either<Failure, List<TuteeAssignment>>> getCachedAssignmentList();
+
+  Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion({
+    Level level,
+    Subject subject,
+    double rateMin,
+    double rateMax,
+  });
 }

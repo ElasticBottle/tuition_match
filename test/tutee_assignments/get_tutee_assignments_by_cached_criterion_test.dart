@@ -1,6 +1,7 @@
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_cached_criterion.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,11 +12,11 @@ class MockTuteeAssignmentRepo extends Mock implements TuteeAssignmentRepo {}
 void main() {
   MockTuteeAssignmentRepo mockRepo;
   // TODO(ElasticBottle): change to cached version
-  GetTuteeAssignmentsByCriterion usecase;
+  GetTuteeAssignmentsByCachedCriterion usecase;
 
   setUp(() {
     mockRepo = MockTuteeAssignmentRepo();
-    usecase = GetTuteeAssignmentsByCriterion(repo: mockRepo);
+    usecase = GetTuteeAssignmentsByCachedCriterion(repo: mockRepo);
   });
 
   group('Retrieving tutee assingments based on various criterion', () {
@@ -41,7 +42,7 @@ void main() {
     );
 
     void _setUpMockRepoCriterionCall({bool success}) {
-      when(mockRepo.getByCriterion(
+      when(mockRepo.getByCachedCriterion(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
@@ -56,7 +57,7 @@ void main() {
 
       await usecase(Params());
 
-      verify(mockRepo.getByCriterion(
+      verify(mockRepo.getByCachedCriterion(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
@@ -86,20 +87,25 @@ void main() {
     });
 
     test('Should return empty list if no result match criteria', () async {
-      when(mockRepo.getByCriterion(
+      when(mockRepo.getByCachedCriterion(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMin: anyNamed('rateMin'),
-        rateMax: 900,
+        rateMax: 900.0,
       )).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
       final result = await usecase(Params(
         level: Level.all,
         subject: Subject(level: Level.all, subjectArea: SubjectArea.ANY),
-        rateMin: 0,
-        rateMax: 900,
+        rateMin: 0.0,
+        rateMax: 900.0,
       ));
-
+      verify(mockRepo.getByCachedCriterion(
+        level: anyNamed('level'),
+        subject: anyNamed('subject'),
+        rateMin: anyNamed('rateMin'),
+        rateMax: 900.0,
+      ));
       final bool actual = result.fold((l) => null, (r) => r.isEmpty);
       final bool expected = Right<Failure, List<TuteeAssignment>>([])
           .fold((l) => null, (r) => r.isEmpty);

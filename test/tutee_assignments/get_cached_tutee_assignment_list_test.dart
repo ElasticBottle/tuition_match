@@ -2,7 +2,7 @@ import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignment_list.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/get_cached_tutee_assignment_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -11,12 +11,11 @@ class MockTuteeAssignmentRepo extends Mock implements TuteeAssignmentRepo {}
 
 void main() {
   MockTuteeAssignmentRepo mockRepo;
-  // TODO(ElasticBottle): change to cached version
-  GetTuteeAssignmentList usecase;
+  GetCachedTuteeAssignmentList usecase;
 
   setUp(() {
     mockRepo = MockTuteeAssignmentRepo();
-    usecase = GetTuteeAssignmentList(repo: mockRepo);
+    usecase = GetCachedTuteeAssignmentList(repo: mockRepo);
   });
 
   group('Retrieving tutee assingments', () {
@@ -42,8 +41,8 @@ void main() {
     );
 
     void _setUpMockRepoAssignmentCall({bool success}) {
-      when(mockRepo.getAssignmentList()).thenAnswer((realInvocation) async =>
-          success
+      when(mockRepo.getCachedAssignmentList()).thenAnswer(
+          (realInvocation) async => success
               ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
               : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     }
@@ -53,7 +52,7 @@ void main() {
 
       await usecase(NoParams());
 
-      verify(mockRepo.getAssignmentList()).called(1);
+      verify(mockRepo.getCachedAssignmentList()).called(1);
       verifyNoMoreInteractions(mockRepo);
     });
 

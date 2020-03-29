@@ -14,18 +14,27 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   final TuteeAssignmentLocalDataSource localDs;
   final NetworkInfo networkInfo;
 
+  Left<Failure, List<TuteeAssignment>> _failure(Failure fail) {
+    return Left<Failure, List<TuteeAssignment>>(fail);
+  }
+
+  Right<Failure, List<TuteeAssignment>> _success(
+      List<TuteeAssignment> success) {
+    return Right<Failure, List<TuteeAssignment>>(success);
+  }
+
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getAssignmentList() async {
     if (await networkInfo.isConnected) {
       try {
         final List<TuteeAssignment> result = await remoteDs.getAssignmentList();
         localDs.cacheAssignmentList(result);
-        return Right<Failure, List<TuteeAssignment>>(result);
+        return _success(result);
       } on ServerException {
-        return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+        return _failure(ServerFailure());
       }
     } else {
-      return Left<Failure, List<TuteeAssignment>>(NetworkFailure());
+      return _failure(NetworkFailure());
     }
   }
 
@@ -38,9 +47,9 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
       try {
         final List<TuteeAssignment> result =
             await localDs.getLastAssignmentList();
-        return Right<Failure, List<TuteeAssignment>>(result);
+        return _success(result);
       } on CacheException {
-        return Left<Failure, List<TuteeAssignment>>(CacheFailure());
+        return _failure(CacheFailure());
       }
     }
   }
@@ -61,7 +70,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
           rateMax: rateMax,
           rateMin: rateMin,
         );
-        return Right<Failure, List<TuteeAssignment>>(result);
+        return _success(result);
       } on ServerException {
         localDs.cacheCriterion(
           level: level,
@@ -69,7 +78,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
           rateMin: rateMin,
           subject: subject,
         );
-        return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+        return _failure(ServerFailure());
       }
     } else {
       localDs.cacheCriterion(
@@ -78,7 +87,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         rateMin: rateMin,
         subject: subject,
       );
-      return Left<Failure, List<TuteeAssignment>>(NetworkFailure());
+      return _failure(NetworkFailure());
     }
   }
 
@@ -98,10 +107,10 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
             rateMin: params.rateMin,
             rateMax: params.rateMax);
       } on CacheException {
-        return Left<Failure, List<TuteeAssignment>>(CacheFailure());
+        return _failure(CacheFailure());
       }
     } else {
-      return Left<Failure, List<TuteeAssignment>>(NetworkFailure());
+      return _failure(NetworkFailure());
     }
   }
 }

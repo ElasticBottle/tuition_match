@@ -9,5 +9,5 @@ abstract class TuteeAssignmentLocalDataSource {
   Future<TuteeAssignmentModel> getLastAssignmentList();
 
   Future<void> cacheAssignmentList(
-      List<TuteeAssignmentModel> assignmnetsToCahce);
+      List<TuteeAssignmentModel> assignmnetsToCache);
 }

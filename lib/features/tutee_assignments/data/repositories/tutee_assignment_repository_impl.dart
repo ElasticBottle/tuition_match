@@ -22,19 +22,26 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCriterion(
       {Level level, Subject subject, double rateMin, double rateMax}) async {
-    networkInfo.isConnected;
     List<TuteeAssignment> result;
-    try {
-      result = await remoteDs.getAssignmentByCriterion(
-        level: level,
-        subject: subject,
-        rateMax: rateMax,
-        rateMin: rateMin,
-      );
-      localDs.cacheAssignmentList(result);
-      return Right<Failure, List<TuteeAssignment>>(result);
-    } on ServerException {
-      return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+    if (await networkInfo.isConnected) {
+      try {
+        result = await remoteDs.getAssignmentByCriterion(
+          level: level,
+          subject: subject,
+          rateMax: rateMax,
+          rateMin: rateMin,
+        );
+        localDs.cacheAssignmentList(result);
+      } on ServerException {
+        return Left<Failure, List<TuteeAssignment>>(ServerFailure());
+      }
+    } else {
+      try {
+        result = await localDs.getLastAssignmentList();
+      } on CacheException {
+        return Left<Failure, List<TuteeAssignment>>(CacheFailure());
+      }
     }
+    return Right<Failure, List<TuteeAssignment>>(result);
   }
 }

@@ -44,26 +44,28 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
     double rateMin,
     double rateMax,
   }) async {
-    List<TuteeAssignment> result;
     if (await networkInfo.isConnected) {
       try {
-        result = await remoteDs.getAssignmentByCriterion(
+        final List<TuteeAssignment> result =
+            await remoteDs.getAssignmentByCriterion(
           level: level,
           subject: subject,
           rateMax: rateMax,
           rateMin: rateMin,
         );
         localDs.cacheAssignmentList(result);
+        return Right<Failure, List<TuteeAssignment>>(result);
       } on ServerException {
         return Left<Failure, List<TuteeAssignment>>(ServerFailure());
       }
     } else {
-      try {
-        result = await localDs.getLastAssignmentList();
-      } on CacheException {
-        return Left<Failure, List<TuteeAssignment>>(CacheFailure());
-      }
+      localDs.cacheCriterion(
+        level: level,
+        rateMax: rateMax,
+        rateMin: rateMin,
+        subject: subject,
+      );
+      return Left<Failure, List<TuteeAssignment>>(NetworkFailure());
     }
-    return Right<Failure, List<TuteeAssignment>>(result);
   }
 }

@@ -22,3 +22,8 @@ class FileFailure extends Failure {
   @override
   List<Object> get props => [];
 }
+
+class NetworkFailure extends Failure {
+  @override
+  List<Object> get props => [];
+}

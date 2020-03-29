@@ -158,14 +158,26 @@ void main() {
     });
 
     runTestsOffline(() {
+      test('Should cache citeria params', () async {
+        // act
+        await _repoCiterionAct();
+
+        // assert
+        verify(mockLocalDataSource.cacheCriterion(
+            level: tLevelSearch,
+            subject: tSubjectSearch,
+            rateMax: tRateMax,
+            rateMin: tRateMin));
+        verifyZeroInteractions(mockRemoteDataSource);
+      });
       test(
-        'should return CacheFailure when there is no internet conection',
+        'should return NetworkFailure after caching params',
         () async {
           // act
           final result = await _repoCiterionAct();
           // assert
           verifyZeroInteractions(mockRemoteDataSource);
-          expect(result, equals(Left<Failure, dynamic>(CacheFailure())));
+          expect(result, equals(Left<Failure, dynamic>(NetworkFailure())));
         },
       );
     });

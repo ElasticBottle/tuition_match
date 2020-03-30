@@ -151,13 +151,13 @@ void main() {
         // assert
         verify(mockSharedPreferences.getString('CACHED_CRITERION'));
         expect(
-            result,
-            equals(Params(
+            result.props,
+            equals(CriteriaParams(
               level: tLevelSearch,
               subject: tSubjectSearch,
               rateMax: tRateMax,
               rateMin: tRateMin,
-            )));
+            ).props));
       },
     );
     test('should throw a CacheException when there is not a cached value', () {

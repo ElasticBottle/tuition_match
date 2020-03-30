@@ -31,13 +31,11 @@ abstract class TuteeAssignmentLocalDataSource {
     double rateMax,
   });
 
-  /// Gets the cached [Params] which was used when the user attempted
+  /// Gets the cached [CriteriaParams] which was used when the user attempted
   /// to search for assignments matching a particular set of criterion
   ///
   /// Throws [CacheException] if no cached data is present.
-  Future<Params> getCachedParams() async {
-    return Params();
-  }
+  Future<CriteriaParams> getCachedParams();
 }
 
 class TuteeAssignmentLocalDataSourceImpl
@@ -72,8 +70,8 @@ class TuteeAssignmentLocalDataSourceImpl
     ];
   }
 
-  Params _criterionFromListString(List<dynamic> toConvert) {
-    return Params(
+  CriteriaParams _criterionFromListString(List<dynamic> toConvert) {
+    return CriteriaParams(
       level: Level.values[int.parse(toConvert[0])],
       subject: Subject(
           level: Level.values[int.parse(toConvert[1])],
@@ -84,11 +82,11 @@ class TuteeAssignmentLocalDataSourceImpl
   }
 
   @override
-  Future<Params> getCachedParams() {
+  Future<CriteriaParams> getCachedParams() {
     final String jsonString = sharedPreferences.getString(CACHED_CRITERION);
     if (jsonString != null) {
       final List<dynamic> criterionList = json.decode(jsonString);
-      final Params result = _criterionFromListString(criterionList);
+      final CriteriaParams result = _criterionFromListString(criterionList);
       return Future.value(result);
     } else {
       throw CacheException();

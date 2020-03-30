@@ -42,34 +42,25 @@ void main() {
     );
 
     void _setUpMockRepoCriterionCall({bool success}) {
-      when(mockRepo.getByCachedCriterion(
-        level: anyNamed('level'),
-        subject: anyNamed('subject'),
-        rateMax: anyNamed('rateMax'),
-        rateMin: anyNamed('rateMin'),
-      )).thenAnswer((realInvocation) async => success
-          ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
-          : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
+      when(mockRepo.getByCachedCriterion()).thenAnswer((realInvocation) async =>
+          success
+              ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
+              : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     }
 
     test('Should call MockTuteeAssignmentRepo', () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      await usecase(Params());
+      await usecase();
 
-      verify(mockRepo.getByCachedCriterion(
-        level: anyNamed('level'),
-        subject: anyNamed('subject'),
-        rateMax: anyNamed('rateMax'),
-        rateMin: anyNamed('rateMin'),
-      )).called(1);
+      verify(mockRepo.getByCachedCriterion()).called(1);
     });
 
     test('Should return Right(List<TuteeAssignemnt>) on successful search',
         () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      final result = await usecase(Params());
+      final result = await usecase();
       final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
       final List<Object> expected =
           Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
@@ -81,31 +72,17 @@ void main() {
     test('Should return Left(Failure) on unsuccessful search', () async {
       _setUpMockRepoCriterionCall(success: false);
 
-      final result = await usecase(Params());
+      final result = await usecase();
 
       expect(result, Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     });
 
     test('Should return empty list if no result match criteria', () async {
-      when(mockRepo.getByCachedCriterion(
-        level: anyNamed('level'),
-        subject: anyNamed('subject'),
-        rateMin: anyNamed('rateMin'),
-        rateMax: 900.0,
-      )).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
+      when(mockRepo.getByCachedCriterion())
+          .thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
-      final result = await usecase(Params(
-        level: Level.all,
-        subject: Subject(level: Level.all, subjectArea: SubjectArea.ANY),
-        rateMin: 0.0,
-        rateMax: 900.0,
-      ));
-      verify(mockRepo.getByCachedCriterion(
-        level: anyNamed('level'),
-        subject: anyNamed('subject'),
-        rateMin: anyNamed('rateMin'),
-        rateMax: 900.0,
-      ));
+      final result = await usecase();
+      verify(mockRepo.getByCachedCriterion());
       final bool actual = result.fold((l) => null, (r) => r.isEmpty);
       final bool expected = Right<Failure, List<TuteeAssignment>>([])
           .fold((l) => null, (r) => r.isEmpty);

@@ -39,6 +39,12 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   }
 
   @override
+  Future<Either<Failure, List<TuteeAssignment>>> getNextAssignmentList() {
+    // TODO(ElasticBottle): implement getNextAssignmentList
+    throw UnimplementedError();
+  }
+
+  @override
   Future<Either<Failure, List<TuteeAssignment>>>
       getCachedAssignmentList() async {
     if (await networkInfo.isConnected) {
@@ -106,18 +112,17 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
     return _failure(serverFailure);
   }
 
-  Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() {}
+  @override
+  Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() {
+    // TODO(ElasticBottle): implement getNextCriterionList
+    throw UnimplementedError();
+  }
 
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion({
-    Level level,
-    Subject subject,
-    double rateMin,
-    double rateMax,
-  }) async {
+  Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion() async {
     if (await networkInfo.isConnected) {
       try {
-        final Params params = await localDs.getCachedParams();
+        final CriteriaParams params = await localDs.getCachedParams();
         return await getByCriterion(
             level: params.level,
             subject: params.subject,

@@ -209,7 +209,7 @@ void main() {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
       // arrange
       when(mockLocalDataSource.getCachedParams()).thenAnswer(
-          (realInvocation) async => Params(
+          (realInvocation) async => CriteriaParams(
               level: tLevelSearch,
               subject: tSubjectSearch,
               rateMax: tRateMax,
@@ -224,7 +224,7 @@ void main() {
       test('should retrieve cached params from local data source', () async {
         // arrange
         when(mockLocalDataSource.getCachedParams()).thenAnswer(
-            (realInvocation) async => Params(
+            (realInvocation) async => CriteriaParams(
                 level: tLevelSearch,
                 subject: tSubjectSearch,
                 rateMax: tRateMax,

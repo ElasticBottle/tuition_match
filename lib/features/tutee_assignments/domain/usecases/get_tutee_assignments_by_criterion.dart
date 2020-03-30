@@ -6,7 +6,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 class GetTuteeAssignmentsByCriterion
-    extends UseCase<List<TuteeAssignment>, Params> {
+    extends UseCase<List<TuteeAssignment>, CriteriaParams> {
   GetTuteeAssignmentsByCriterion({this.repo});
 
   TuteeAssignmentRepo repo;
@@ -24,8 +24,8 @@ class GetTuteeAssignmentsByCriterion
   }
 }
 
-class Params extends Equatable {
-  const Params({
+class CriteriaParams implements Params {
+  const CriteriaParams({
     this.level = Level.all,
     this.subject = const Subject(
       level: Level.all,
@@ -46,4 +46,7 @@ class Params extends Equatable {
         rateMin,
         rateMax,
       ];
+
+  @override
+  bool get stringify => false;
 }

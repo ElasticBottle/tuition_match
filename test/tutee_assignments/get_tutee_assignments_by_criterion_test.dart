@@ -53,7 +53,7 @@ void main() {
     test('Should call MockTuteeAssignmentRepo', () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      await usecase(Params());
+      await usecase(CriteriaParams());
 
       verify(mockRepo.getByCriterion(
         level: anyNamed('level'),
@@ -67,7 +67,7 @@ void main() {
         () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      final result = await usecase(Params());
+      final result = await usecase(CriteriaParams());
       final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
       final List<Object> expected =
           Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
@@ -79,7 +79,7 @@ void main() {
     test('Should return Left(Failure) on unsuccessful search', () async {
       _setUpMockRepoCriterionCall(success: false);
 
-      final result = await usecase(Params());
+      final result = await usecase(CriteriaParams());
 
       expect(result, Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     });
@@ -92,7 +92,7 @@ void main() {
         rateMax: 900,
       )).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
-      final result = await usecase(Params(
+      final result = await usecase(CriteriaParams(
         level: Level.all,
         subject: Subject(level: Level.all, subjectArea: SubjectArea.ANY),
         rateMin: 0,

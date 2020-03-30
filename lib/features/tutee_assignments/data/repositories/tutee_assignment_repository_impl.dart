@@ -1,11 +1,15 @@
 import 'package:cotor/core/error/exception.dart';
+import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/del_tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/set_tutee_assignment.dart';
 import 'package:dartz/dartz.dart';
 
 class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
@@ -13,7 +17,6 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   final TuteeAssignmentRemoteDataSource remoteDs;
   final TuteeAssignmentLocalDataSource localDs;
   final NetworkInfo networkInfo;
-
   Left<Failure, List<TuteeAssignment>> _failure(Failure fail) {
     return Left<Failure, List<TuteeAssignment>>(fail);
   }
@@ -23,19 +26,22 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
     return Right<Failure, List<TuteeAssignment>>(success);
   }
 
+  // Retrieving Assignment List
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getAssignmentList() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final List<TuteeAssignment> result = await remoteDs.getAssignmentList();
-        localDs.cacheAssignmentList(result);
-        return _success(result);
-      } on ServerException {
-        return _failure(ServerFailure());
-      }
-    } else {
-      return _failure(NetworkFailure());
-    }
+    return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final List<TuteeAssignment> result =
+                await remoteDs.getAssignmentList();
+            localDs.cacheAssignmentList(result);
+            return _success(result);
+          } on ServerException {
+            return _failure(ServerFailure());
+          }
+        });
   }
 
   @override
@@ -60,6 +66,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
     }
   }
 
+  // Retrieving Searched Assignments
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCriterion({
     Level level,
@@ -120,17 +127,20 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final CriteriaParams params = await localDs.getCachedParams();
-        return await getByCriterion(
-            level: params.level,
-            subject: params.subject,
-            rateMin: params.rateMin,
-            rateMax: params.rateMax);
-      } on CacheException {
-        return _failure(CacheFailure());
-      }
+    return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final CriteriaParams params = await localDs.getCachedParams();
+            return await getByCriterion(
+                level: params.level,
+                subject: params.subject,
+                rateMin: params.rateMin,
+                rateMax: params.rateMax);
+          } on CacheException {
+            return _failure(CacheFailure());
+          }
     } else {
       return _failure(NetworkFailure());
     }

@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/name.dart';
 
@@ -34,16 +35,25 @@ enum Level {
   all,
 }
 
-class Subject {
+class Subject extends Equatable {
   const Subject({this.level, this.subjectArea});
 
   final Level level;
   final String subjectArea;
+
+  @override
+  List<Object> get props => [
+        level,
+        subjectArea,
+      ];
 }
 
-class SubjectArea {
+class SubjectArea extends Equatable {
   const SubjectArea();
   static const String ANY = 'Any';
+
+  @override
+  List<Object> get props => [];
 }
 
 class Science extends SubjectArea {

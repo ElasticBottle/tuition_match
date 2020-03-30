@@ -4,6 +4,7 @@ import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/set_tutee_assignment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_ASSIGNMENT_LIST = 'CACHED_ASSIGNMENT_LIST';
@@ -36,6 +37,8 @@ abstract class TuteeAssignmentLocalDataSource {
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<CriteriaParams> getCachedParams();
+
+  Future<TuteeAssignmentParams> getCachedTuteeAssignmentToSet();
 }
 
 class TuteeAssignmentLocalDataSourceImpl
@@ -141,5 +144,11 @@ class TuteeAssignmentLocalDataSourceImpl
     } else {
       throw CacheException();
     }
+  }
+
+  @override
+  Future<TuteeAssignmentParams> getCachedTuteeAssignmentToSet() {
+    // TODO: implement getCachedTuteeAssignmentToSet
+    throw UnimplementedError();
   }
 }

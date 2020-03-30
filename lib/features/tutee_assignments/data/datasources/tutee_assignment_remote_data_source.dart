@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
+import 'package:cotor/features/tutee_assignments/domain/usecases/set_tutee_assignment.dart';
 
 abstract class TuteeAssignmentRemoteDataSource {
   ///
@@ -17,6 +18,12 @@ abstract class TuteeAssignmentRemoteDataSource {
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<TuteeAssignmentModel>> getAssignmentList();
+
+  Future<bool> delAssignment({String postId});
+
+  Future<bool> setTuteeAssignment({TuteeAssignmentParams tuteeParmas});
+
+  Future<bool> updateTuteeAssignment({TuteeAssignmentParams tuteeParmas});
 }
 
 const int DOCUMENT_RETRIEVAL_LIMIT = 20;
@@ -82,5 +89,23 @@ class TuteeAssignmentRemoteDataSourceImpl
     mostRecentAssignmentDocument =
         snapshot.documents[snapshot.documents.length - 1];
     return Future.value(result);
+  }
+
+  @override
+  Future<bool> delAssignment({String postId}) {
+    // TODO: implement delAssignment
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> setTuteeAssignment({TuteeAssignmentParams tuteeParmas}) {
+    // TODO: implement setTuteeAssignment
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> updateTuteeAssignment({TuteeAssignmentParams tuteeParmas}) {
+    // TODO: implement updateTuteeAssignment
+    throw UnimplementedError();
   }
 }

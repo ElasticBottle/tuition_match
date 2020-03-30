@@ -141,8 +141,80 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
           } on CacheException {
             return _failure(CacheFailure());
           }
-    } else {
-      return _failure(NetworkFailure());
+        });
+  }
+
+  // Deleting Assingments
+  @override
+  Future<Either<Failure, bool>> delAssignment(DelParams params) async {
+    return IsNetworkOnline<Failure, bool>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final bool result =
+                await remoteDs.delAssignment(postId: params.postId);
+            return Right<Failure, bool>(result);
+          } on ServerException {
+            return Left<Failure, bool>(ServerFailure());
+          }
+        });
+  }
+
+  // Update and creation of assignments
+  @override
+  Future<Either<Failure, TuteeAssignmentParams>>
+      getCachedTuteeAssignmentToSet() async {
+    try {
+      final TuteeAssignmentParams result =
+          await localDs.getCachedTuteeAssignmentToSet();
+      return Right<Failure, TuteeAssignmentParams>(result);
+    } on CacheException {
+      return Left<Failure, TuteeAssignmentParams>(CacheFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> setTuteeAssignment(
+      TuteeAssignmentParams params) {
+    return IsNetworkOnline<Failure, bool>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final bool result =
+                await remoteDs.setTuteeAssignment(tuteeParmas: params);
+            return Right<Failure, bool>(result);
+          } on ServerException {
+            return Left<Failure, bool>(ServerFailure());
+          }
+        });
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateTuteeAssignment(
+      TuteeAssignmentParams params) {
+    return IsNetworkOnline<Failure, bool>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          MakeDSCall<ServerException, bool>().call(
+            dsCall: () {
+              remoteDs.updateTuteeAssignment(tuteeParmas: params);
+            },
+            ifFail: ServerFailure(),
+          );
+        });
+  }
+}
+
+class MakeDSCall<Exception, T> {
+  Future<Either<Failure, T>> call({Function dsCall, Failure ifFail}) async {
+    try {
+      final T result = await dsCall();
+      return Right<Failure, T>(result);
+    } on Exception {
+      return Left<Failure, T>(ifFail);
     }
   }
 }

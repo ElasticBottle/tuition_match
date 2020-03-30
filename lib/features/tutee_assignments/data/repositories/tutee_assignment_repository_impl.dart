@@ -72,24 +72,41 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         );
         return _success(result);
       } on ServerException {
-        localDs.cacheCriterion(
+        return _cacheCriterionAndReturnFailure(
+          ServerFailure(),
           level: level,
           rateMax: rateMax,
           rateMin: rateMin,
           subject: subject,
         );
-        return _failure(ServerFailure());
       }
     } else {
-      localDs.cacheCriterion(
+      return _cacheCriterionAndReturnFailure(
+        NetworkFailure(),
         level: level,
         rateMax: rateMax,
         rateMin: rateMin,
         subject: subject,
       );
-      return _failure(NetworkFailure());
     }
   }
+
+  Left<Failure, List<TuteeAssignment>> _cacheCriterionAndReturnFailure(
+      Failure serverFailure,
+      {Level level,
+      double rateMax,
+      double rateMin,
+      Subject subject}) {
+    localDs.cacheCriterion(
+      level: level,
+      rateMax: rateMax,
+      rateMin: rateMin,
+      subject: subject,
+    );
+    return _failure(serverFailure);
+  }
+
+  Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() {}
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion({

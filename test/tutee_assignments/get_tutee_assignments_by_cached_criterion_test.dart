@@ -1,4 +1,5 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_cached_criterion.dart';
@@ -51,7 +52,7 @@ void main() {
     test('Should call MockTuteeAssignmentRepo', () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      await usecase();
+      await usecase(NoParams());
 
       verify(mockRepo.getByCachedCriterion()).called(1);
     });
@@ -60,7 +61,7 @@ void main() {
         () async {
       _setUpMockRepoCriterionCall(success: true);
 
-      final result = await usecase();
+      final result = await usecase(NoParams());
       final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
       final List<Object> expected =
           Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
@@ -72,7 +73,7 @@ void main() {
     test('Should return Left(Failure) on unsuccessful search', () async {
       _setUpMockRepoCriterionCall(success: false);
 
-      final result = await usecase();
+      final result = await usecase(NoParams());
 
       expect(result, Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     });
@@ -81,7 +82,7 @@ void main() {
       when(mockRepo.getByCachedCriterion())
           .thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
-      final result = await usecase();
+      final result = await usecase(NoParams());
       verify(mockRepo.getByCachedCriterion());
       final bool actual = result.fold((l) => null, (r) => r.isEmpty);
       final bool expected = Right<Failure, List<TuteeAssignment>>([])

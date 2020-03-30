@@ -11,8 +11,7 @@ class GetTuteeAssignmentsByCachedCriterion
   TuteeAssignmentRepo repo;
 
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> call(
-      [NoParams params = const NoParams()]) async {
+  Future<Either<Failure, List<TuteeAssignment>>> call(NoParams params) async {
     final Either<Failure, List<TuteeAssignment>> result =
         await repo.getByCachedCriterion();
     return result;

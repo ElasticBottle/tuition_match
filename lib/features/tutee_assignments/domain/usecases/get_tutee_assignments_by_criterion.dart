@@ -24,7 +24,7 @@ class GetTuteeAssignmentsByCriterion
   }
 }
 
-class CriteriaParams implements Params {
+class CriteriaParams extends Params {
   const CriteriaParams({
     this.level = Level.all,
     this.subject = const Subject(
@@ -46,7 +46,4 @@ class CriteriaParams implements Params {
         rateMin,
         rateMax,
       ];
-
-  @override
-  bool get stringify => false;
 }

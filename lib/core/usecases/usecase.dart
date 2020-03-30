@@ -16,4 +16,8 @@ class NoParams extends Equatable {
   List<Object> get props => [];
 }
 
-abstract class Params extends Equatable {}
+class Params extends Equatable {
+  const Params();
+  @override
+  List<Object> get props => [];
+}

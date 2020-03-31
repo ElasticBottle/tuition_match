@@ -3,7 +3,6 @@ import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_cached_criterion.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/name.dart';
 

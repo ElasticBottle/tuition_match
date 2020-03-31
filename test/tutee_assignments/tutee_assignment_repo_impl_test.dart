@@ -3,10 +3,12 @@ import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
+import 'package:cotor/features/tutee_assignments/data/models/name_model.dart';
+import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/data/repositories/tutee_assignment_repository_impl.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -43,6 +45,12 @@ void main() {
       SubjectModel(level: Level.values[2], sbjArea: 'science');
   const double tRateMin = 60.0;
   const double tRateMax = 80.0;
+
+  final CriteriaParams tCriteriaParams = CriteriaParams(
+      level: tLevelSearch,
+      subject: tSubjectSearch,
+      rateMax: tRateMax,
+      rateMin: tRateMin);
 
   final TuteeAssignmentModel tTuteeAssignmentModel = TuteeAssignmentModel(
     postId: 'postId',
@@ -87,19 +95,11 @@ void main() {
 
   group('getAssignmentListByCriterion', () {
     Future<Either<Failure, List<TuteeAssignment>>> _repoCiterionAct() {
-      return repository.getByCriterion(
-          level: tLevelSearch,
-          subject: tSubjectSearch,
-          rateMax: tRateMax,
-          rateMin: tRateMin);
+      return repository.getByCriterion(tCriteriaParams);
     }
 
     Future<List<TuteeAssignment>> _remoteDsAct() {
-      return mockRemoteDataSource.getAssignmentByCriterion(
-          level: tLevelSearch,
-          subject: tSubjectSearch,
-          rateMax: tRateMax,
-          rateMin: tRateMin);
+      return mockRemoteDataSource.getAssignmentByCriterion(tCriteriaParams);
     }
 
     test('should check if the device is online', () {
@@ -113,11 +113,7 @@ void main() {
 
     runTestsOnline(() {
       void _setUpRemoteDs() {
-        when(mockRemoteDataSource.getAssignmentByCriterion(
-                level: tLevelSearch,
-                subject: tSubjectSearch,
-                rateMax: tRateMax,
-                rateMin: tRateMin))
+        when(mockRemoteDataSource.getAssignmentByCriterion(tCriteriaParams))
             .thenAnswer((_) async => [tTuteeAssignmentModel]);
       }
 
@@ -141,32 +137,20 @@ void main() {
       test('Should cache citeria params before returning ServerFailure',
           () async {
         // arrange
-        when(mockRemoteDataSource.getAssignmentByCriterion(
-                level: tLevelSearch,
-                subject: tSubjectSearch,
-                rateMax: tRateMax,
-                rateMin: tRateMin))
+        when(mockRemoteDataSource.getAssignmentByCriterion(tCriteriaParams))
             .thenThrow(ServerException());
 
         // act
         await _repoCiterionAct();
 
         // assert
-        verify(mockLocalDataSource.cacheCriterion(
-            level: tLevelSearch,
-            subject: tSubjectSearch,
-            rateMax: tRateMax,
-            rateMin: tRateMin));
+        verify(mockLocalDataSource.cacheCriterion(tCriteriaParams));
       });
       test(
         'should return server failure when the call to remote data source is unsuccessful',
         () async {
           // arrange
-          when(mockRemoteDataSource.getAssignmentByCriterion(
-                  level: tLevelSearch,
-                  subject: tSubjectSearch,
-                  rateMax: tRateMax,
-                  rateMin: tRateMin))
+          when(mockRemoteDataSource.getAssignmentByCriterion(tCriteriaParams))
               .thenThrow(ServerException());
           // act
           final result = await _repoCiterionAct();
@@ -183,11 +167,7 @@ void main() {
         await _repoCiterionAct();
 
         // assert
-        verify(mockLocalDataSource.cacheCriterion(
-            level: tLevelSearch,
-            subject: tSubjectSearch,
-            rateMax: tRateMax,
-            rateMin: tRateMin));
+        verify(mockLocalDataSource.cacheCriterion(tCriteriaParams));
         verifyZeroInteractions(mockRemoteDataSource);
       });
       test(
@@ -223,12 +203,8 @@ void main() {
     runTestsOnline(() {
       test('should retrieve cached params from local data source', () async {
         // arrange
-        when(mockLocalDataSource.getCachedParams()).thenAnswer(
-            (realInvocation) async => CriteriaParams(
-                level: tLevelSearch,
-                subject: tSubjectSearch,
-                rateMax: tRateMax,
-                rateMin: tRateMin));
+        when(mockLocalDataSource.getCachedParams())
+            .thenAnswer((realInvocation) async => tCriteriaParams);
 
         // act
         await repository.getByCachedCriterion();

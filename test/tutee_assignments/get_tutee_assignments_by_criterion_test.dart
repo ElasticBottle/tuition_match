@@ -1,4 +1,5 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
@@ -40,12 +41,12 @@ void main() {
     );
 
     void _setUpMockRepoCriterionCall({bool success}) {
-      when(mockRepo.getByCriterion(
+      when(mockRepo.getByCriterion(CriteriaParams(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
         rateMin: anyNamed('rateMin'),
-      )).thenAnswer((realInvocation) async => success
+      ))).thenAnswer((realInvocation) async => success
           ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
           : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     }
@@ -55,12 +56,12 @@ void main() {
 
       await usecase(CriteriaParams());
 
-      verify(mockRepo.getByCriterion(
+      verify(mockRepo.getByCriterion(CriteriaParams(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMax: anyNamed('rateMax'),
         rateMin: anyNamed('rateMin'),
-      )).called(1);
+      ))).called(1);
     });
 
     test('Should return Right(List<TuteeAssignemnt>) on successful search',
@@ -85,12 +86,12 @@ void main() {
     });
 
     test('Should return empty list if no result match criteria', () async {
-      when(mockRepo.getByCriterion(
+      when(mockRepo.getByCriterion(CriteriaParams(
         level: anyNamed('level'),
         subject: anyNamed('subject'),
         rateMin: anyNamed('rateMin'),
         rateMax: 900,
-      )).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
+      ))).thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
 
       final result = await usecase(CriteriaParams(
         level: Level.all,

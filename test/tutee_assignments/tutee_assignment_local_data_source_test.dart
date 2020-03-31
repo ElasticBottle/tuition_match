@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
+import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
+import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:matcher/matcher.dart';
@@ -113,13 +114,15 @@ void main() {
         SubjectModel(level: Level.values[2], sbjArea: 'science');
     const double tRateMin = 60.0;
     const double tRateMax = 80.0;
+    final tCriteriaParam = CriteriaParams(
+      level: tLevelSearch,
+      subject: tSubjectSearch,
+      rateMax: tRateMax,
+      rateMin: tRateMin,
+    );
     test('should call SharedPreferences to cache the data', () {
       // act
-      dataSource.cacheCriterion(
-          level: tLevelSearch,
-          subject: tSubjectSearch,
-          rateMax: tRateMax,
-          rateMin: tRateMin);
+      dataSource.cacheCriterion(tCriteriaParam);
       // assert
       verify(mockSharedPreferences.setString(
           'CACHED_CRITERION',

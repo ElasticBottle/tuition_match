@@ -47,47 +47,68 @@ class TuteeAssignmentRemoteDataSourceImpl
         .where('rateMax', isLessThanOrEqualTo: params.rateMax)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     mostRecentCriterionQuery = query;
+
+    try {
       final QuerySnapshot snapshot = await query.getDocuments();
       final List<TuteeAssignmentModel> result =
           snapshot.documents.map((e) => TuteeAssignmentModel.fromJson(e.data));
       mostRecentCriterionDocument =
           snapshot.documents[snapshot.documents.length - 1];
       return Future.value(result);
+    } catch (e) {
+      throw ServerException();
+    }
   }
 
+  @override
   Future<List<TuteeAssignmentModel>> getNextCriterionList() async {
     final Query query = mostRecentCriterionQuery
         .startAfterDocument(mostRecentCriterionDocument);
+
+    try {
       final QuerySnapshot snapshot = await query.getDocuments();
       final List<TuteeAssignmentModel> result =
           snapshot.documents.map((e) => TuteeAssignmentModel.fromJson(e.data));
       mostRecentAssignmentDocument =
           snapshot.documents[snapshot.documents.length - 1];
       return Future.value(result);
+    } catch (e) {
+      throw ServerException();
+    }
   }
 
   @override
   Future<List<TuteeAssignmentModel>> getAssignmentList() async {
-    final Query query = remoteStore.collection('assignments').limit(20);
+    final Query query =
+        remoteStore.collection('assignments').limit(DOCUMENT_RETRIEVAL_LIMIT);
+    try {
       final QuerySnapshot snapshot = await query.getDocuments();
       final List<TuteeAssignmentModel> result =
           snapshot.documents.map((e) => TuteeAssignmentModel.fromJson(e.data));
       mostRecentAssignmentDocument =
           snapshot.documents[snapshot.documents.length - 1];
       return Future.value(result);
+    } catch (e) {
+      throw ServerException();
+    }
   }
 
+  @override
   Future<List<TuteeAssignmentModel>> getNextAssignmentList() async {
     final Query query = remoteStore
         .collection('assignments')
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
         .startAfterDocument(mostRecentAssignmentDocument);
+    try {
       final QuerySnapshot snapshot = await query.getDocuments();
       final List<TuteeAssignmentModel> result =
           snapshot.documents.map((e) => TuteeAssignmentModel.fromJson(e.data));
       mostRecentAssignmentDocument =
           snapshot.documents[snapshot.documents.length - 1];
       return Future.value(result);
+    } catch (e) {
+      throw ServerException();
+    }
   }
 
   @override

@@ -1,28 +1,9 @@
+import 'package:cotor/features/tutee_assignments/data/models/name_model.dart';
+import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/name.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 
-const String username = 'username';
-const String level = 'level';
-const String tutorOccupation = 'tutorOccupation';
-const String classFormat = 'format';
-const String gender = 'gender';
-const String status = 'status';
-const String freq = 'freq';
-const String additionalRemarks = 'additionalRemarks';
-const String applied = 'applied';
-const String subject = 'subject';
-const String tuteeName = 'tuteeName';
-const String rateMax = 'rateMax';
-const String rateMin = 'rateMin';
-const String location = 'location';
-const String liked = 'liked';
-const String timing = 'timing';
-const String postId = 'postId';
-
-const String subjectArea = 'subjectArea';
-
-const String firstName = 'firstName';
-const String lastName = 'lastName';
+import 'map_key_strings.dart';
 
 class TuteeAssignmentModel extends TuteeAssignment {
   const TuteeAssignmentModel({
@@ -107,53 +88,6 @@ class TuteeAssignmentModel extends TuteeAssignment {
         username: this.username,
         tuteeName: tuteeNameModel.toJson(),
       }
-    };
-  }
-}
-
-class NameModel extends Name {
-  const NameModel({
-    String firstName,
-    String lastName,
-  }) : super(
-          firstName: firstName,
-          lastName: lastName,
-        );
-
-  factory NameModel.fromJson(Map json) {
-    return NameModel(
-      firstName: json[firstName],
-      lastName: json[lastName],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      firstName: this.firstName,
-      lastName: this.lastName,
-    };
-  }
-}
-
-class SubjectModel extends Subject {
-  const SubjectModel({
-    Level level,
-    String sbjArea,
-  }) : super(
-          level: level,
-          subjectArea: sbjArea,
-        );
-
-  factory SubjectModel.fromJson(Map<String, dynamic> json) {
-    return SubjectModel(
-      level: Level.values[json[level]],
-      sbjArea: json[subjectArea],
-    );
-  }
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      level: this.level.index,
-      subjectArea: this.subjectArea,
     };
   }
 }

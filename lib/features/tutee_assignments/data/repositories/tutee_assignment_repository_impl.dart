@@ -3,13 +3,12 @@ import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/del_tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/set_tutee_assignment.dart';
 import 'package:dartz/dartz.dart';
 
 class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
@@ -45,9 +44,20 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   }
 
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> getNextAssignmentList() {
-    // TODO(ElasticBottle): implement getNextAssignmentList
-    throw UnimplementedError();
+  Future<Either<Failure, List<TuteeAssignment>>> getNextAssignmentList() async {
+    return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final List<TuteeAssignment> result =
+                await remoteDs.getNextAssignmentList();
+            localDs.cacheToExistingAssignmentList(result);
+            return _success(result);
+          } on ServerException {
+            return _failure(ServerFailure());
+          }
+        });
   }
 
   @override
@@ -68,61 +78,41 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   // Retrieving Searched Assignments
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> getByCriterion({
-    Level level,
-    Subject subject,
-    double rateMin,
-    double rateMax,
-  }) async {
+  Future<Either<Failure, List<TuteeAssignment>>> getByCriterion(
+      CriteriaParams params) async {
     if (await networkInfo.isConnected) {
       try {
         final List<TuteeAssignment> result =
-            await remoteDs.getAssignmentByCriterion(
-          level: level,
-          subject: subject,
-          rateMax: rateMax,
-          rateMin: rateMin,
-        );
+            await remoteDs.getAssignmentByCriterion(params);
         return _success(result);
       } on ServerException {
-        return _cacheCriterionAndReturnFailure(
-          ServerFailure(),
-          level: level,
-          rateMax: rateMax,
-          rateMin: rateMin,
-          subject: subject,
-        );
+        return _cacheCriterionAndReturnFailure(ServerFailure(), params);
       }
     } else {
-      return _cacheCriterionAndReturnFailure(
-        NetworkFailure(),
-        level: level,
-        rateMax: rateMax,
-        rateMin: rateMin,
-        subject: subject,
-      );
+      return _cacheCriterionAndReturnFailure(NetworkFailure(), params);
     }
   }
 
   Left<Failure, List<TuteeAssignment>> _cacheCriterionAndReturnFailure(
-      Failure serverFailure,
-      {Level level,
-      double rateMax,
-      double rateMin,
-      Subject subject}) {
-    localDs.cacheCriterion(
-      level: level,
-      rateMax: rateMax,
-      rateMin: rateMin,
-      subject: subject,
-    );
+      Failure serverFailure, CriteriaParams params) {
+    localDs.cacheCriterion(params);
     return _failure(serverFailure);
   }
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() {
-    // TODO(ElasticBottle): implement getNextCriterionList
-    throw UnimplementedError();
+    return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
+        networkInfo: networkInfo,
+        ifOffline: NetworkFailure(),
+        ifOnline: () async {
+          try {
+            final List<TuteeAssignment> result =
+                await remoteDs.getNextCriterionList();
+            return _success(result);
+          } on ServerException {
+            return _failure(ServerFailure());
+          }
+        });
   }
 
   @override
@@ -133,11 +123,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOnline: () async {
           try {
             final CriteriaParams params = await localDs.getCachedParams();
-            return await getByCriterion(
-                level: params.level,
-                subject: params.subject,
-                rateMin: params.rateMin,
-                rateMax: params.rateMax);
+            return await getByCriterion(params);
           } on CacheException {
             return _failure(CacheFailure());
           }
@@ -152,8 +138,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result =
-                await remoteDs.delAssignment(postId: params.postId);
+            final bool result = await remoteDs.delAssignment(params);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -163,20 +148,20 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   // Update and creation of assignments
   @override
-  Future<Either<Failure, TuteeAssignmentParams>>
+  Future<Either<Failure, TuteeAssignmentModel>>
       getCachedTuteeAssignmentToSet() async {
     try {
-      final TuteeAssignmentParams result =
+      final TuteeAssignmentModel result =
           await localDs.getCachedTuteeAssignmentToSet();
-      return Right<Failure, TuteeAssignmentParams>(result);
+      return Right<Failure, TuteeAssignmentModel>(result);
     } on CacheException {
-      return Left<Failure, TuteeAssignmentParams>(CacheFailure());
+      return Left<Failure, TuteeAssignmentModel>(CacheFailure());
     }
   }
 
   @override
   Future<Either<Failure, bool>> setTuteeAssignment(
-      TuteeAssignmentParams params) {
+      TuteeAssignmentModel params) {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
@@ -193,17 +178,18 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, bool>> updateTuteeAssignment(
-      TuteeAssignmentParams params) {
+      TuteeAssignmentModel params) {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
-          MakeDSCall<ServerException, bool>().call(
-            dsCall: () {
-              remoteDs.updateTuteeAssignment(tuteeParmas: params);
-            },
-            ifFail: ServerFailure(),
-          );
+          try {
+            final bool result =
+                await remoteDs.updateTuteeAssignment(tuteeParmas: params);
+            return Right<Failure, bool>(result);
+          } on ServerException {
+            return Left<Failure, bool>(ServerFailure());
+          }
         });
   }
 }

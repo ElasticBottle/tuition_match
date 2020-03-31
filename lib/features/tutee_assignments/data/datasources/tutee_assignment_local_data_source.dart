@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
+import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
 import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/set_tutee_assignment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_ASSIGNMENT_LIST = 'CACHED_ASSIGNMENT_LIST';
 const CACHED_CRITERION = 'CACHED_CRITERION';
+const CACHED_ASSIGNMENT = 'CACHED_ASSIGNMENT';
 
 abstract class TuteeAssignmentLocalDataSource {
   /// Gets the cached [TuteeAssignmnetModel] which was gotten the last time
@@ -25,12 +25,7 @@ abstract class TuteeAssignmentLocalDataSource {
     List<TuteeAssignmentModel> assignmnetsToCache,
   );
 
-  Future<void> cacheCriterion({
-    Level level,
-    Subject subject,
-    double rateMin,
-    double rateMax,
-  });
+  Future<void> cacheCriterion(CriteriaParams params);
 
   /// Gets the cached [CriteriaParams] which was used when the user attempted
   /// to search for assignments matching a particular set of criterion
@@ -38,7 +33,9 @@ abstract class TuteeAssignmentLocalDataSource {
   /// Throws [CacheException] if no cached data is present.
   Future<CriteriaParams> getCachedParams();
 
-  Future<TuteeAssignmentParams> getCachedTuteeAssignmentToSet();
+  Future<TuteeAssignmentModel> getCachedTuteeAssignmentToSet();
+
+  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentModel params);
 }
 
 class TuteeAssignmentLocalDataSourceImpl
@@ -47,14 +44,8 @@ class TuteeAssignmentLocalDataSourceImpl
   SharedPreferences sharedPreferences;
 
   @override
-  Future<void> cacheCriterion(
-      {Level level, Subject subject, double rateMin, double rateMax}) {
-    final List<String> toEncode = _criterionToListString(
-      level: level,
-      subject: subject,
-      rateMin: rateMin,
-      rateMax: rateMax,
-    );
+  Future<void> cacheCriterion(CriteriaParams params) {
+    final List<String> toEncode = _criterionToListString(params);
     print(toEncode);
     return sharedPreferences.setString(
       CACHED_CRITERION,
@@ -62,14 +53,13 @@ class TuteeAssignmentLocalDataSourceImpl
     );
   }
 
-  List<String> _criterionToListString(
-      {Level level, Subject subject, double rateMin, double rateMax}) {
+  List<String> _criterionToListString(CriteriaParams params) {
     return [
-      level.index.toString(),
-      subject.level.index.toString(),
-      subject.subjectArea,
-      rateMin.toString(),
-      rateMax.toString()
+      params.level.index.toString(),
+      params.subject.level.index.toString(),
+      params.subject.subjectArea,
+      params.rateMin.toString(),
+      params.rateMax.toString()
     ];
   }
 
@@ -147,8 +137,26 @@ class TuteeAssignmentLocalDataSourceImpl
   }
 
   @override
-  Future<TuteeAssignmentParams> getCachedTuteeAssignmentToSet() {
-    // TODO: implement getCachedTuteeAssignmentToSet
-    throw UnimplementedError();
+  Future<TuteeAssignmentModel> getCachedTuteeAssignmentToSet() {
+    final String jsonString =
+        sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
+    if (jsonString != null) {
+      final Map<String, dynamic> cachedAssignmentString =
+          json.decode(jsonString);
+      final TuteeAssignmentModel result =
+          TuteeAssignmentModel.fromJson(cachedAssignmentString);
+      return Future.value(result);
+    } else {
+      throw CacheException();
+    }
+  }
+
+  @override
+  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentModel params) {
+    final Map<String, dynamic> toEncode = params.toJson();
+    return sharedPreferences.setString(
+      CACHED_ASSIGNMENT,
+      json.encode(toEncode),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
+import 'map_key_strings.dart';
 
 class CriteriaParams extends Params {
   const CriteriaParams({
@@ -11,6 +12,17 @@ class CriteriaParams extends Params {
     this.rateMin = 0,
     this.rateMax = 999,
   });
+
+  factory CriteriaParams.fromMap(Map<String, dynamic> map) {
+    return CriteriaParams(
+      level: Level.values[int.parse(map[LEVEL])],
+      subject: Subject(
+          level: Level.values[int.parse(map[LEVEL])],
+          subjectArea: map[SUBJECTAREA]),
+      rateMin: double.parse(map[RATEMIN]),
+      rateMax: double.parse(map[RATEMAX]),
+    );
+  }
   final Level level;
   final Subject subject;
   final double rateMin;

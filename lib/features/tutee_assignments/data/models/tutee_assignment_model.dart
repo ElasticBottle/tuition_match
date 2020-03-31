@@ -1,6 +1,5 @@
 import 'package:cotor/features/tutee_assignments/data/models/name_model.dart';
 import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
-import 'package:cotor/features/tutee_assignments/domain/entities/name.dart';
 import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 
 import 'map_key_strings.dart';
@@ -46,22 +45,22 @@ class TuteeAssignmentModel extends TuteeAssignment {
   factory TuteeAssignmentModel.fromJson(Map<String, dynamic> json) {
     return TuteeAssignmentModel(
       postId: json.keys.first,
-      username: json[postId][username],
-      level: Level.values[json[postId][level]],
-      tutorOccupation: TutorOccupation.values[json[postId][tutorOccupation]],
-      format: ClassFormat.values[json[postId][classFormat]],
-      gender: Gender.values[json[postId][gender]],
-      status: Status.values[json[postId][status]],
-      subjectModel: SubjectModel.fromJson(json[postId][subject]),
-      additionalRemarks: json[postId][additionalRemarks],
-      applied: json[postId][applied],
-      freq: json[postId][freq],
-      liked: json[postId][liked].cast<String>(),
-      location: json[postId][location],
-      timing: json[postId][timing],
-      tuteeNameModel: NameModel.fromJson(json[postId][tuteeName]),
-      rateMax: json[postId][rateMax],
-      rateMin: json[postId][rateMin],
+      username: json[POSTID][USERNAME],
+      level: Level.values[json[POSTID][LEVEL]],
+      tutorOccupation: TutorOccupation.values[json[POSTID][TUTOR_OCCUPATION]],
+      format: ClassFormat.values[json[POSTID][CLASSFORMAT]],
+      gender: Gender.values[json[POSTID][GENDER]],
+      status: Status.values[json[POSTID][STATUS]],
+      subjectModel: SubjectModel.fromJson(json[POSTID][SUBJECT]),
+      additionalRemarks: json[POSTID][ADDITIONAL_REMARKS],
+      applied: json[POSTID][APPLIED],
+      freq: json[POSTID][FREQ],
+      liked: json[POSTID][LIKED].cast<String>(),
+      location: json[POSTID][LOCATION],
+      timing: json[POSTID][TIMING],
+      tuteeNameModel: NameModel.fromJson(json[POSTID][TUTEE_NAME]),
+      rateMax: json[POSTID][RATEMAX],
+      rateMin: json[POSTID][RATEMIN],
     );
   }
 
@@ -70,23 +69,23 @@ class TuteeAssignmentModel extends TuteeAssignment {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      this.postId: {
-        level: this.level.index,
-        subject: subjectModel.toJson(),
-        timing: this.timing,
-        location: this.location,
-        rateMin: this.rateMin,
-        rateMax: this.rateMax,
-        gender: this.gender.index,
-        freq: this.freq,
-        tutorOccupation: this.tutorOccupation.index,
-        classFormat: format.index,
-        additionalRemarks: this.additionalRemarks,
-        applied: this.applied,
-        liked: this.liked,
-        status: this.status.index,
-        username: this.username,
-        tuteeName: tuteeNameModel.toJson(),
+      postId: {
+        LEVEL: level.index,
+        SUBJECT: subjectModel.toJson(),
+        TIMING: timing,
+        LOCATION: location,
+        RATEMIN: rateMin,
+        RATEMAX: rateMax,
+        GENDER: gender.index,
+        FREQ: freq,
+        TUTOR_OCCUPATION: tutorOccupation.index,
+        CLASSFORMAT: format.index,
+        ADDITIONAL_REMARKS: additionalRemarks,
+        APPLIED: applied,
+        LIKED: liked,
+        STATUS: status.index,
+        USERNAME: username,
+        TUTEE_NAME: tuteeNameModel.toJson(),
       }
     };
   }

@@ -12,14 +12,14 @@ class SubjectModel extends Subject {
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     return SubjectModel(
-      level: Level.values[json[level]],
-      sbjArea: json[subjectArea],
+      level: Level.values[json[LEVEL]],
+      sbjArea: json[SUBJECTAREA],
     );
   }
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      level: this.level.index,
-      subjectArea: this.subjectArea,
+      LEVEL: level.index,
+      SUBJECTAREA: subjectArea,
     };
   }
 }

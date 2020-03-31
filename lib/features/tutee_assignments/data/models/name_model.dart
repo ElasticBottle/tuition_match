@@ -13,15 +13,15 @@ class NameModel extends Name {
 
   factory NameModel.fromJson(Map json) {
     return NameModel(
-      firstName: json[firstName],
-      lastName: json[lastName],
+      firstName: json[FIRSTNAME],
+      lastName: json[LASTNAME],
     );
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      firstName: this.firstName,
-      lastName: this.lastName,
+      FIRSTNAME: firstName,
+      LASTNAME: lastName,
     };
   }
 }

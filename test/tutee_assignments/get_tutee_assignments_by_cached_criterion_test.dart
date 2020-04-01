@@ -11,7 +11,6 @@ class MockTuteeAssignmentRepo extends Mock implements TuteeAssignmentRepo {}
 
 void main() {
   MockTuteeAssignmentRepo mockRepo;
-  // TODO(ElasticBottle): change to cached version
   GetTuteeAssignmentsByCachedCriterion usecase;
 
   setUp(() {

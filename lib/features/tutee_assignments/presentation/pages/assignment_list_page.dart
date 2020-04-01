@@ -1,24 +1,77 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class AssignmentListPage extends StatelessWidget {
+import 'package:cotor/constants/custom_color_and_fonts.dart';
+import 'package:cotor/constants/spacings_and_heights.dart';
+import 'package:cotor/constants/strings.dart';
+import 'package:flutter/material.dart';
+import 'package:loadany/loadany.dart';
+
+class AssignmentListPage extends StatefulWidget {
+  @override
+  _AssignmentListPageState createState() => _AssignmentListPageState();
+}
+
+class _AssignmentListPageState extends State<AssignmentListPage> {
+  LoadStatus status = LoadStatus.normal;
+  int loadMoreParam = 10;
+
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        ///First sliver is the App Bar
-        CustomSliverAppbar(),
-        SliverList(
-          ///Lazy building of list
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              /// To convert this infinite list to a list with "n" no of items,
-              /// uncomment the following line:
-              /// if (index > n) return null;
-              return listItem(Colors.yellow[600], 'Sliver List item: $index');
-            },
-          ),
-        )
-      ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        print('refresh assignment list');
+        await Future<dynamic>.delayed(Duration(seconds: 1));
+        return Future.value(1);
+      },
+      displacement: SpacingsAndHeights.refreshDisplacement,
+      child: LoadAny(
+        onLoadMore: () async {
+          setState(() {
+            status = LoadStatus.loading;
+          });
+          print('loading more assignments');
+          await Future<dynamic>.delayed(Duration(seconds: 1));
+          setState(() {
+            loadMoreParam = loadMoreParam + 10;
+            status = LoadStatus.error;
+          });
+        },
+        endLoadMore: false,
+        bottomTriggerDistance: 100,
+        footerHeight: 70,
+        status: status,
+        loadMoreBuilder: (BuildContext context, LoadStatus status) {
+          if (status == LoadStatus.loading) {
+            return Container(
+              height: 70,
+              child: CircularProgressIndicator(),
+              color: Colors.white,
+              alignment: Alignment.center,
+            );
+          }
+          return null;
+        },
+        child: CustomScrollView(
+          slivers: <Widget>[
+            ///First sliver is the App Bar
+            CustomSliverAppbar(),
+            SliverList(
+              ///Lazy building of list
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  /// To convert this infinite list to a list with "n" no of items,
+                  /// uncomment the following line:
+                  if (index > loadMoreParam) {
+                    return null;
+                  }
+                  return listItem(
+                      Colors.yellow[600], 'Sliver List item: $index');
+                },
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -44,26 +97,26 @@ class CustomSliverAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       ///Properties of app bar
-      backgroundColor: Colors.white,
-      elevation: 10,
+      backgroundColor: CustomColorAndFonts.backgroundColor,
+      elevation: SpacingsAndHeights.appbarElevation,
       primary: true,
       floating: true,
       snap: false,
       pinned: false,
       centerTitle: false,
       title: Text(
-        'Assginments',
+        Strings.assignmentTitle,
         style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20.0,
+            color: CustomColorAndFonts.primary,
+            fontSize: CustomColorAndFonts.fontSizeTitle,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Quicksand'),
+            fontFamily: CustomColorAndFonts.primaryFont),
       ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
             Icons.search,
-            color: Colors.black,
+            color: CustomColorAndFonts.primary,
           ),
           onPressed: () {
             print('search press');
@@ -72,14 +125,15 @@ class CustomSliverAppbar extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.favorite,
-            color: Colors.black,
+            color: CustomColorAndFonts.primary,
           ),
           onPressed: () {
             print('favourtie press');
           },
         ),
         Padding(
-          padding: EdgeInsets.only(right: 10.0),
+          padding:
+              EdgeInsets.only(right: SpacingsAndHeights.rightAppBarPadding),
         )
       ],
     );

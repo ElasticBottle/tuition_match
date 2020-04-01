@@ -136,9 +136,7 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageController,
         children: [
-          AssignmentListPage(
-            scaffoldKey: _scaffoldKey,
-          ),
+          AssignmentListPage(),
           TutorListPage(),
           NotificationPage(),
           ProfilePage(),

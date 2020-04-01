@@ -10,8 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loadany/loadany.dart';
 
 class AssignmentListPage extends StatefulWidget {
-  const AssignmentListPage({this.scaffoldKey});
-  final GlobalKey<ScaffoldState> scaffoldKey;
+  const AssignmentListPage({Key key}) : super(key: key);
   @override
   _AssignmentListPageState createState() => _AssignmentListPageState();
 }
@@ -25,8 +24,8 @@ class _AssignmentListPageState extends State<AssignmentListPage> {
     return RefreshIndicator(
       onRefresh: () async {
         print('refresh assignment list');
-        await Future<dynamic>.delayed(Duration(seconds: 1));
-        return Future.value(1);
+        await Future<dynamic>.delayed(Duration(milliseconds: 50));
+        BlocProvider.of<AssignmentsBloc>(context).add(GetAssignmentList());
       },
       displacement: SpacingsAndHeights.refreshDisplacement,
       child: CustomScrollView(
@@ -59,19 +58,26 @@ class _AssignmentListPageState extends State<AssignmentListPage> {
               //   );
               if (state is CachedAssignmentError) {
                 snackBar = SnackBar(
-                  content: Text(
-                    state.message,
-                    style: TextStyle(color: Colors.white),
+                  content: Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: SpacingsAndHeights.bottomSnacBarTextPadding),
+                    child: Text(
+                      state.message,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: ColorsAndFonts.primaryFont,
+                          fontSize: ColorsAndFonts.fontSizeSnacBarMsg),
+                    ),
                   ),
                   action: SnackBarAction(
                     label: 'Refresh',
                     onPressed:
                         // Some code to undo the change.
-                        widget.scaffoldKey.currentState.hideCurrentSnackBar,
+                        Scaffold.of(context).hideCurrentSnackBar,
                   ),
                   duration: Duration(seconds: 3),
                 );
-                widget.scaffoldKey.currentState.showSnackBar(snackBar);
+                Scaffold.of(context).showSnackBar(snackBar);
               }
             },
             child: BlocBuilder<AssignmentsBloc, AssignmentsState>(
@@ -170,7 +176,7 @@ class CustomSliverAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       ///Properties of app bar
-      backgroundColor: CustomColorAndFonts.backgroundColor,
+      backgroundColor: ColorsAndFonts.backgroundColor,
       elevation: SpacingsAndHeights.appbarElevation,
       primary: true,
       floating: true,
@@ -180,16 +186,16 @@ class CustomSliverAppbar extends StatelessWidget {
       title: Text(
         Strings.assignmentTitle,
         style: TextStyle(
-            color: CustomColorAndFonts.primary,
-            fontSize: CustomColorAndFonts.fontSizeTitle,
+            color: ColorsAndFonts.primary,
+            fontSize: ColorsAndFonts.fontSizeAppbarTitle,
             fontWeight: FontWeight.bold,
-            fontFamily: CustomColorAndFonts.primaryFont),
+            fontFamily: ColorsAndFonts.primaryFont),
       ),
       actions: <Widget>[
         IconButton(
           icon: Icon(
             Icons.search,
-            color: CustomColorAndFonts.primary,
+            color: ColorsAndFonts.primary,
           ),
           onPressed: () {
             print('search press');
@@ -198,7 +204,7 @@ class CustomSliverAppbar extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.favorite,
-            color: CustomColorAndFonts.primary,
+            color: ColorsAndFonts.primary,
           ),
           onPressed: () {
             print('favourtie press');

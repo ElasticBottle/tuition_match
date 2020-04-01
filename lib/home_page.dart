@@ -83,6 +83,7 @@
 //   }
 // }
 
+import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/features/tutee_assignments/presentation/pages/assignment_list_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -106,15 +107,12 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _currentPage,
-        height: 50.0,
+        height: SpacingsAndHeights.bottomBarHeight,
         items: <Widget>[
-          Column(children: <Widget>[
-            Icon(Icons.list, size: 30),
-            Text('Assignment'),
-          ]),
-          Icon(Icons.library_books, size: 30),
-          Icon(Icons.notifications, size: 30),
-          Icon(Icons.perm_identity, size: 30),
+          Icon(Icons.list, size: SpacingsAndHeights.bottomBarIconSize),
+          Icon(Icons.library_books, size: SpacingsAndHeights.bottomBarIconSize),
+          Icon(Icons.notifications, size: SpacingsAndHeights.bottomBarIconSize),
+          Icon(Icons.perm_identity, size: SpacingsAndHeights.bottomBarIconSize),
         ],
         color: Colors.white,
         buttonBackgroundColor: Colors.white,

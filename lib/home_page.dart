@@ -83,6 +83,7 @@
 //   }
 // }
 
+import 'package:cotor/features/tutee_assignments/presentation/pages/assignment_list_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -144,18 +145,6 @@ class _HomePageState extends State<HomePage> {
             _currentPage = index;
           });
         },
-      ),
-    );
-  }
-}
-
-class AssignmentListPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.yellow,
-      child: Center(
-        child: Text('assignment page'),
       ),
     );
   }

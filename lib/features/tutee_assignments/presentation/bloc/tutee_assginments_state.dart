@@ -9,11 +9,17 @@ abstract class AssignmentsState extends Equatable {
 class InitialAssignmentsState extends AssignmentsState {
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'InitialAssignmentsState';
 }
 
 class AssignmentLoading extends AssignmentsState {
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'AssignmentLoading';
 }
 
 class AssignmentLoaded extends AssignmentsState {
@@ -23,6 +29,9 @@ class AssignmentLoaded extends AssignmentsState {
   List<Object> get props => [
         assignments,
       ];
+
+  @override
+  String toString() => 'AssignmentLoaded { assignments : $assignments }';
 }
 
 class AssignmentError extends AssignmentsState {
@@ -31,11 +40,17 @@ class AssignmentError extends AssignmentsState {
 
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'AssignmentError { error: $message }';
 }
 
 class NextAssignmentLoading extends AssignmentsState {
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'NextAssignmentLoading';
 }
 
 class NextAssignmentLoaded extends AssignmentsState {
@@ -45,6 +60,9 @@ class NextAssignmentLoaded extends AssignmentsState {
   List<Object> get props => [
         assignments,
       ];
+
+  @override
+  String toString() => 'NextAssignmentLoaded{ assignments : $assignments } ';
 }
 
 class NextAssignmentError extends AssignmentsState {
@@ -53,11 +71,17 @@ class NextAssignmentError extends AssignmentsState {
 
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'NextAssignmentError { error: $message }';
 }
 
 class CachedAssignmentLoading extends AssignmentsState {
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'CachedAssignmentLoading';
 }
 
 class CachedAssignmentLoaded extends AssignmentsState {
@@ -67,6 +91,9 @@ class CachedAssignmentLoaded extends AssignmentsState {
   List<Object> get props => [
         assignments,
       ];
+
+  @override
+  String toString() => 'CachedAssignmentLoaded { assignments: $assignments }';
 }
 
 class CachedAssignmentError extends AssignmentsState {
@@ -75,4 +102,7 @@ class CachedAssignmentError extends AssignmentsState {
 
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() => 'CachedAssignmentError { message : $message }';
 }

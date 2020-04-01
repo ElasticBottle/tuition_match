@@ -26,7 +26,7 @@ void main() {
     status: Status.values[0],
     username: 'username',
     tuteeNameModel: NameModel(firstName: 'john', lastName: 'doe'),
-    liked: const ['username1', 'username2'],
+    liked: 2,
   );
 
   test(

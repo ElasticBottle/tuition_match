@@ -1,5 +1,8 @@
 import 'package:cotor/features/sign-in/services/auth_service.dart';
+import 'package:cotor/features/tutee_assignments/presentation/bloc/bloc.dart';
+import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 /// Used to create user-dependent objects that need to be accessible by all widgets.
@@ -21,6 +24,9 @@ class UserDataInjector extends StatelessWidget {
             providers: [
               Provider<User>.value(value: user),
               // NOTE: Any other user-bound providers here can be added here
+              BlocProvider<AssignmentsBloc>(
+                create: (context) => sl<AssignmentsBloc>(),
+              ),
             ],
             child: builder(context, snapshot),
           );

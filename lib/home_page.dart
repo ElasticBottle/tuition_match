@@ -95,7 +95,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
-  final GlobalKey _bottomNavigationKey = GlobalKey<CurvedNavigationBarState>();
+  final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey =
+      GlobalKey<CurvedNavigationBarState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final PageController _pageController = PageController(
     initialPage: 0,
     keepPage: true,
@@ -104,6 +106,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _currentPage,
@@ -133,7 +136,9 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageController,
         children: [
-          AssignmentListPage(),
+          AssignmentListPage(
+            scaffoldKey: _scaffoldKey,
+          ),
           TutorListPage(),
           NotificationPage(),
           ProfilePage(),

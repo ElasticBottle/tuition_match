@@ -63,16 +63,12 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   @override
   Future<Either<Failure, List<TuteeAssignment>>>
       getCachedAssignmentList() async {
-    if (await networkInfo.isConnected) {
-      return await getAssignmentList();
-    } else {
-      try {
-        final List<TuteeAssignment> result =
-            await localDs.getLastAssignmentList();
-        return _success(result);
-      } on CacheException {
-        return _failure(CacheFailure());
-      }
+    try {
+      final List<TuteeAssignment> result =
+          await localDs.getLastAssignmentList();
+      return _success(result);
+    } on CacheException {
+      return _failure(CacheFailure());
     }
   }
 

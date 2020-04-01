@@ -1,3 +1,4 @@
+import 'package:cotor/core/bloc/bloc_delegate.dart';
 import 'package:cotor/features/sign-in/app/email_link_error_presenter.dart';
 import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:cotor/features/sign-in/services/auth_service_adapter.dart';
@@ -6,6 +7,7 @@ import 'package:cotor/features/sign-in/services/firebase_email_link_handler.dart
 import 'package:cotor/initial_page_decider.dart';
 import 'package:cotor/user_data_injector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:cotor/injection_container.dart' as di;
@@ -14,6 +16,7 @@ import 'package:cotor/routing/router.gr.dart';
 Future<void> main() async {
   // Fix for: Unhandled Exception: ServicesBinding.defaultBinaryMessenger was accessed before the binding was initialized.
   WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = SimpleBlocDelegate();
   await di.init();
   runApp(MyApp());
 }

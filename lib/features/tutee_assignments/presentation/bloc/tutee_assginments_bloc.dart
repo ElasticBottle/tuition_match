@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
+import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_next_tutee_assignment_list.dart';
 import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignment_list.dart';
+import 'package:flutter/material.dart';
 import './bloc.dart';
 
 const String SERVER_FAILURE_MSG =
@@ -17,17 +19,17 @@ const String UNKNOWN_FAILURE_MSG =
     'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
 
 class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
-  AssignmentsBloc(
-    this.getAssignmentList,
-    this.getNextAssignments,
-    this.getCachedAssignments,
-  )   : assert(getAssignmentList != null),
+  AssignmentsBloc({
+    @required this.getAssignmentList,
+    @required this.getNextAssignments,
+    @required this.getCachedAssignments,
+  })  : assert(getAssignmentList != null),
         assert(getNextAssignments != null),
         assert(getCachedAssignments != null);
   final GetTuteeAssignmentList getAssignmentList;
   final GetNextTuteeAssignmentList getNextAssignments;
   final GetCachedTuteeAssignmentList getCachedAssignments;
-
+  List<TuteeAssignment> assignments = [];
   @override
   AssignmentsState get initialState => InitialAssignmentsState();
 
@@ -36,17 +38,18 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
     AssignmentsEvent event,
   ) async* {
     if (event is GetAssignmentList) {
-      _mapGetAssignmentListToState(event);
+      yield* _mapGetAssignmentListToState(event);
     } else if (event is GetNextAssignmentList) {
-      _mepGetNextAssignmentListToState(event);
+      yield* _mepGetNextAssignmentListToState(event);
     } else if (event is GetCachedAssignmentList) {
-      _mapGetCachedAssignmentListToState(event);
+      yield* _mapGetCachedAssignmentListToState(event);
     }
   }
 
   Stream<AssignmentsState> _mapGetAssignmentListToState(
       GetAssignmentList event) async* {
     yield AssignmentLoading();
+    assignments.clear();
     final result = await getAssignmentList(NoParams());
     yield* result.fold(
       (failure) async* {
@@ -54,7 +57,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
         add(GetCachedAssignmentList());
       },
       (assignmentList) async* {
-        yield AssignmentLoaded(assignments: assignmentList);
+        assignments.addAll(assignmentList);
+        yield AssignmentLoaded(assignments: assignments);
       },
     );
   }
@@ -70,7 +74,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
             message: _mapFailureToFailureMessage(failure));
       },
       (assignmentList) async* {
-        yield NextAssignmentLoaded(assignments: assignmentList);
+        assignments.addAll(assignmentList);
+        yield NextAssignmentLoaded(assignments: assignments);
       },
     );
   }
@@ -105,5 +110,10 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
         return UNKNOWN_FAILURE_MSG;
         break;
     }
+  }
+
+  @override
+  Future<void> close() {
+    return super.close();
   }
 }

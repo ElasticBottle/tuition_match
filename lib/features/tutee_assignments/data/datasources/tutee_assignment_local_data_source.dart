@@ -89,8 +89,10 @@ class TuteeAssignmentLocalDataSourceImpl
   @override
   Future<void> cacheAssignmentList(
       List<TuteeAssignmentModel> assignmnetsToCache) {
-    final List<Map<String, dynamic>> toEncode =
-        assignmnetsToCache.map((TuteeAssignmentModel e) => e.toJson()).toList();
+    final List<Map<String, dynamic>> toEncode = (assignmnetsToCache
+            ?.map((TuteeAssignmentModel e) => e.toJson())
+            .toList()) ??
+        [];
     return sharedPreferences.setString(
       CACHED_ASSIGNMENT_LIST,
       json.encode(toEncode),

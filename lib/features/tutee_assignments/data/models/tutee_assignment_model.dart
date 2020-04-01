@@ -22,7 +22,7 @@ class TuteeAssignmentModel extends TuteeAssignment {
     String username,
     this.tuteeNameModel,
     int applied,
-    List<String> liked,
+    int liked,
   }) : super(
             postId: postId,
             additionalRemarks: additionalRemarks,
@@ -44,24 +44,30 @@ class TuteeAssignmentModel extends TuteeAssignment {
 
   factory TuteeAssignmentModel.fromJson(Map<String, dynamic> json) {
     return TuteeAssignmentModel(
-      postId: json.keys.first,
-      username: json[POSTID][USERNAME],
-      level: Level.values[json[POSTID][LEVEL]],
-      tutorOccupation: TutorOccupation.values[json[POSTID][TUTOR_OCCUPATION]],
-      format: ClassFormat.values[json[POSTID][CLASSFORMAT]],
-      gender: Gender.values[json[POSTID][GENDER]],
-      status: Status.values[json[POSTID][STATUS]],
-      subjectModel: SubjectModel.fromJson(json[POSTID][SUBJECT]),
-      additionalRemarks: json[POSTID][ADDITIONAL_REMARKS],
-      applied: json[POSTID][APPLIED],
-      freq: json[POSTID][FREQ],
-      liked: json[POSTID][LIKED].cast<String>(),
-      location: json[POSTID][LOCATION],
-      timing: json[POSTID][TIMING],
-      tuteeNameModel: NameModel.fromJson(json[POSTID][TUTEE_NAME]),
-      rateMax: json[POSTID][RATEMAX],
-      rateMin: json[POSTID][RATEMIN],
+      postId: json[POSTID],
+      username: json[USERNAME],
+      level: Level.values[json[LEVEL]],
+      tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
+      format: ClassFormat.values[json[CLASSFORMAT]],
+      gender: Gender.values[json[GENDER]],
+      status: Status.values[json[STATUS]],
+      subjectModel: SubjectModel.fromJson(json[SUBJECT]),
+      additionalRemarks: json[ADDITIONAL_REMARKS],
+      applied: json[APPLIED],
+      freq: json[FREQ],
+      liked: json[LIKED],
+      location: json[LOCATION],
+      timing: json[TIMING],
+      tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
+      rateMax: json[RATEMAX].toDouble(),
+      rateMin: json[RATEMIN].toDouble(),
     );
+  }
+
+  factory TuteeAssignmentModel.fromDocumentSnapshot(
+      {Map<String, dynamic> json, String postId}) {
+    json.addAll(<String, String>{POSTID: postId});
+    return TuteeAssignmentModel.fromJson(json);
   }
 
   final SubjectModel subjectModel;
@@ -69,24 +75,23 @@ class TuteeAssignmentModel extends TuteeAssignment {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      postId: {
-        LEVEL: level.index,
-        SUBJECT: subjectModel.toJson(),
-        TIMING: timing,
-        LOCATION: location,
-        RATEMIN: rateMin,
-        RATEMAX: rateMax,
-        GENDER: gender.index,
-        FREQ: freq,
-        TUTOR_OCCUPATION: tutorOccupation.index,
-        CLASSFORMAT: format.index,
-        ADDITIONAL_REMARKS: additionalRemarks,
-        APPLIED: applied,
-        LIKED: liked,
-        STATUS: status.index,
-        USERNAME: username,
-        TUTEE_NAME: tuteeNameModel.toJson(),
-      }
+      POSTID: postId,
+      LEVEL: level.index,
+      SUBJECT: subjectModel.toJson(),
+      TIMING: timing,
+      LOCATION: location,
+      RATEMIN: rateMin,
+      RATEMAX: rateMax,
+      GENDER: gender.index,
+      FREQ: freq,
+      TUTOR_OCCUPATION: tutorOccupation.index,
+      CLASSFORMAT: format.index,
+      ADDITIONAL_REMARKS: additionalRemarks,
+      APPLIED: applied,
+      LIKED: liked,
+      STATUS: status.index,
+      USERNAME: username,
+      TUTEE_NAME: tuteeNameModel.toJson(),
     };
   }
 }

@@ -148,7 +148,7 @@ class TuteeAssignment extends Equatable {
   final String username;
   final Name tuteeName;
   final int applied;
-  final List<String> liked;
+  final int liked;
 
   @override
   List<Object> get props => [

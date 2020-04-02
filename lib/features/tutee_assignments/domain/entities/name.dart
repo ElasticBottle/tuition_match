@@ -10,4 +10,7 @@ class Name extends Equatable {
 
   @override
   List<Object> get props => [firstName, lastName];
+
+  @override
+  String toString() => firstName + ' ' + lastName;
 }

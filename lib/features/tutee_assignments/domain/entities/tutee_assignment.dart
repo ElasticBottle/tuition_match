@@ -45,6 +45,14 @@ class Subject extends Equatable {
         level,
         subjectArea,
       ];
+
+  @override
+  String toString() => subjectArea;
+}
+
+String describeEnum(dynamic value) {
+  final List<String> output = value.toString().split('.');
+  return output[1];
 }
 
 class SubjectArea extends Equatable {

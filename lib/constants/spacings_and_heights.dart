@@ -10,4 +10,9 @@ class SpacingsAndHeights {
 
   // snac bar
   static const double bottomSnacBarTextPadding = 8.0;
+
+  // Card to display tutee // tutor info
+  static const double cardBevel = 10.0;
+
+  static const double cardElevation = 5.0;
 }

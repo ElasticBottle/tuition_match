@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:badges/badges.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
@@ -7,7 +8,6 @@ import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignmen
 import 'package:cotor/features/tutee_assignments/presentation/bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loadany/loadany.dart';
 
 class AssignmentListPage extends StatefulWidget {
   const AssignmentListPage({Key key}) : super(key: key);
@@ -16,7 +16,6 @@ class AssignmentListPage extends StatefulWidget {
 }
 
 class _AssignmentListPageState extends State<AssignmentListPage> {
-  LoadStatus status = LoadStatus.normal;
   int loadMoreParam = 10;
 
   @override
@@ -127,30 +126,171 @@ class AssignmentsListDisplay extends StatelessWidget {
         (BuildContext context, int index) {
           /// To convert this infinite list to a list with "n" no of items,
           /// uncomment the following line:
-          // if (index > loadMoreParam) {
-          //   return null;
-          // }
-          return listItem(Colors.yellow[600], 'Sliver List item: $index');
+          if (index >= assignments.length && index < assignments.length + 1) {
+            // BlocProvider.of<AssignmentsBloc>(context)
+            //     .add(GetNextAssignmentList());
+            return LoadingWidget.noSliver(context);
+          } else if (index >= assignments.length + 1) {
+            return null;
+          }
+          return ItemTile(assignment: assignments[index]);
         },
       ),
     );
   }
+}
 
-  Widget listItem(Color color, String title) => Container(
-        height: 100.0,
-        color: color,
-        child: Center(
-          child: Text(
-            '$title',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Quicksand'),
-          ),
+class ItemTile extends StatelessWidget {
+  const ItemTile({this.assignment});
+  final TuteeAssignment assignment;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: ColorsAndFonts.backgroundColor,
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(SpacingsAndHeights.cardBevel),
+      ),
+      elevation: SpacingsAndHeights.cardElevation,
+      child: Padding(
+        padding: EdgeInsets.all(15.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Icon(Icons.perm_identity, size: 30),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(assignment.tuteeName.toString(),
+                        style: TextStyle(
+                            color: ColorsAndFonts.primaryColor,
+                            fontFamily: ColorsAndFonts.primaryFont,
+                            fontSize: ColorsAndFonts.fontSizeSnacBarMsg)),
+                    Text(assignment.username,
+                        style: TextStyle(
+                            color: ColorsAndFonts.primaryColor,
+                            fontFamily: ColorsAndFonts.primaryFont,
+                            fontSize: 10.0)),
+                  ],
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Badge(
+                  badgeColor: Colors.yellow,
+                  shape: BadgeShape.square,
+                  borderRadius: 10,
+                  toAnimate: false,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                  badgeContent: Text(
+                    describeEnum(assignment.level),
+                    style: TextStyle(
+                        color: ColorsAndFonts.primaryColor,
+                        fontFamily: ColorsAndFonts.primaryFont),
+                  ),
+                ),
+                Badge(
+                  badgeColor: Colors.blue,
+                  shape: BadgeShape.square,
+                  borderRadius: 10,
+                  toAnimate: false,
+                  badgeContent: Text(
+                    assignment.subject.toString(),
+                    style: TextStyle(
+                        color: ColorsAndFonts.primaryColor,
+                        fontFamily: ColorsAndFonts.primaryFont),
+                  ),
+                ),
+                Badge(
+                  badgeColor: Colors.green,
+                  shape: BadgeShape.square,
+                  borderRadius: 10,
+                  toAnimate: false,
+                  badgeContent: Text(
+                    describeEnum(assignment.format),
+                    style: TextStyle(
+                        color: ColorsAndFonts.primaryColor,
+                        fontFamily: ColorsAndFonts.primaryFont),
+                  ),
+                ),
+                // PopupMenuButton<dynamic>(itemBuilder: null),
+              ],
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            InkWell(
+              onTap: () {
+                print('card tapped');
+              },
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Text(
+                  'Timing: ' +
+                      assignment.timing +
+                      '\n' +
+                      'Location: ' +
+                      assignment.location +
+                      '\n' +
+                      'Frequency: ' +
+                      assignment.freq +
+                      '\nRate: ' +
+                      assignment.rateMin.toString() +
+                      '- ' +
+                      assignment.rateMax.toString() +
+                      ' /hour',
+                  style: TextStyle(
+                    color: ColorsAndFonts.primaryColor,
+                    fontFamily: ColorsAndFonts.primaryFont,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: FlatButton(
+                    color: ColorsAndFonts.primaryColor,
+                    child: const Text('Apply',
+                        style:
+                            TextStyle(color: ColorsAndFonts.backgroundColor)),
+                    onPressed: () {
+                      print('apply pressed');
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.favorite,
+                    color: ColorsAndFonts.primaryColor,
+                    size: SpacingsAndHeights.bottomBarIconSize,
+                  ),
+                  onPressed: () {
+                    print('liked pressed');
+                  },
+                ),
+                Text(
+                  assignment.liked.toString(),
+                  style: TextStyle(
+                      color: ColorsAndFonts.primaryColor,
+                      fontFamily: ColorsAndFonts.primaryFont),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 }
 
 class LoadingWidget extends StatelessWidget {
@@ -166,6 +306,15 @@ class LoadingWidget extends StatelessWidget {
         child: Center(
           child: CircularProgressIndicator(),
         ),
+      ),
+    );
+  }
+
+  static Widget noSliver(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 7,
+      child: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -186,7 +335,7 @@ class CustomSliverAppbar extends StatelessWidget {
       title: Text(
         Strings.assignmentTitle,
         style: TextStyle(
-            color: ColorsAndFonts.primary,
+            color: ColorsAndFonts.primaryColor,
             fontSize: ColorsAndFonts.fontSizeAppbarTitle,
             fontWeight: FontWeight.bold,
             fontFamily: ColorsAndFonts.primaryFont),
@@ -195,7 +344,7 @@ class CustomSliverAppbar extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.search,
-            color: ColorsAndFonts.primary,
+            color: ColorsAndFonts.primaryColor,
           ),
           onPressed: () {
             print('search press');
@@ -204,7 +353,7 @@ class CustomSliverAppbar extends StatelessWidget {
         IconButton(
           icon: Icon(
             Icons.favorite,
-            color: ColorsAndFonts.primary,
+            color: ColorsAndFonts.primaryColor,
           ),
           onPressed: () {
             print('favourtie press');

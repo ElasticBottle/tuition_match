@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ColorsAndFonts {
   // Colors
-  static const Color primary = Colors.black;
+  static const Color primaryColor = Colors.black;
   static const Color backgroundColor = Colors.white;
 
   //fonts

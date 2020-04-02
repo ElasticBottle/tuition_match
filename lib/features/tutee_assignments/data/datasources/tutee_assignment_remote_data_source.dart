@@ -41,6 +41,7 @@ class TuteeAssignmentRemoteDataSourceImpl
       CriteriaParams params) async {
     final Query query = remoteStore
         .collection('assignments')
+        .where('status', isEqualTo: 0)
         .where('level', isEqualTo: params.level)
         .where('subject', isEqualTo: params.subject)
         .where('rateMin', isGreaterThanOrEqualTo: params.rateMin)
@@ -48,7 +49,9 @@ class TuteeAssignmentRemoteDataSourceImpl
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     mostRecentCriterionQuery = query;
 
-    return _attemptQuery(query, mostRecentCriterionDocument);
+    return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
+      mostRecentCriterionDocument = snapshot[snapshot.length - 1];
+    });
   }
 
   @override
@@ -56,27 +59,39 @@ class TuteeAssignmentRemoteDataSourceImpl
     final Query query = mostRecentCriterionQuery
         .startAfterDocument(mostRecentCriterionDocument);
 
-    return _attemptQuery(query, mostRecentCriterionDocument);
+    return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
+      mostRecentCriterionDocument = snapshot[snapshot.length - 1];
+    });
   }
 
   @override
   Future<List<TuteeAssignmentModel>> getAssignmentList() async {
-    final Query query =
-        remoteStore.collection('assignments').limit(DOCUMENT_RETRIEVAL_LIMIT);
-    return _attemptQuery(query, mostRecentAssignmentDocument);
+    final Query query = remoteStore
+        .collection('assignments')
+        .where('status', isEqualTo: 0)
+        .limit(DOCUMENT_RETRIEVAL_LIMIT);
+    return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
+      mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
+    });
   }
 
   @override
   Future<List<TuteeAssignmentModel>> getNextAssignmentList() async {
     final Query query = remoteStore
         .collection('assignments')
+        .where('status', isEqualTo: 0)
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
+        .orderBy('dateTime')
         .startAfterDocument(mostRecentAssignmentDocument);
-    return _attemptQuery(query, mostRecentAssignmentDocument);
+    return query == null
+        ? []
+        : _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
+            mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
+          });
   }
 
   Future<List<TuteeAssignmentModel>> _attemptQuery(
-      Query query, DocumentSnapshot toSave) async {
+      Query query, Function toSave) async {
     try {
       final QuerySnapshot snapshot = await query.getDocuments();
       print(snapshot.documents[0].data);
@@ -85,7 +100,7 @@ class TuteeAssignmentRemoteDataSourceImpl
             .map((e) => TuteeAssignmentModel.fromDocumentSnapshot(
                 json: e.data, postId: e.documentID))
             .toList();
-        toSave = snapshot.documents[snapshot.documents.length - 1];
+        toSave(snapshot.documents);
         return result;
       }
       return null;

@@ -1,3 +1,4 @@
+import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -19,9 +20,11 @@ class Avatar extends StatelessWidget {
       decoration: _borderDecoration(),
       child: CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.black12,
+        backgroundColor: ColorsAndFonts.primaryColor,
         backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-        child: photoUrl == null ? Icon(Icons.camera_alt, size: radius) : null,
+        child: photoUrl == null
+            ? Icon(Icons.perm_identity, size: radius * 1.2)
+            : null,
       ),
     );
   }

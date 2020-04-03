@@ -15,7 +15,11 @@ class ColorsAndFonts {
   static const double fontSizeUserDetailCardHead = 15.0;
   static const double fontSizeUserDetailCardSubHead = 11.0;
 
+  // Assignment Tile Badge colors
   static const Color levelBadgeColor = Colors.yellow;
   static const Color subjectBadgeColor = Colors.blue;
   static const Color classFormatBadgeColor = Colors.green;
+
+  // Add Assignment selection font size
+  static const double addAssignmentSelectionFontSize = 15.0;
 }

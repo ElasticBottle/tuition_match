@@ -70,5 +70,9 @@ class Strings {
   static const String mock = 'Mock';
 
   // AssignmentList page
-  static String assignmentTitle = 'Assignments';
+  static const String assignmentTitle = 'Assignments';
+  static const String cachedAssignmentLoadedMsg = 'Last retrieved copy loaded';
+
+  // EndTile
+  static const String endTileAllItemLoaded = '- All items have been loaded -';
 }

@@ -15,113 +15,117 @@ class AssignmentListPage extends StatefulWidget {
   _AssignmentListPageState createState() => _AssignmentListPageState();
 }
 
-class _AssignmentListPageState extends State<AssignmentListPage> {
+class _AssignmentListPageState extends State<AssignmentListPage>
+    with AutomaticKeepAliveClientMixin<AssignmentListPage> {
   int loadMoreParam = 10;
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      print('at the end of list');
+      if (BlocProvider.of<AssignmentsBloc>(context).state
+          is! AllAssignmentLoaded) {
+        BlocProvider.of<AssignmentsBloc>(context).add(GetNextAssignmentList());
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<AssignmentsBloc>(context).add(GetAssignmentList());
+    _scrollController.addListener(_scrollListener);
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return RefreshIndicator(
       onRefresh: () async {
         print('refresh assignment list');
-        await Future<dynamic>.delayed(Duration(milliseconds: 50));
         BlocProvider.of<AssignmentsBloc>(context).add(GetAssignmentList());
       },
       displacement: SpacingsAndHeights.refreshDisplacement,
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: _scrollController,
         slivers: <Widget>[
           ///First sliver is the App Bar
           CustomSliverAppbar(),
           BlocListener<AssignmentsBloc, AssignmentsState>(
             bloc: BlocProvider.of<AssignmentsBloc>(context),
             listener: (context, state) {
-              SnackBar snackBar;
-              // if (state is AssignmentError) {
-              //   snackBar = SnackBar(
-              //     content: Text(state.message),
-              //     action: SnackBarAction(
-              //       label: 'Refresh',
-              //       onPressed: () {
-              //         // Some code to undo the change.
-              //       },
-              //     ),
-              //   );
-              // } else if (state is NextAssignmentError) {
-              //   snackBar = SnackBar(
-              //     content: Text(state.message),
-              //     action: SnackBarAction(
-              //       label: 'Refresh',
-              //       onPressed: () {
-              //         // Some code to undo the change.
-              //       },
-              //     ),
-              //   );
               if (state is CachedAssignmentError) {
-                snackBar = SnackBar(
-                  content: Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: SpacingsAndHeights.bottomSnacBarTextPadding),
-                    child: Text(
-                      state.message,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: ColorsAndFonts.primaryFont,
-                          fontSize: ColorsAndFonts.fontSizeSnacBarMsg),
-                    ),
-                  ),
+                // TODO(ElasticBottle): remove when error page is done up for this state
+                _displaySnacBar(
+                  message: state.message,
+                  context: context,
                   action: SnackBarAction(
                     label: 'Refresh',
-                    onPressed:
-                        // Some code to undo the change.
-                        Scaffold.of(context).hideCurrentSnackBar,
+                    textColor: ColorsAndFonts.secondaryColor,
+                    onPressed: () {
+                      BlocProvider.of<AssignmentsBloc>(context)
+                          .add(GetAssignmentList());
+                    },
                   ),
-                  duration: Duration(seconds: 3),
                 );
-                Scaffold.of(context).showSnackBar(snackBar);
               }
-              if (state is CachedAssignmentLoaded) {
-                snackBar = SnackBar(
-                  content: Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: SpacingsAndHeights.bottomSnacBarTextPadding),
-                    child: Text(
-                      'Currently having issues with server, last retrieved copy loaded',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: ColorsAndFonts.primaryFont,
-                          fontSize: ColorsAndFonts.fontSizeSnacBarMsg),
-                    ),
-                  ),
+              if (state is AssignmentError) {
+                _displaySnacBar(
+                  context: context,
+                  message: state.message,
                   action: SnackBarAction(
                     label: 'dismiss',
-                    onPressed:
-                        // Some code to undo the change.
-                        Scaffold.of(context).hideCurrentSnackBar,
+                    textColor: ColorsAndFonts.secondaryColor,
+                    onPressed: Scaffold.of(context).hideCurrentSnackBar,
                   ),
-                  duration: Duration(seconds: 3),
                 );
-                Scaffold.of(context).showSnackBar(snackBar);
+              }
+              if (state is CachedAssignmentLoaded) {
+                _displaySnacBar(
+                  context: context,
+                  message: Strings.cachedAssignmentLoadedMsg,
+                  action: SnackBarAction(
+                    label: 'dismiss',
+                    textColor: ColorsAndFonts.secondaryColor,
+                    onPressed: Scaffold.of(context).hideCurrentSnackBar,
+                  ),
+                );
               }
             },
             child: BlocBuilder<AssignmentsBloc, AssignmentsState>(
                 bloc: BlocProvider.of<AssignmentsBloc>(context),
                 builder: (BuildContext context, AssignmentsState state) {
-                  if (state is InitialAssignmentsState) {
-                    BlocProvider.of<AssignmentsBloc>(context)
-                        .add(GetAssignmentList());
-                  } else if (state is CachedAssignmentLoading ||
-                      state is NextAssignmentLoading ||
-                      state is AssignmentLoading) {
+                  if (state is AssignmentLoading) {
                     return LoadingWidget();
+                  } else if (state is NextAssignmentLoading) {
+                    return AssignmentsListDisplay(
+                      assignments: state.assignments,
+                      loadState: LoadState.loading,
+                    );
                   } else if (state is AssignmentLoaded) {
                     return AssignmentsListDisplay(
-                        assignments: state.assignments);
-                  } else if (state is NextAssignmentLoaded) {
-                    return AssignmentsListDisplay(
-                        assignments: state.assignments);
+                      assignments: state.assignments,
+                    );
                   } else if (state is CachedAssignmentLoaded) {
                     return AssignmentsListDisplay(
-                        assignments: state.assignments);
+                      assignments: state.assignments,
+                    );
+                  } else if (state is AssignmentError) {
+                    BlocProvider.of<AssignmentsBloc>(context)
+                        .add(GetCachedAssignmentList());
+                    return LoadingWidget();
+                  } else if (state is CachedAssignmentError) {
+                    // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
+                  } else if (state is AllAssignmentLoaded) {
+                    return AssignmentsListDisplay(
+                      assignments: state.assignments,
+                      loadState: LoadState.allLoaded,
+                    );
                   }
+                  // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any
                   return SliverToBoxAdapter(
                     child: Container(
                       color: Colors.red,
@@ -133,35 +137,108 @@ class _AssignmentListPageState extends State<AssignmentListPage> {
       ),
     );
   }
+
+  void _displaySnacBar(
+      {BuildContext context,
+      String message,
+      SnackBarAction action,
+      int duration = 3}) {
+    final SnackBar snackBar = SnackBar(
+      content: Padding(
+        padding: const EdgeInsets.only(
+            bottom: SpacingsAndHeights.bottomSnacBarTextPadding),
+        child: Text(
+          message,
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: ColorsAndFonts.primaryFont,
+              fontSize: ColorsAndFonts.fontSizeSnacBarMsg),
+        ),
+      ),
+      action: action,
+      duration: Duration(seconds: duration),
+    );
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+enum LoadState {
+  normal,
+  loading,
+  allLoaded,
 }
 
 class AssignmentsListDisplay extends StatelessWidget {
   const AssignmentsListDisplay({
     Key key,
     @required this.assignments,
+    this.loadState = LoadState.normal,
   })  : assert(assignments != null),
         super(key: key);
 
   final List<TuteeAssignment> assignments;
-
+  final LoadState loadState;
   @override
   Widget build(BuildContext context) {
     return SliverList(
       ///Lazy building of list
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          /// To convert this infinite list to a list with "n" no of items,
-          /// uncomment the following line:
-          if (index >= assignments.length && index < assignments.length + 1) {
-            // BlocProvider.of<AssignmentsBloc>(context)
-            //     .add(GetNextAssignmentList());
-            return LoadingWidget.noSliver(context);
-          } else if (index >= assignments.length + 1) {
+          if (index == assignments.length) {
+            switch (loadState) {
+              case LoadState.normal:
+                return EndTile();
+                break;
+              case LoadState.loading:
+                return EndTile(loadState: LoadState.loading);
+                break;
+              case LoadState.allLoaded:
+                return EndTile(loadState: LoadState.allLoaded);
+                break;
+            }
+          } else if (index >= assignments.length) {
             return null;
           }
           return ItemTile(assignment: assignments[index]);
         },
       ),
+    );
+  }
+}
+
+class EndTile extends StatelessWidget {
+  const EndTile({this.loadState = LoadState.normal});
+  final LoadState loadState;
+  @override
+  Widget build(BuildContext context) {
+    Widget child;
+    switch (loadState) {
+      case LoadState.normal:
+        child = null;
+        break;
+      case LoadState.loading:
+        child = Center(
+          child: CircularProgressIndicator(),
+        );
+        break;
+      case LoadState.allLoaded:
+        child = Center(
+          child: Text(
+            Strings.endTileAllItemLoaded,
+            style: TextStyle(
+              color: ColorsAndFonts.primaryColor,
+              fontFamily: ColorsAndFonts.primaryFont,
+            ),
+          ),
+        );
+        break;
+    }
+    return Container(
+      height: MediaQuery.of(context).size.height / 7,
+      child: child,
     );
   }
 }
@@ -249,34 +326,33 @@ class ItemTile extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 10.0,
+              height: 400.0,
             ),
             InkWell(
               onTap: () {
                 print('card tapped');
               },
               child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Text(
-                  'Timing: ' +
-                      assignment.timing +
-                      '\n' +
-                      'Location: ' +
-                      assignment.location +
-                      '\n' +
-                      'Frequency: ' +
-                      assignment.freq +
-                      '\nRate: ' +
-                      assignment.rateMin.toString() +
-                      '- ' +
-                      assignment.rateMax.toString() +
-                      ' /hour',
-                  style: TextStyle(
-                    color: ColorsAndFonts.primaryColor,
-                    fontFamily: ColorsAndFonts.primaryFont,
-                  ),
-                ),
-              ),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: <Widget>[
+                      InfoLine(icon: Icons.timer, infoText: assignment.timing),
+                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
+                      InfoLine(
+                          icon: Icons.location_on,
+                          infoText: assignment.location),
+                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
+                      InfoLine(
+                          icon: Icons.radio_button_checked,
+                          infoText: assignment.freq),
+                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
+                      InfoLine(
+                          icon: Icons.attach_money,
+                          infoText: assignment.rateMin.toString() +
+                              '- ' +
+                              assignment.rateMax.toString()),
+                    ],
+                  )),
             ),
             SizedBox(
               height: 10.0,
@@ -319,6 +395,33 @@ class ItemTile extends StatelessWidget {
   }
 }
 
+class InfoLine extends StatelessWidget {
+  const InfoLine({
+    this.icon,
+    this.infoText,
+  });
+  final IconData icon;
+  final String infoText;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Icon(
+          icon,
+        ),
+        SizedBox(width: SpacingsAndHeights.infoLineIconTextSpacing),
+        Text(
+          infoText,
+          style: TextStyle(
+            color: ColorsAndFonts.primaryColor,
+            fontFamily: ColorsAndFonts.primaryFont,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({
     Key key,
@@ -332,15 +435,6 @@ class LoadingWidget extends StatelessWidget {
         child: Center(
           child: CircularProgressIndicator(),
         ),
-      ),
-    );
-  }
-
-  static Widget noSliver(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height / 7,
-      child: Center(
-        child: CircularProgressIndicator(),
       ),
     );
   }

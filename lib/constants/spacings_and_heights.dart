@@ -15,4 +15,8 @@ class SpacingsAndHeights {
   static const double cardBevel = 10.0;
 
   static const double cardElevation = 5.0;
+
+  static const double infoLineIconTextSpacing = 5.0;
+
+  static const double itemTileInfoSpacing = 7.0;
 }

@@ -4,7 +4,7 @@ class ColorsAndFonts {
   // Colors
   static const Color primaryColor = Colors.black;
   static const Color backgroundColor = Colors.white;
-
+  static const Color secondaryColor = Colors.blueAccent;
   //fonts
   static const String primaryFont = 'Quicksand';
   static const double fontSizeAppbarTitle = 20.0;

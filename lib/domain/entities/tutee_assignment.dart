@@ -10,8 +10,8 @@ enum Gender {
 }
 
 enum Level {
-  kindergarden1,
-  kindergarden2,
+  K1,
+  K2,
   pri1,
   pri2,
   pri3,

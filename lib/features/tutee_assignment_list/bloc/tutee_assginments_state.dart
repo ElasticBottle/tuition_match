@@ -39,22 +39,25 @@ class AssignmentError extends AssignmentsState {
   final String message;
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [message];
 
   @override
   String toString() => 'AssignmentError { error: $message }';
 }
 
 class NextAssignmentLoading extends AssignmentsState {
-  @override
-  List<Object> get props => [];
+  const NextAssignmentLoading({@required this.assignments});
+  final List<TuteeAssignment> assignments;
 
   @override
-  String toString() => 'NextAssignmentLoading';
+  List<Object> get props => [assignments];
+
+  @override
+  String toString() => 'NextAssignmentLoading { assignments : $assignments }';
 }
 
-class NextAssignmentLoaded extends AssignmentsState {
-  const NextAssignmentLoaded({this.assignments});
+class AllAssignmentLoaded extends AssignmentsState {
+  const AllAssignmentLoaded({this.assignments});
   final List<TuteeAssignment> assignments;
   @override
   List<Object> get props => [
@@ -62,26 +65,7 @@ class NextAssignmentLoaded extends AssignmentsState {
       ];
 
   @override
-  String toString() => 'NextAssignmentLoaded{ assignments : $assignments } ';
-}
-
-class NextAssignmentError extends AssignmentsState {
-  const NextAssignmentError({@required this.message});
-  final String message;
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'NextAssignmentError { error: $message }';
-}
-
-class CachedAssignmentLoading extends AssignmentsState {
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'CachedAssignmentLoading';
+  String toString() => 'AllAssignmentLoaded { assignments : $assignments }';
 }
 
 class CachedAssignmentLoaded extends AssignmentsState {
@@ -101,7 +85,7 @@ class CachedAssignmentError extends AssignmentsState {
   final String message;
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [message];
 
   @override
   String toString() => 'CachedAssignmentError { message : $message }';

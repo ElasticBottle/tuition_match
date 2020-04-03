@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:cotor/features/tutee_assignment_list/bloc/bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
@@ -7,14 +9,13 @@ import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignm
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
 import 'package:flutter/material.dart';
-import './bloc.dart';
 
 const String SERVER_FAILURE_MSG =
-    'Sorry, Our Server is having problems processing the request (||^_^)';
+    'Sorry, Our Server is having problems processing the request (||^_^), retrieving last fetched list';
 const String NETWORK_FAILURE_MSG =
-    'No internet access, please check your connection.';
+    'No internet access, please check your connection, retrieving last fetched list';
 const String CACHE_FAILURE_MSG =
-    'No internet access, please check your connection.';
+    'No last fetched list, please try again when you\'re online!';
 const String UNKNOWN_FAILURE_MSG =
     'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
 
@@ -32,6 +33,23 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
   List<TuteeAssignment> assignments = [];
   @override
   AssignmentsState get initialState => InitialAssignmentsState();
+
+  @override
+  Stream<AssignmentsState> transformEvents(
+    Stream<AssignmentsEvent> events,
+    Stream<AssignmentsState> Function(AssignmentsEvent event) next,
+  ) {
+    final nonDebounceStream = events.where((event) {
+      return event is! GetNextAssignmentList;
+    });
+    final debounceStream = events.where((event) {
+      return event is GetNextAssignmentList;
+    }).debounceTime(Duration(milliseconds: 500));
+    return super.transformEvents(
+      nonDebounceStream.mergeWith([debounceStream]),
+      next,
+    );
+  }
 
   @override
   Stream<AssignmentsState> mapEventToState(
@@ -54,7 +72,6 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
     yield* result.fold(
       (failure) async* {
         yield AssignmentError(message: _mapFailureToFailureMessage(failure));
-        add(GetCachedAssignmentList());
       },
       (assignmentList) async* {
         assignments.addAll(assignmentList);
@@ -65,24 +82,26 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
 
   Stream<AssignmentsState> _mepGetNextAssignmentListToState(
       GetNextAssignmentList event) async* {
-    yield NextAssignmentLoading();
+    yield NextAssignmentLoading(assignments: assignments);
     final result = await getNextAssignments(NoParams());
     yield* result.fold(
       (failure) async* {
-        add(GetCachedAssignmentList());
-        yield NextAssignmentError(
-            message: _mapFailureToFailureMessage(failure));
+        yield AssignmentError(message: _mapFailureToFailureMessage(failure));
       },
       (assignmentList) async* {
-        assignments.addAll(assignmentList);
-        yield NextAssignmentLoaded(assignments: assignments);
+        if (assignmentList != null) {
+          assignments.addAll(assignmentList);
+          yield AssignmentLoaded(assignments: assignments);
+        } else {
+          yield AllAssignmentLoaded(assignments: assignments);
+        }
       },
     );
   }
 
   Stream<AssignmentsState> _mapGetCachedAssignmentListToState(
       GetCachedAssignmentList event) async* {
-    yield CachedAssignmentLoading();
+    yield AssignmentLoading();
     final result = await getCachedAssignments(NoParams());
     yield* result.fold(
       (failure) async* {
@@ -90,6 +109,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
             message: _mapFailureToFailureMessage(failure));
       },
       (assignmentList) async* {
+        assignments.addAll(assignmentList);
         yield CachedAssignmentLoaded(assignments: assignmentList);
       },
     );

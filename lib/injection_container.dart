@@ -1,23 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/platform/network_info.dart';
+import 'package:cotor/data/datasources/tutee_assignment_local_data_source.dart';
+import 'package:cotor/data/datasources/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/data/repository_implementations/tutee_assignment_repository_impl.dart';
+import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
+import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
+import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
+import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
 import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
 import 'package:cotor/features/onboarding/data/repositories/onboarding_repository_adapter.dart';
+import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
-import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
-import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_remote_data_source.dart';
-import 'package:cotor/features/tutee_assignments/data/repositories/tutee_assignment_repository_impl.dart';
-import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_cached_tutee_assignment_list.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_next_tutee_assignment_list.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignment_list.dart';
-import 'package:cotor/features/tutee_assignments/presentation/bloc/bloc.dart';
+import 'package:cotor/features/tutee_assignments/bloc/tutee_assginments_bloc.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'features/onboarding/domain/repositories/onboarding_repository.dart';
 
 final sl = GetIt.instance;
 

@@ -84,7 +84,7 @@
 // }
 
 import 'package:cotor/constants/spacings_and_heights.dart';
-import 'package:cotor/features/tutee_assignments/presentation/pages/assignment_list_page.dart';
+import 'package:cotor/features/tutee_assignments/pages/assignment_list_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 

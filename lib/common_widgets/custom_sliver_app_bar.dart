@@ -1,52 +1,71 @@
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
-import 'package:cotor/constants/strings.dart';
 import 'package:flutter/material.dart';
 
 class CustomSliverAppbar extends StatelessWidget {
+  const CustomSliverAppbar({
+    @required this.title,
+    this.showActions = true,
+    this.elevation = SpacingsAndHeights.appbarElevation,
+    this.bgColor = ColorsAndFonts.backgroundColor,
+    this.isFloating = true,
+    this.isSnapped = false,
+    this.isPinned = false,
+    this.isTitleCenter = false,
+  });
+  final String title;
+  final bool showActions;
+  final double elevation;
+  final Color bgColor;
+  final bool isFloating;
+  final bool isPinned;
+  final bool isSnapped;
+  final bool isTitleCenter;
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
       ///Properties of app bar
-      backgroundColor: ColorsAndFonts.backgroundColor,
-      elevation: SpacingsAndHeights.appbarElevation,
+      backgroundColor: bgColor,
+      elevation: elevation,
       primary: true,
-      floating: true,
-      snap: false,
-      pinned: false,
-      centerTitle: false,
+      floating: isFloating,
+      snap: isSnapped,
+      pinned: isPinned,
+      centerTitle: isTitleCenter,
       title: Text(
-        Strings.assignmentTitle,
+        title,
         style: TextStyle(
             color: ColorsAndFonts.primaryColor,
             fontSize: ColorsAndFonts.fontSizeAppbarTitle,
             fontWeight: FontWeight.bold,
             fontFamily: ColorsAndFonts.primaryFont),
       ),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.search,
-            color: ColorsAndFonts.primaryColor,
-          ),
-          onPressed: () {
-            print('search press');
-          },
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.favorite,
-            color: ColorsAndFonts.primaryColor,
-          ),
-          onPressed: () {
-            print('favourtie press');
-          },
-        ),
-        Padding(
-          padding:
-              EdgeInsets.only(right: SpacingsAndHeights.rightAppBarPadding),
-        )
-      ],
+      actions: showActions
+          ? <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.search,
+                  color: ColorsAndFonts.primaryColor,
+                ),
+                onPressed: () {
+                  print('search press');
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.favorite,
+                  color: ColorsAndFonts.primaryColor,
+                ),
+                onPressed: () {
+                  print('favourtie press');
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    right: SpacingsAndHeights.rightAppBarPadding),
+              )
+            ]
+          : <Widget>[],
     );
   }
 }

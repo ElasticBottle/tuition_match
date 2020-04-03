@@ -1,3 +1,4 @@
+import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc.dart';
 import 'package:cotor/injection_container.dart';
@@ -27,6 +28,9 @@ class UserDataInjector extends StatelessWidget {
               BlocProvider<AssignmentsBloc>(
                 create: (context) => sl<AssignmentsBloc>(),
               ),
+              BlocProvider<AddTuteeAssignmentBloc>(
+                create: (context) => sl<AddTuteeAssignmentBloc>(),
+              )
             ],
             child: builder(context, snapshot),
           );

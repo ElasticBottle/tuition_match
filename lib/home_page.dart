@@ -84,6 +84,7 @@
 // }
 
 import 'package:cotor/constants/spacings_and_heights.dart';
+import 'package:cotor/features/add_tutee_assignment/pages/add_assignment_page.dart';
 import 'package:cotor/features/tutee_assignment_list/pages/assignment_list_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,7 @@ class _HomePageState extends State<HomePage> {
         items: <Widget>[
           Icon(Icons.list, size: SpacingsAndHeights.bottomBarIconSize),
           Icon(Icons.library_books, size: SpacingsAndHeights.bottomBarIconSize),
+          Icon(Icons.add, size: SpacingsAndHeights.bottomBarIconSize),
           Icon(Icons.notifications, size: SpacingsAndHeights.bottomBarIconSize),
           Icon(Icons.perm_identity, size: SpacingsAndHeights.bottomBarIconSize),
         ],
@@ -138,6 +140,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           AssignmentListPage(),
           TutorListPage(),
+          AddAssignmentPage(),
           NotificationPage(),
           ProfilePage(),
         ],

@@ -53,7 +53,9 @@ class _AssignmentListPageState extends State<AssignmentListPage>
         controller: _scrollController,
         slivers: <Widget>[
           ///First sliver is the App Bar
-          CustomSliverAppbar(),
+          CustomSliverAppbar(
+            title: Strings.assignmentTitle,
+          ),
           BlocListener<AssignmentsBloc, AssignmentsState>(
             bloc: BlocProvider.of<AssignmentsBloc>(context),
             listener: (context, state) {

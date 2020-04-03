@@ -7,6 +7,7 @@ import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
+import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
 import 'package:cotor/features/onboarding/data/repositories/onboarding_repository_adapter.dart';
 import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -35,6 +36,10 @@ Future<void> init() async {
       getNextAssignments: sl(),
       getCachedAssignments: sl(),
     ),
+  );
+
+  sl.registerFactory<AddTuteeAssignmentBloc>(
+    () => AddTuteeAssignmentBloc(),
   );
 
   // UseCase

@@ -28,4 +28,7 @@ class SpacingsAndHeights {
   static const double assignmentBadgeHorPadding = 10.0;
   static const double assignmentBadgeVertPadding = 5.0;
   static const double assignmentBadgeRadius = 10.0;
+
+  // Level DropDownMenu
+  static const int levelDropDownVisibleItems = 5;
 }

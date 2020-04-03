@@ -47,7 +47,6 @@ class Strings {
   static const String submitEmailAddressLink =
       'Submit your email address to receive an activation link.';
   static const String checkYourEmail = 'Check your email';
-
   static String activationLinkSent(String email) =>
       'We have sent an activation link to $email';
   static const String errorSendingEmail = 'Error sending email';
@@ -72,6 +71,14 @@ class Strings {
   // AssignmentList page
   static const String assignmentTitle = 'Assignments';
   static const String cachedAssignmentLoadedMsg = 'Last retrieved copy loaded';
+
+  // AddAssignment page
+  static const String addAssignment = 'Add Assignment';
+  static const String subject = 'Subject';
+  static const String level = 'Level';
+  // AddAssignment page level drodown
+  static const String levelDropDownHint = 'Choose a level';
+  static const String levelDropDownLabel = 'Level';
 
   // EndTile
   static const String endTileAllItemLoaded = '- All items have been loaded -';

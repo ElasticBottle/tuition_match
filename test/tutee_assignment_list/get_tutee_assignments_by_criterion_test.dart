@@ -1,8 +1,9 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
-import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignments_by_criterion.dart';
+import 'package:cotor/data/models/criteria_params.dart';
+import 'package:cotor/domain/entities/subject.dart';
+import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
+import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignments_by_criterion.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';

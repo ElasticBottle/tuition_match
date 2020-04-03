@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-import 'package:cotor/features/tutee_assignments/data/models/name_model.dart';
-import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
-import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
-import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
+import 'package:cotor/data/models/name_model.dart';
+import 'package:cotor/data/models/subject_model.dart';
+import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fixtures/fixture_reader.dart';
 
 void main() {
-  final tTuteeAssignmentModel = TuteeAssignmentModel(
+  final tuteeAssignmentModel = TuteeAssignmentModel(
     postId: 'postId',
     additionalRemarks: 'addtionalRemarks',
     applied: 1,
@@ -28,6 +28,7 @@ void main() {
     tuteeNameModel: NameModel(firstName: 'john', lastName: 'doe'),
     liked: 2,
   );
+  final tTuteeAssignmentModel = tuteeAssignmentModel;
 
   test(
     'should be a subclass of NumberTrivia entity',

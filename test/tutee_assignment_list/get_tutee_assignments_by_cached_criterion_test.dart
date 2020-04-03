@@ -1,8 +1,9 @@
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
-import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignments/domain/repositories/tutee_assignment_repo.dart';
-import 'package:cotor/features/tutee_assignments/domain/usecases/get_tutee_assignment_list.dart';
+import 'package:cotor/domain/entities/subject.dart';
+import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
+import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignments_by_cached_criterion.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -11,14 +12,14 @@ class MockTuteeAssignmentRepo extends Mock implements TuteeAssignmentRepo {}
 
 void main() {
   MockTuteeAssignmentRepo mockRepo;
-  GetTuteeAssignmentList usecase;
+  GetTuteeAssignmentsByCachedCriterion usecase;
 
   setUp(() {
     mockRepo = MockTuteeAssignmentRepo();
-    usecase = GetTuteeAssignmentList(repo: mockRepo);
+    usecase = GetTuteeAssignmentsByCachedCriterion(repo: mockRepo);
   });
 
-  group('Retrieving tutee assingments', () {
+  group('Retrieving tutee assingments based on various criterion', () {
     final TuteeAssignment tTuteeAssignment = TuteeAssignment(
       level: Level.pri2,
       subject: Subject(
@@ -40,25 +41,24 @@ void main() {
       username: 'test',
     );
 
-    void _setUpMockRepoAssignmentCall({bool success}) {
-      when(mockRepo.getAssignmentList()).thenAnswer((realInvocation) async =>
+    void _setUpMockRepoCriterionCall({bool success}) {
+      when(mockRepo.getByCachedCriterion()).thenAnswer((realInvocation) async =>
           success
               ? Right<Failure, List<TuteeAssignment>>([tTuteeAssignment])
               : Left<Failure, List<TuteeAssignment>>(ServerFailure()));
     }
 
     test('Should call MockTuteeAssignmentRepo', () async {
-      _setUpMockRepoAssignmentCall(success: true);
+      _setUpMockRepoCriterionCall(success: true);
 
       await usecase(NoParams());
 
-      verify(mockRepo.getAssignmentList()).called(1);
-      verifyNoMoreInteractions(mockRepo);
+      verify(mockRepo.getByCachedCriterion()).called(1);
     });
 
-    test('Should return Right(List<TuteeAssignemnt>) on successful retrieval',
+    test('Should return Right(List<TuteeAssignemnt>) on successful search',
         () async {
-      _setUpMockRepoAssignmentCall(success: true);
+      _setUpMockRepoCriterionCall(success: true);
 
       final result = await usecase(NoParams());
       final List<Object> remarks = result.fold((l) => null, (r) => r[0].props);
@@ -70,11 +70,23 @@ void main() {
     });
 
     test('Should return Left(Failure) on unsuccessful search', () async {
-      _setUpMockRepoAssignmentCall(success: false);
+      _setUpMockRepoCriterionCall(success: false);
 
       final result = await usecase(NoParams());
 
       expect(result, Left<Failure, List<TuteeAssignment>>(ServerFailure()));
+    });
+
+    test('Should return empty list if no result match criteria', () async {
+      when(mockRepo.getByCachedCriterion())
+          .thenAnswer((_) async => Right<Failure, List<TuteeAssignment>>([]));
+
+      final result = await usecase(NoParams());
+      verify(mockRepo.getByCachedCriterion());
+      final bool actual = result.fold((l) => null, (r) => r.isEmpty);
+      final bool expected = Right<Failure, List<TuteeAssignment>>([])
+          .fold((l) => null, (r) => r.isEmpty);
+      expect(actual, expected);
     });
   });
 }

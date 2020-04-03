@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
-import 'package:cotor/features/tutee_assignments/data/datasources/tutee_assignment_local_data_source.dart';
-import 'package:cotor/features/tutee_assignments/data/models/criteria_params.dart';
-import 'package:cotor/features/tutee_assignments/data/models/subject_model.dart';
-import 'package:cotor/features/tutee_assignments/data/models/tutee_assignment_model.dart';
-import 'package:cotor/features/tutee_assignments/domain/entities/tutee_assignment.dart';
+import 'package:cotor/data/datasources/tutee_assignment_local_data_source.dart';
+import 'package:cotor/data/models/criteria_params.dart';
+import 'package:cotor/data/models/subject_model.dart';
+import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/domain/entities/subject.dart';
+import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:matcher/matcher.dart';

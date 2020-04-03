@@ -52,7 +52,9 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
           try {
             final List<TuteeAssignment> result =
                 await remoteDs.getNextAssignmentList();
-            localDs.cacheToExistingAssignmentList(result);
+            if (result != null) {
+              localDs.cacheToExistingAssignmentList(result);
+            }
             return _success(result);
           } on ServerException {
             return _failure(ServerFailure());

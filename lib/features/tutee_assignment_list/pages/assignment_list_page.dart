@@ -1,11 +1,11 @@
-import 'dart:async';
-
-import 'package:badges/badges.dart';
+import 'package:cotor/common_widgets/custom_sliver_app_bar.dart';
+import 'package:cotor/common_widgets/paginated_sliver_list.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/bloc.dart';
+import 'package:cotor/features/tutee_assignment_list/widgets/assignment_item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -101,17 +101,35 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                   if (state is AssignmentLoading) {
                     return LoadingWidget();
                   } else if (state is NextAssignmentLoading) {
-                    return AssignmentsListDisplay(
+                    return PaginatedSliverList<TuteeAssignment>(
                       assignments: state.assignments,
                       loadState: LoadState.loading,
+                      builder:
+                          (BuildContext context, TuteeAssignment assignment) {
+                        return AssignmentItemTile(
+                          assignment: assignment,
+                        );
+                      },
                     );
                   } else if (state is AssignmentLoaded) {
-                    return AssignmentsListDisplay(
+                    return PaginatedSliverList(
                       assignments: state.assignments,
+                      builder:
+                          (BuildContext context, TuteeAssignment assignment) {
+                        return AssignmentItemTile(
+                          assignment: assignment,
+                        );
+                      },
                     );
                   } else if (state is CachedAssignmentLoaded) {
-                    return AssignmentsListDisplay(
+                    return PaginatedSliverList(
                       assignments: state.assignments,
+                      builder:
+                          (BuildContext context, TuteeAssignment assignment) {
+                        return AssignmentItemTile(
+                          assignment: assignment,
+                        );
+                      },
                     );
                   } else if (state is AssignmentError) {
                     BlocProvider.of<AssignmentsBloc>(context)
@@ -120,9 +138,15 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                   } else if (state is CachedAssignmentError) {
                     // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
                   } else if (state is AllAssignmentLoaded) {
-                    return AssignmentsListDisplay(
+                    return PaginatedSliverList(
                       assignments: state.assignments,
                       loadState: LoadState.allLoaded,
+                      builder:
+                          (BuildContext context, TuteeAssignment assignment) {
+                        return AssignmentItemTile(
+                          assignment: assignment,
+                        );
+                      },
                     );
                   }
                   // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any
@@ -165,263 +189,6 @@ class _AssignmentListPageState extends State<AssignmentListPage>
   bool get wantKeepAlive => true;
 }
 
-enum LoadState {
-  normal,
-  loading,
-  allLoaded,
-}
-
-class AssignmentsListDisplay extends StatelessWidget {
-  const AssignmentsListDisplay({
-    Key key,
-    @required this.assignments,
-    this.loadState = LoadState.normal,
-  })  : assert(assignments != null),
-        super(key: key);
-
-  final List<TuteeAssignment> assignments;
-  final LoadState loadState;
-  @override
-  Widget build(BuildContext context) {
-    return SliverList(
-      ///Lazy building of list
-      delegate: SliverChildBuilderDelegate(
-        (BuildContext context, int index) {
-          if (index == assignments.length) {
-            switch (loadState) {
-              case LoadState.normal:
-                return EndTile();
-                break;
-              case LoadState.loading:
-                return EndTile(loadState: LoadState.loading);
-                break;
-              case LoadState.allLoaded:
-                return EndTile(loadState: LoadState.allLoaded);
-                break;
-            }
-          } else if (index >= assignments.length) {
-            return null;
-          }
-          return ItemTile(assignment: assignments[index]);
-        },
-      ),
-    );
-  }
-}
-
-class EndTile extends StatelessWidget {
-  const EndTile({this.loadState = LoadState.normal});
-  final LoadState loadState;
-  @override
-  Widget build(BuildContext context) {
-    Widget child;
-    switch (loadState) {
-      case LoadState.normal:
-        child = null;
-        break;
-      case LoadState.loading:
-        child = Center(
-          child: CircularProgressIndicator(),
-        );
-        break;
-      case LoadState.allLoaded:
-        child = Center(
-          child: Text(
-            Strings.endTileAllItemLoaded,
-            style: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-            ),
-          ),
-        );
-        break;
-    }
-    return Container(
-      height: MediaQuery.of(context).size.height / 7,
-      child: child,
-    );
-  }
-}
-
-class ItemTile extends StatelessWidget {
-  const ItemTile({this.assignment});
-  final TuteeAssignment assignment;
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: ColorsAndFonts.backgroundColor,
-      shape: BeveledRectangleBorder(
-        borderRadius: BorderRadius.circular(SpacingsAndHeights.cardBevel),
-      ),
-      elevation: SpacingsAndHeights.cardElevation,
-      child: Padding(
-        padding: EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Icon(Icons.perm_identity, size: 30),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(assignment.tuteeName.toString(),
-                        style: TextStyle(
-                            color: ColorsAndFonts.primaryColor,
-                            fontFamily: ColorsAndFonts.primaryFont,
-                            fontSize: ColorsAndFonts.fontSizeSnacBarMsg)),
-                    Text(assignment.username,
-                        style: TextStyle(
-                            color: ColorsAndFonts.primaryColor,
-                            fontFamily: ColorsAndFonts.primaryFont,
-                            fontSize: 10.0)),
-                  ],
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Badge(
-                  badgeColor: Colors.yellow,
-                  shape: BadgeShape.square,
-                  borderRadius: 10,
-                  toAnimate: false,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                  badgeContent: Text(
-                    describeEnum(assignment.level),
-                    style: TextStyle(
-                        color: ColorsAndFonts.primaryColor,
-                        fontFamily: ColorsAndFonts.primaryFont),
-                  ),
-                ),
-                Badge(
-                  badgeColor: Colors.blue,
-                  shape: BadgeShape.square,
-                  borderRadius: 10,
-                  toAnimate: false,
-                  badgeContent: Text(
-                    assignment.subject.toString(),
-                    style: TextStyle(
-                        color: ColorsAndFonts.primaryColor,
-                        fontFamily: ColorsAndFonts.primaryFont),
-                  ),
-                ),
-                Badge(
-                  badgeColor: Colors.green,
-                  shape: BadgeShape.square,
-                  borderRadius: 10,
-                  toAnimate: false,
-                  badgeContent: Text(
-                    describeEnum(assignment.format),
-                    style: TextStyle(
-                        color: ColorsAndFonts.primaryColor,
-                        fontFamily: ColorsAndFonts.primaryFont),
-                  ),
-                ),
-                // PopupMenuButton<dynamic>(itemBuilder: null),
-              ],
-            ),
-            SizedBox(
-              height: 400.0,
-            ),
-            InkWell(
-              onTap: () {
-                print('card tapped');
-              },
-              child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Column(
-                    children: <Widget>[
-                      InfoLine(icon: Icons.timer, infoText: assignment.timing),
-                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
-                      InfoLine(
-                          icon: Icons.location_on,
-                          infoText: assignment.location),
-                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
-                      InfoLine(
-                          icon: Icons.radio_button_checked,
-                          infoText: assignment.freq),
-                      SizedBox(height: SpacingsAndHeights.itemTileInfoSpacing),
-                      InfoLine(
-                          icon: Icons.attach_money,
-                          infoText: assignment.rateMin.toString() +
-                              '- ' +
-                              assignment.rateMax.toString()),
-                    ],
-                  )),
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: FlatButton(
-                    color: ColorsAndFonts.primaryColor,
-                    child: const Text('Apply',
-                        style:
-                            TextStyle(color: ColorsAndFonts.backgroundColor)),
-                    onPressed: () {
-                      print('apply pressed');
-                    },
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite,
-                    color: ColorsAndFonts.primaryColor,
-                    size: SpacingsAndHeights.bottomBarIconSize,
-                  ),
-                  onPressed: () {
-                    print('liked pressed');
-                  },
-                ),
-                Text(
-                  assignment.liked.toString(),
-                  style: TextStyle(
-                      color: ColorsAndFonts.primaryColor,
-                      fontFamily: ColorsAndFonts.primaryFont),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class InfoLine extends StatelessWidget {
-  const InfoLine({
-    this.icon,
-    this.infoText,
-  });
-  final IconData icon;
-  final String infoText;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Icon(
-          icon,
-        ),
-        SizedBox(width: SpacingsAndHeights.infoLineIconTextSpacing),
-        Text(
-          infoText,
-          style: TextStyle(
-            color: ColorsAndFonts.primaryColor,
-            fontFamily: ColorsAndFonts.primaryFont,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({
     Key key,
@@ -436,54 +203,6 @@ class LoadingWidget extends StatelessWidget {
           child: CircularProgressIndicator(),
         ),
       ),
-    );
-  }
-}
-
-class CustomSliverAppbar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SliverAppBar(
-      ///Properties of app bar
-      backgroundColor: ColorsAndFonts.backgroundColor,
-      elevation: SpacingsAndHeights.appbarElevation,
-      primary: true,
-      floating: true,
-      snap: false,
-      pinned: false,
-      centerTitle: false,
-      title: Text(
-        Strings.assignmentTitle,
-        style: TextStyle(
-            color: ColorsAndFonts.primaryColor,
-            fontSize: ColorsAndFonts.fontSizeAppbarTitle,
-            fontWeight: FontWeight.bold,
-            fontFamily: ColorsAndFonts.primaryFont),
-      ),
-      actions: <Widget>[
-        IconButton(
-          icon: Icon(
-            Icons.search,
-            color: ColorsAndFonts.primaryColor,
-          ),
-          onPressed: () {
-            print('search press');
-          },
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.favorite,
-            color: ColorsAndFonts.primaryColor,
-          ),
-          onPressed: () {
-            print('favourtie press');
-          },
-        ),
-        Padding(
-          padding:
-              EdgeInsets.only(right: SpacingsAndHeights.rightAppBarPadding),
-        )
-      ],
     );
   }
 }

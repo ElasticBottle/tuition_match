@@ -4,50 +4,6 @@ abstract class AddTuteeAssignmentEvent extends Equatable {
   const AddTuteeAssignmentEvent();
 }
 
-class AddAssignment extends AddTuteeAssignmentEvent {
-  const AddAssignment({
-    this.gender,
-    this.level,
-    this.subjectModel,
-    this.format,
-    this.timing,
-    this.rateMin,
-    this.rateMax,
-    this.location,
-    this.freq,
-    this.tutorOccupation,
-    this.additionalRemarks,
-    this.status,
-    this.username,
-    this.firstName,
-    this.lastName,
-    this.applied,
-    this.liked,
-  });
-  final int gender;
-  final int level;
-  final int subjectModel;
-  final int format;
-  final String timing;
-  final double rateMin;
-  final double rateMax;
-  final String location;
-  final String freq;
-  final int tutorOccupation;
-  final String additionalRemarks;
-  final int status;
-  final String username;
-  final String firstName;
-  final String lastName;
-  final int applied;
-  final int liked;
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'AddAssignment {}';
-}
-
 class LevelChanged extends AddTuteeAssignmentEvent {
   const LevelChanged({this.level, this.currentIndex});
   final Level level;
@@ -72,6 +28,17 @@ class SpecificLevelChanged extends AddTuteeAssignmentEvent {
       'SpecificLevelChanged { specificLevel: $specificLevel, specificLevelIndex: $specificLevelIndex }';
 }
 
+class SubjectClicked extends AddTuteeAssignmentEvent {
+  const SubjectClicked({this.value, this.index});
+  final dynamic value;
+  final int index;
+  @override
+  List<Object> get props => [value, index];
+
+  @override
+  String toString() => 'SubjectChanged { option: $value, index: $index }';
+}
+
 class EventClicked extends AddTuteeAssignmentEvent {
   const EventClicked({
     this.value,
@@ -84,13 +51,26 @@ class EventClicked extends AddTuteeAssignmentEvent {
   String toString() => 'EventChanged { option: $value }';
 }
 
-class SubjectClicked extends AddTuteeAssignmentEvent {
-  const SubjectClicked({this.value, this.index});
-  final dynamic value;
-  final int index;
-  @override
-  List<Object> get props => [value, index];
+class FormSaved extends AddTuteeAssignmentEvent {
+  const FormSaved({
+    this.value,
+    this.key,
+  });
+  final String value;
+  final String key;
 
   @override
-  String toString() => 'SubjectChanged { option: $value, index: $index }';
+  List<Object> get props => [value, key];
+
+  @override
+  String toString() => 'FormSaved { key : $key, value : $value }';
+}
+
+class FormSubmit extends AddTuteeAssignmentEvent {
+  const FormSubmit();
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'FormSubmit { }';
 }

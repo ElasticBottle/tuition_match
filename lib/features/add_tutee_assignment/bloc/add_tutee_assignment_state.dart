@@ -33,3 +33,33 @@ class Loaded extends AddTuteeAssignmentState {
   @override
   String toString() => 'Loaded { }';
 }
+
+class SubmissionLoading extends AddTuteeAssignmentState {
+  const SubmissionLoading();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'SubmissionLoading { }';
+}
+
+class SubmissionError extends AddTuteeAssignmentState {
+  const SubmissionError({this.error});
+  final FormError error;
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'SubmissionError { error : ${error.toString()} }';
+}
+
+class SubmissionSuccess extends AddTuteeAssignmentState {
+  const SubmissionSuccess();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'SubmissionSuccess { }';
+}

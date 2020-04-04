@@ -19,6 +19,7 @@ class AddTuteeAssignmentBloc
   String currentSubject = Languages.ENG;
   int currentSubjectIndex = 0;
   Map<String, List<dynamic>> values = <String, List<dynamic>>{};
+  Map<String, String> stringValues = <String, String>{};
 
   List<String> initialLevels;
   List<Level> initialLevelsValue;
@@ -49,6 +50,10 @@ class AddTuteeAssignmentBloc
       yield* _mapSubjectClickedToState(event.value);
     } else if (event is EventClicked) {
       yield* _mapEventClickedToState(event.value);
+    } else if (event is FormSaved) {
+      yield* _mapFormSavedToState(event.key, event.value);
+    } else if (event is FormSubmit) {
+      yield* _mapFormSubmitToState();
     }
   }
 
@@ -77,13 +82,13 @@ class AddTuteeAssignmentBloc
   Stream<AddTuteeAssignmentState> _mapEventClickedToState(
       List<dynamic> value) async* {
     yield Loading();
-    if (value != null) {
-      if (value[0] is Gender) {
+    if (value.isNotEmpty) {
+      if (value.first is Gender) {
         print('adding gender');
         values.addAll(<String, List<dynamic>>{GENDER: value});
-      } else if (value[0] is TutorOccupation) {
+      } else if (value.first is TutorOccupation) {
         values.addAll(<String, List<dynamic>>{TUTOR_OCCUPATION: value});
-      } else if (value[0] is ClassFormat) {
+      } else if (value.first is ClassFormat) {
         values.addAll(<String, List<dynamic>>{CLASSFORMAT: value});
       }
     }
@@ -99,6 +104,41 @@ class AddTuteeAssignmentBloc
     });
     yield Loaded();
   }
+
+  Stream<AddTuteeAssignmentState> _mapFormSavedToState(
+      String key, String value) async* {
+    yield Loading();
+    stringValues.addAll({key: value});
+    print(stringValues);
+    yield Loaded();
+  }
+
+  Stream<AddTuteeAssignmentState> _mapFormSubmitToState() async* {
+    yield SubmissionLoading();
+  }
+}
+
+class FormError {
+  String gender;
+  String tutorOccupation;
+  String classFormat;
+  String location;
+  String timing;
+  String freq;
+  String rateMin;
+  String rateMax;
+  String additionalRemarks;
+
+  @override
+  String toString() => 'Errors: { gender: $gender '
+      'tutorOccupation: $tutorOccupation'
+      'classFormat: $classFormat'
+      'locatio: $location'
+      'timing: $timing'
+      'freq: $freq'
+      'rateMin: $rateMin'
+      'rateMax: $rateMax'
+      'additional Remarks: $additionalRemarks';
 }
 
 class Helper {

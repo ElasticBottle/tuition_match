@@ -5,25 +5,31 @@ abstract class AddTuteeAssignmentState extends Equatable {
 }
 
 class AddTuteeAssignmentInitial extends AddTuteeAssignmentState {
-  const AddTuteeAssignmentInitial({this.level});
-  final List<String> level;
+  const AddTuteeAssignmentInitial();
 
   @override
-  List<Object> get props => [level];
+  List<Object> get props => [];
 
   @override
-  String toString() => 'AddTuteeAssignmentInitial { level : $level }';
+  String toString() => 'AddTuteeAssignmentInitial';
 }
 
-class SubjectLoaded extends AddTuteeAssignmentState {
-  const SubjectLoaded({
-    this.subjects,
-  });
-  final List<String> subjects;
+class Loading extends AddTuteeAssignmentState {
+  const Loading();
 
   @override
-  List<Object> get props => [subjects];
+  List<Object> get props => [];
 
   @override
-  String toString() => 'SubjectLoaded { subjects : $subjects }';
+  String toString() => 'Loading { }';
+}
+
+class Loaded extends AddTuteeAssignmentState {
+  const Loaded();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'Loaded { }';
 }

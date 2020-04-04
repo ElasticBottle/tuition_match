@@ -54,6 +54,9 @@ class Humans extends SubjectArea {
 class Music extends SubjectArea {
   const Music();
   static const String PIANO = 'Piano';
+  static const String VIOLIN = 'Violin';
+  static const String GUITAR = 'Guitar';
+  static const String DRUMS = 'Drums';
 }
 
 class Languages extends SubjectArea {

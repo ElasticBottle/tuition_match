@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cotor/domain/entities/subject.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/rendering.dart';
+import 'package:cotor/data/models/map_key_strings.dart';
 
 part 'add_tutee_assignment_event.dart';
 part 'add_tutee_assignment_state.dart';
@@ -12,10 +12,28 @@ part 'add_tutee_assignment_state.dart';
 class AddTuteeAssignmentBloc
     extends Bloc<AddTuteeAssignmentEvent, AddTuteeAssignmentState> {
   AddTuteeAssignmentBloc();
+  Level currentLevel = Level.pri;
+  int currentLevelIndex = 0;
+  Level currentSpecificLevel = Level.pri1;
+  int currentSpecificLevelIndex = 0;
+  String currentSubject = Languages.ENG;
+  int currentSubjectIndex = 0;
+  Map<String, List<dynamic>> values = <String, List<dynamic>>{};
+
+  List<String> initialLevels;
+  List<Level> initialLevelsValue;
+  List<String> specificLevels;
+  List<Level> specificLevelsValue;
+  List<String> subjects;
+
   @override
   AddTuteeAssignmentState get initialState {
-    final List<String> levels = Helper.initialiseLevels();
-    return AddTuteeAssignmentInitial(level: levels);
+    initialLevels = Helper.initialiseLevels();
+    initialLevelsValue = Helper.initialiseLevelValues();
+    specificLevels = Helper.getSpecificLevels(currentLevel);
+    specificLevelsValue = Helper.getSpecificLevelValues(currentLevel);
+    subjects = Helper.getAppropriateSubjectList(currentSpecificLevel);
+    return AddTuteeAssignmentInitial();
   }
 
   @override
@@ -23,21 +41,70 @@ class AddTuteeAssignmentBloc
     AddTuteeAssignmentEvent event,
   ) async* {
     if (event is LevelChanged) {
-      print('event is level changed');
-      yield* _mapLevelChangedToState(event.level);
+      yield* _mapLevelChangedToState(event.level, event.currentIndex);
+    } else if (event is SpecificLevelChanged) {
+      yield* _mapSpecificLevelChangedToState(
+          event.specificLevel, event.specificLevelIndex);
+    } else if (event is SubjectClicked) {
+      yield* _mapSubjectClickedToState(event.value);
+    } else if (event is EventClicked) {
+      yield* _mapEventClickedToState(event.value);
     }
   }
 
-  Stream<AddTuteeAssignmentState> _mapLevelChangedToState(String level) async* {
-    final List<String> subjects = Helper.getAppropriateSubjectList(level);
-    yield SubjectLoaded(subjects: subjects);
+  Stream<AddTuteeAssignmentState> _mapLevelChangedToState(
+      Level level, int index) async* {
+    yield Loading();
+    currentLevelIndex = index;
+    currentLevel = level;
+    specificLevels = Helper.getSpecificLevels(level);
+    specificLevelsValue = Helper.getSpecificLevelValues(currentLevel);
+    yield Loaded();
+  }
+
+  Stream<AddTuteeAssignmentState> _mapSpecificLevelChangedToState(
+      Level specificLevel, int specificLevelIndex) async* {
+    yield Loading();
+    currentSpecificLevel = specificLevel;
+    currentSpecificLevelIndex = specificLevelIndex;
+    subjects = Helper.getAppropriateSubjectList(specificLevel);
+    values.addAll(<String, List<Level>>{
+      LEVEL: [specificLevel]
+    });
+    yield Loaded();
+  }
+
+  Stream<AddTuteeAssignmentState> _mapEventClickedToState(
+      List<dynamic> value) async* {
+    yield Loading();
+    if (value != null) {
+      if (value[0] is Gender) {
+        print('adding gender');
+        values.addAll(<String, List<dynamic>>{GENDER: value});
+      } else if (value[0] is TutorOccupation) {
+        values.addAll(<String, List<dynamic>>{TUTOR_OCCUPATION: value});
+      } else if (value[0] is ClassFormat) {
+        values.addAll(<String, List<dynamic>>{CLASSFORMAT: value});
+      }
+    }
+    print('values so far for the map ' + values.toString());
+    yield Loaded();
+  }
+
+  Stream<AddTuteeAssignmentState> _mapSubjectClickedToState(
+      dynamic value) async* {
+    yield Loading();
+    values.addAll(<String, List<Subject>>{
+      SUBJECT: [Subject(level: currentSpecificLevel, subjectArea: value)]
+    });
+    yield Loaded();
   }
 }
 
 class Helper {
-  static List<String> getAppropriateSubjectList(String level) {
-    List<String> results;
-    switch (stringToEnum(level)) {
+  static List<String> getAppropriateSubjectList(Level level) {
+    final List<String> results = [];
+    switch (level) {
       case Level.K1:
       case Level.K2:
         results.addAll([
@@ -107,7 +174,8 @@ class Helper {
           Humans.HIST,
           Humans.LIT,
           Humans.POA,
-          Humans.SS
+          Humans.SS,
+          Music.PIANO,
         ]);
         break;
       case Level.jC1:
@@ -131,11 +199,97 @@ class Helper {
   }
 
   static List<String> initialiseLevels() {
-    final List<String> temp = Level.values.map((e) => describeEnum(e)).toList();
-    temp.remove('pri');
-    temp.remove('sec');
-    temp.remove('jc');
-    temp.remove('all');
+    final List<String> temp = [];
+    temp.add(describeEnum(Level.pri));
+    temp.add(describeEnum(Level.sec));
+    temp.add(describeEnum(Level.jc));
+    temp.add(describeEnum(Level.poly));
+    temp.add(describeEnum(Level.uni));
+    temp.add(describeEnum(Level.other));
+    return temp;
+  }
+
+  static List<Level> initialiseLevelValues() {
+    final List<Level> temp = [];
+    temp.add(Level.pri);
+    temp.add(Level.sec);
+    temp.add(Level.jc);
+    temp.add(Level.poly);
+    temp.add(Level.uni);
+    temp.add(Level.other);
+    return temp;
+  }
+
+  static List<String> getSpecificLevels(Level currentLevel) {
+    final List<String> temp = [];
+    switch (currentLevel) {
+      case Level.preSchool:
+        temp.add(describeEnum(Level.K1));
+        temp.add(describeEnum(Level.K2));
+        break;
+      case Level.pri:
+        temp.add(describeEnum(Level.pri1));
+        temp.add(describeEnum(Level.pri2));
+        temp.add(describeEnum(Level.pri3));
+        temp.add(describeEnum(Level.pri4));
+        temp.add(describeEnum(Level.pri5));
+        temp.add(describeEnum(Level.pri6));
+        break;
+      case Level.sec:
+        temp.add(describeEnum(Level.sec1));
+        temp.add(describeEnum(Level.sec2));
+        temp.add(describeEnum(Level.sec3));
+        temp.add(describeEnum(Level.sec4));
+        break;
+      case Level.jc:
+        temp.add(describeEnum(Level.jC1));
+        temp.add(describeEnum(Level.jC2));
+        break;
+      case Level.poly:
+        temp.add(describeEnum(Level.poly1));
+        temp.add(describeEnum(Level.poly2));
+        temp.add(describeEnum(Level.poly3));
+        break;
+      default:
+        break;
+    }
+    print(temp);
+    return temp;
+  }
+
+  static List<Level> getSpecificLevelValues(Level currentLevel) {
+    final List<Level> temp = [];
+    switch (currentLevel) {
+      case Level.preSchool:
+        temp.add(Level.K1);
+        temp.add(Level.K2);
+        break;
+      case Level.pri:
+        temp.add(Level.pri1);
+        temp.add(Level.pri2);
+        temp.add(Level.pri3);
+        temp.add(Level.pri4);
+        temp.add(Level.pri5);
+        temp.add(Level.pri6);
+        break;
+      case Level.sec:
+        temp.add(Level.sec1);
+        temp.add(Level.sec2);
+        temp.add(Level.sec3);
+        temp.add(Level.sec4);
+        break;
+      case Level.jc:
+        temp.add(Level.jC1);
+        temp.add(Level.jC2);
+        break;
+      case Level.poly:
+        temp.add(Level.poly1);
+        temp.add(Level.poly2);
+        temp.add(Level.poly3);
+        break;
+      default:
+        break;
+    }
     return temp;
   }
 }

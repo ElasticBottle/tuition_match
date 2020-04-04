@@ -6,10 +6,10 @@ import 'name.dart';
 enum Gender {
   male,
   female,
-  other,
 }
 
 enum Level {
+  preSchool,
   K1,
   K2,
   pri1,
@@ -28,6 +28,9 @@ enum Level {
   jC2,
   jc,
   poly,
+  poly1,
+  poly2,
+  poly3,
   uni,
   other,
   all,

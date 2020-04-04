@@ -32,7 +32,7 @@ class CustomRadioButton extends StatefulWidget {
 
   final List<String> buttonLables;
 
-  final Function(dynamic) radioButtonValue;
+  final Function(dynamic, int) radioButtonValue;
 
   final Color selectedColor;
   final Color buttonColor;
@@ -79,7 +79,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
           height: widget.height,
           child: MaterialButton(
             onPressed: () {
-              widget.radioButtonValue(widget.buttonValues[index]);
+              widget.radioButtonValue(widget.buttonValues[index], index);
               setState(() {
                 currentSelected = index;
                 currentSelectedLabel = widget.buttonLables[index];
@@ -136,7 +136,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                     borderRadius: BorderRadius.zero,
                   ),
             onPressed: () {
-              widget.radioButtonValue(widget.buttonValues[index]);
+              widget.radioButtonValue(widget.buttonValues[index], index);
               setState(() {
                 currentSelected = index;
                 currentSelectedLabel = widget.buttonLables[index];

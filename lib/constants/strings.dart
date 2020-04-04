@@ -82,4 +82,22 @@ class Strings {
 
   // EndTile
   static const String endTileAllItemLoaded = '- All items have been loaded -';
+
+  // AddTuteeAssignment Page CustomFTextField
+  static const String location = 'Location';
+  static const String locationHelperText =
+      'Postal code, Block/Unit, Num to make it easy for Tutors!';
+  static const String timing = 'Timing';
+  static const String timingHelperText = 'When do you want lessons at?';
+  static const String freq = 'Frequency';
+  static const String freqHelperText = 'How often do you want lessons?';
+  static const String rate = 'Rate';
+  static const String minRate = 'Min';
+  static const String maxRate = 'Max';
+  static const String additionalRemarks = 'Additional Remarks';
+  static const String additionalRemarksHelperText =
+      'Anything else? Special condition, emphasis points etc.';
+
+  static const String rateMax = 'Max';
+  static const String rateMin = 'Min';
 }

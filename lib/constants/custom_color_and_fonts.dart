@@ -22,4 +22,6 @@ class ColorsAndFonts {
 
   // Add Assignment selection font size
   static const double addAssignmentSelectionFontSize = 15.0;
+  static const double AddAssignmntSubmitButtonFontSize = 20.0;
+  static const double AddAssignmntRateFontSize = 18.0;
 }

@@ -1,8 +1,11 @@
 import 'package:cotor/common_widgets/custom_radio_button.dart';
 import 'package:cotor/common_widgets/custom_check_box_group.dart';
+import 'package:cotor/common_widgets/custom_raised_button.dart';
 import 'package:cotor/common_widgets/custom_sliver_app_bar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
+import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
+import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +17,8 @@ class AddAssignmentPage extends StatefulWidget {
 }
 
 class _AddAssignmentPageState extends State<AddAssignmentPage> {
-  FocusScopeNode _focusScopeNode = FocusScopeNode();
-
-  final _controller1 = TextEditingController();
-
-  final _controller2 = TextEditingController();
+  final FocusScopeNode _focusScopeNode = FocusScopeNode();
+  final _formKey = GlobalKey<FormState>();
 
   void _handleSubmitted(String value) {
     _focusScopeNode.nextFocus();
@@ -40,59 +40,68 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        CustomSliverAppbar(
-          title: Strings.addAssignment,
-          isTitleCenter: true,
-          showActions: false,
-        ),
-        BlocBuilder<AddTuteeAssignmentBloc, AddTuteeAssignmentState>(
-          builder: (context, state) {
-            print(state);
-            if (state is Loaded || state is AddTuteeAssignmentInitial) {
+    return GestureDetector(
+      onTap: () {
+        final FocusScopeNode currentFocus = FocusScope.of(context);
+
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: CustomScrollView(
+        slivers: <Widget>[
+          CustomSliverAppbar(
+            title: Strings.addAssignment,
+            isTitleCenter: true,
+            showActions: false,
+          ),
+          BlocBuilder<AddTuteeAssignmentBloc, AddTuteeAssignmentState>(
+            builder: (context, state) {
+              print(state);
+              if (state is Loaded || state is AddTuteeAssignmentInitial) {
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            SpacingsAndHeights.addAssignmentPageSidePadding),
+                    child: Column(
+                      children: <Widget>[
+                        _getRadioSelectors(),
+                        SizedBox(
+                            height: SpacingsAndHeights
+                                .addAssignmentPageFieldSpacing),
+                        _getTextFormFields(),
+                      ],
+                    ),
+                  ),
+                );
+              } else if (state is SubmissionLoading) {
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal:
+                            SpacingsAndHeights.addAssignmentPageSidePadding),
+                    child: Column(
+                      children: <Widget>[
+                        _getRadioSelectors(),
+                        SizedBox(
+                            height: SpacingsAndHeights
+                                .addAssignmentPageFieldSpacing),
+                        _getTextFormFields(isLoading: true),
+                      ],
+                    ),
+                  ),
+                );
+              }
               return SliverToBoxAdapter(
-                child: Column(
-                  children: <Widget>[
-                    _getRadioSelectors(),
-                  ],
+                child: Center(
+                  child: CircularProgressIndicator(),
                 ),
               );
-            }
-            return SliverToBoxAdapter(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          },
-        ),
-        // FocusScope(
-        //   node: _focusScopeNode,
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: <Widget>[
-        //       Padding(
-        //         padding: const EdgeInsets.all(8.0),
-        //         child: TextFormField(
-        //           textInputAction: TextInputAction.next,
-        //           onFieldSubmitted: _handleSubmitted,
-        //           controller: _controller1,
-        //           decoration: InputDecoration(border: OutlineInputBorder()),
-        //         ),
-        //       ),
-        //       Padding(
-        //         padding: const EdgeInsets.all(8.0),
-        //         child: TextFormField(
-        //           textInputAction: TextInputAction.next,
-        //           onFieldSubmitted: _handleSubmitted,
-        //           controller: _controller2,
-        //           decoration: InputDecoration(border: OutlineInputBorder()),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-      ],
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -191,12 +200,242 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
     );
   }
 
+  Widget _getTextFormFields({bool isLoading = false}) {
+    return FocusScope(
+      node: _focusScopeNode,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            CustomTextField(
+              labelText: Strings.location,
+              helpText: Strings.locationHelperText,
+              maxLines: SpacingsAndHeights.locationMaxLines,
+              textInputAction: TextInputAction.newline,
+              prefixIcon: Icon(Icons.location_on),
+              onSaved: (String field) =>
+                  BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                      .add(FormSaved(
+                value: field,
+                key: LOCATION,
+              )),
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+            CustomTextField(
+              labelText: Strings.timing,
+              helpText: Strings.timingHelperText,
+              maxLines: SpacingsAndHeights.timingMaxLines,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: _handleSubmitted,
+              prefixIcon: Icon(Icons.watch),
+              onSaved: (String field) =>
+                  BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                      .add(FormSaved(
+                value: field,
+                key: TIMING,
+              )),
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+            CustomTextField(
+              labelText: Strings.freq,
+              helpText: Strings.freqHelperText,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: _handleSubmitted,
+              prefixIcon: Icon(Icons.av_timer),
+              onSaved: (String field) =>
+                  BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                      .add(FormSaved(
+                value: field,
+                key: FREQ,
+              )),
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+            Text(
+              Strings.rate,
+              style: TextStyle(
+                color: ColorsAndFonts.primaryColor,
+                fontFamily: ColorsAndFonts.primaryFont,
+                fontWeight: FontWeight.normal,
+                fontSize: ColorsAndFonts.AddAssignmntRateFontSize,
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 9,
+                  child: CustomTextField(
+                    labelText: Strings.rateMin,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: _handleSubmitted,
+                    prefixIcon: Icon(Icons.attach_money),
+                    onSaved: (String field) =>
+                        BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                            .add(FormSaved(
+                      value: field,
+                      key: RATEMIN,
+                    )),
+                  ),
+                ),
+                SizedBox(
+                    width: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+                Expanded(
+                  flex: 10,
+                  child: CustomTextField(
+                    labelText: Strings.rateMax,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: _handleSubmitted,
+                    prefixIcon: Icon(Icons.attach_money),
+                    onSaved: (String field) =>
+                        BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                            .add(FormSaved(
+                      value: field,
+                      key: RATEMAX,
+                    )),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+            CustomTextField(
+              labelText: Strings.additionalRemarks,
+              helpText: Strings.additionalRemarksHelperText,
+              maxLines: SpacingsAndHeights.addRemarksMaxLines,
+              textInputAction: TextInputAction.send,
+              onFieldSubmitted: (_) => _formSubmit(),
+              prefixIcon: Icon(Icons.speaker_notes),
+              onSaved: (String field) =>
+                  BlocProvider.of<AddTuteeAssignmentBloc>(context)
+                      .add(FormSaved(
+                value: field,
+                key: ADDITIONAL_REMARKS,
+              )),
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: CustomRaisedButton(
+                onPressed: _formSubmit,
+                loading: isLoading,
+                color: ColorsAndFonts.primaryColor,
+                child: Text(
+                  Strings.addAssignment,
+                  style: TextStyle(
+                    color: ColorsAndFonts.backgroundColor,
+                    fontFamily: ColorsAndFonts.primaryFont,
+                    fontWeight: FontWeight.normal,
+                    fontSize: ColorsAndFonts.AddAssignmntSubmitButtonFontSize,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _formSubmit() {
+    final FormState state = _formKey.currentState;
+    state.save();
+    BlocProvider.of<AddTuteeAssignmentBloc>(context).add(FormSubmit());
+  }
+
   @override
   void dispose() {
     _focusScopeNode.dispose();
-    _controller1.dispose();
-    _controller2.dispose();
     super.dispose();
+  }
+}
+
+class CustomTextField extends StatelessWidget {
+  const CustomTextField({
+    this.onFieldSubmitted,
+    this.onSaved,
+    this.validator,
+    this.initialText = '',
+    this.helpText,
+    this.labelText,
+    this.errorText,
+    this.helperFontSize = 12.0,
+    this.labelFontSize = 18.0,
+    this.textInputAction = TextInputAction.next,
+    this.prefixIcon,
+    this.maxLines = 1,
+  });
+  final Function(String) onFieldSubmitted;
+  final Function(String) onSaved;
+  final Function(String) validator;
+  final String initialText;
+  final String helpText;
+  final String labelText;
+  final String errorText;
+  final double labelFontSize;
+  final double helperFontSize;
+  final TextInputAction textInputAction;
+  final Icon prefixIcon;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onHorizontalDragStart: (_) {
+        final FocusScopeNode currentFocus = FocusScope.of(context);
+
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: TextFormField(
+        initialValue: initialText,
+        textInputAction: textInputAction,
+        onFieldSubmitted: onFieldSubmitted,
+        validator: validator,
+        onSaved: onSaved,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: labelText,
+          labelStyle: TextStyle(
+            color: ColorsAndFonts.primaryColor,
+            fontFamily: ColorsAndFonts.primaryFont,
+            fontSize: labelFontSize,
+          ),
+          helperText: helpText,
+          helperStyle: TextStyle(
+            color: ColorsAndFonts.primaryColor,
+            fontFamily: ColorsAndFonts.primaryFont,
+            fontWeight: FontWeight.normal,
+            fontSize: helperFontSize,
+          ),
+          errorText: errorText,
+          prefixIcon: prefixIcon,
+          fillColor: Colors.grey[200],
+          filled: true,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.grey,
+            ),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: ColorsAndFonts.primaryColor, width: 1.0),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 1.0),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 1.0),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+        ),
+        maxLines: maxLines,
+      ),
+    );
   }
 }
 
@@ -222,48 +461,45 @@ class CustomSelector extends StatelessWidget {
   // final List<Level> levelValues;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-              fontSize: fontSize,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          title,
+          style: TextStyle(
+            color: ColorsAndFonts.primaryColor,
+            fontFamily: ColorsAndFonts.primaryFont,
+            fontSize: fontSize,
           ),
-          isRadio
-              ? CustomRadioButton(
-                  elevation: 0.0,
-                  vertical: false,
-                  buttonColor: Theme.of(context).canvasColor,
-                  width: 95,
-                  height: 50,
-                  fontSize: ColorsAndFonts.addAssignmentSelectionFontSize,
-                  defaultSelected: defaultSelected,
-                  buttonLables: labels,
-                  buttonValues: values,
-                  radioButtonValue: onPressed,
-                  selectedColor: Theme.of(context).accentColor,
-                )
-              : CustomCheckBoxGroup(
-                  elevation: 0.0,
-                  vertical: false,
-                  buttonColor: Theme.of(context).canvasColor,
-                  width: 95,
-                  height: 50,
-                  fontSize: ColorsAndFonts.addAssignmentSelectionFontSize,
-                  defaultSelected: defaultSelected,
-                  buttonLables: labels,
-                  buttonValuesList: values,
-                  checkBoxButtonValues: checkBoxOnPressed,
-                  selectedColor: Theme.of(context).accentColor,
-                ),
-        ],
-      ),
+        ),
+        isRadio
+            ? CustomRadioButton(
+                elevation: 0.0,
+                vertical: false,
+                buttonColor: Theme.of(context).canvasColor,
+                width: 95,
+                height: 50,
+                fontSize: ColorsAndFonts.addAssignmentSelectionFontSize,
+                defaultSelected: defaultSelected,
+                buttonLables: labels,
+                buttonValues: values,
+                radioButtonValue: onPressed,
+                selectedColor: Theme.of(context).accentColor,
+              )
+            : CustomCheckBoxGroup(
+                elevation: 0.0,
+                vertical: false,
+                buttonColor: Theme.of(context).canvasColor,
+                width: 95,
+                height: 50,
+                fontSize: ColorsAndFonts.addAssignmentSelectionFontSize,
+                defaultSelected: defaultSelected,
+                buttonLables: labels,
+                buttonValuesList: values,
+                checkBoxButtonValues: checkBoxOnPressed,
+                selectedColor: Theme.of(context).accentColor,
+              ),
+      ],
     );
   }
 }

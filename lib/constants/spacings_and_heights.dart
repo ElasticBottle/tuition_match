@@ -31,4 +31,12 @@ class SpacingsAndHeights {
 
   // Level DropDownMenu
   static const int levelDropDownVisibleItems = 5;
+
+  //AddAssignmentPage
+  static const double addAssignmentPageFieldSpacing = 30.0;
+  static const double addAssignmentPageSidePadding = 25.0;
+  // CustomTextField
+  static const int addRemarksMaxLines = 7;
+  static const int locationMaxLines = 5;
+  static const int timingMaxLines = 2;
 }

@@ -67,23 +67,23 @@ class DropDownField extends FormField<String> {
       {Key key,
       this.controller,
       this.value,
-      this.required: false,
+      this.required = false,
       this.icon,
       this.hintText,
-      this.hintStyle: const TextStyle(
+      this.hintStyle = const TextStyle(
           fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
       this.labelText,
-      this.labelStyle: const TextStyle(
+      this.labelStyle = const TextStyle(
           fontWeight: FontWeight.normal, color: Colors.grey, fontSize: 18.0),
       this.inputFormatters,
       this.items,
-      this.textStyle: const TextStyle(
+      this.textStyle = const TextStyle(
           fontWeight: FontWeight.bold, color: Colors.black, fontSize: 14.0),
       this.setter,
       this.onValueChanged,
-      this.itemsVisibleInDropdown: 3,
-      this.enabled: true,
-      this.strict: true})
+      this.itemsVisibleInDropdown = 3,
+      this.enabled = true,
+      this.strict = true})
       : super(
           key: key,
           autovalidate: false,

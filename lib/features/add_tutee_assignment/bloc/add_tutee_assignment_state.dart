@@ -1,65 +1,154 @@
 part of 'add_tutee_assignment_bloc.dart';
 
-abstract class AddTuteeAssignmentState extends Equatable {
-  const AddTuteeAssignmentState();
-}
+class AddTuteeFormState extends Equatable {
+  const AddTuteeFormState({
+    this.genderError,
+    this.occupationError,
+    this.formatError,
+    this.locationError,
+    this.timingError,
+    this.frewError,
+    this.rateMinError,
+    this.rateMaxError,
+    @required this.isSubmitting,
+    @required this.isSuccess,
+    @required this.isFailure,
+    @required this.currentLevel,
+    @required this.currentLevelIndex,
+    @required this.currentSpecificLevel,
+    @required this.currentSpecificLevelIndex,
+    @required this.currentSubject,
+    @required this.currentSubjectIndex,
+    @required this.initialLevels,
+    @required this.initialLevelsValue,
+    @required this.specificLevels,
+    @required this.specificLevelsValue,
+    @required this.subjects,
+  });
 
-class AddTuteeAssignmentInitial extends AddTuteeAssignmentState {
-  const AddTuteeAssignmentInitial();
+  final Level currentLevel;
+  final int currentLevelIndex;
+  final Level currentSpecificLevel;
+  final int currentSpecificLevelIndex;
+  final String currentSubject;
+  final int currentSubjectIndex;
+  final List<String> initialLevels;
+  final List<Level> initialLevelsValue;
+  final List<String> specificLevels;
+  final List<Level> specificLevelsValue;
+  final List<String> subjects;
+  final String genderError;
+  final String occupationError;
+  final String formatError;
+  final String locationError;
+  final String timingError;
+  final String frewError;
+  final String rateMinError;
+  final String rateMaxError;
+  final bool isSubmitting;
+  final bool isSuccess;
+  final bool isFailure;
+
+  AddTuteeFormState copyWith({
+    Level currentLevel,
+    int currentLevelIndex,
+    Level currentSpecificLevel,
+    int currentSpecificLevelIndex,
+    String currentSubject,
+    int currentSubjectIndex,
+    List<String> initialLevels,
+    List<Level> initialLevelsValue,
+    List<String> specificLevels,
+    List<Level> specificLevelsValue,
+    List<String> subjects,
+    String genderError,
+    String occupationError,
+    String formatError,
+    String locationError,
+    String timingError,
+    String frewError,
+    String rateMinError,
+    String rateMaxError,
+    bool isSubmitting,
+    bool isSuccess,
+    bool isFailure,
+  }) {
+    return AddTuteeFormState(
+      genderError: genderError ?? this.genderError,
+      occupationError: occupationError ?? this.occupationError,
+      formatError: formatError ?? this.formatError,
+      locationError: locationError ?? this.locationError,
+      timingError: timingError ?? this.timingError,
+      frewError: frewError ?? this.frewError,
+      rateMinError: rateMinError ?? this.rateMinError,
+      rateMaxError: rateMaxError ?? this.rateMaxError,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      isSuccess: isSuccess ?? this.isSuccess,
+      isFailure: isFailure ?? this.isFailure,
+      currentLevel: currentLevel ?? this.currentLevel,
+      currentLevelIndex: currentLevelIndex ?? this.currentLevelIndex,
+      currentSpecificLevel: currentSpecificLevel ?? this.currentSpecificLevel,
+      currentSpecificLevelIndex:
+          currentSpecificLevelIndex ?? this.currentSpecificLevelIndex,
+      currentSubject: currentSubject ?? this.currentSubject,
+      currentSubjectIndex: currentSubjectIndex ?? this.currentSubjectIndex,
+      initialLevels: initialLevels ?? this.initialLevels,
+      initialLevelsValue: initialLevelsValue ?? this.initialLevelsValue,
+      specificLevels: specificLevels ?? this.specificLevels,
+      specificLevelsValue: specificLevelsValue ?? this.specificLevelsValue,
+      subjects: subjects ?? this.subjects,
+    );
+  }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [
+        genderError,
+        occupationError,
+        formatError,
+        locationError,
+        timingError,
+        frewError,
+        rateMinError,
+        rateMaxError,
+        isSubmitting,
+        isSuccess,
+        isFailure,
+        currentLevel,
+        currentLevelIndex,
+        currentSpecificLevel,
+        currentSpecificLevelIndex,
+        currentSubject,
+        currentSubjectIndex,
+        initialLevels,
+        initialLevelsValue,
+        specificLevels,
+        specificLevelsValue,
+        subjects,
+      ];
 
   @override
-  String toString() => 'AddTuteeAssignmentInitial';
-}
-
-class Loading extends AddTuteeAssignmentState {
-  const Loading();
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'Loading { }';
-}
-
-class Loaded extends AddTuteeAssignmentState {
-  const Loaded();
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'Loaded { }';
-}
-
-class SubmissionLoading extends AddTuteeAssignmentState {
-  const SubmissionLoading();
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'SubmissionLoading { }';
-}
-
-class SubmissionError extends AddTuteeAssignmentState {
-  const SubmissionError({this.error});
-  final FormError error;
-  @override
-  List<Object> get props => [error];
-
-  @override
-  String toString() => 'SubmissionError { error : ${error.toString()} }';
-}
-
-class SubmissionSuccess extends AddTuteeAssignmentState {
-  const SubmissionSuccess();
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'SubmissionSuccess { }';
+  String toString() => '''AddTuteeFormState {
+    currentLevel : $currentLevel,
+    currentLevelIndex: $currentLevelIndex,
+    currentSpecificLevel: $currentSpecificLevel,
+    currentSpecificLevelIndex: $currentSpecificLevelIndex,
+    currentSubject: $currentSubject,
+    currentSubjectIndex: $currentSubjectIndex,
+    initialLevel: $initialLevels,
+    initialLevelValues: $initialLevelsValue,
+    specificLevels: $specificLevels,
+    specificLevelsValue: $specificLevelsValue,
+    subjects: $subjects,
+    isSubmitting: $isSubmitting,
+    isSuccess: $isSuccess,
+    isFailure: $isFailure,
+    genderError: $genderError,
+    occupationError: $occupationError,
+    formatError: $formatError,
+    locationError: $locationError,
+    timingError: $timingError,
+    frewError: $frewError,
+    rateMinError: $rateMinError,
+    rateMaxError: $rateMaxError,
+  }''';
 }

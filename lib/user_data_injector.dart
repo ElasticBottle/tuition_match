@@ -28,9 +28,6 @@ class UserDataInjector extends StatelessWidget {
               BlocProvider<AssignmentsBloc>(
                 create: (context) => sl<AssignmentsBloc>(),
               ),
-              BlocProvider<AddTuteeAssignmentBloc>(
-                create: (context) => sl<AddTuteeAssignmentBloc>(),
-              )
             ],
             child: builder(context, snapshot),
           );

@@ -27,15 +27,6 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
 
   @override
   void initState() {
-    BlocProvider.of<AddTuteeAssignmentBloc>(context).add(SpecificLevelChanged(
-        specificLevel: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-            .currentSpecificLevel,
-        specificLevelIndex: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-            .currentSpecificLevelIndex));
-    BlocProvider.of<AddTuteeAssignmentBloc>(context).add(SubjectClicked(
-        value: BlocProvider.of<AddTuteeAssignmentBloc>(context).currentSubject,
-        index: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-            .currentSubjectIndex));
     super.initState();
   }
 
@@ -56,47 +47,19 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
             isTitleCenter: true,
             showActions: false,
           ),
-          BlocBuilder<AddTuteeAssignmentBloc, AddTuteeAssignmentState>(
+          BlocBuilder<AddTuteeAssignmentBloc, AddTuteeFormState>(
             builder: (context, state) {
-              print(state);
-              if (state is Loaded || state is AddTuteeAssignmentInitial) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal:
-                            SpacingsAndHeights.addAssignmentPageSidePadding),
-                    child: Column(
-                      children: <Widget>[
-                        _getRadioSelectors(),
-                        SizedBox(
-                            height: SpacingsAndHeights
-                                .addAssignmentPageFieldSpacing),
-                        _getTextFormFields(),
-                      ],
-                    ),
-                  ),
-                );
-              } else if (state is SubmissionLoading) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal:
-                            SpacingsAndHeights.addAssignmentPageSidePadding),
-                    child: Column(
-                      children: <Widget>[
-                        _getRadioSelectors(),
-                        SizedBox(
-                            height: SpacingsAndHeights
-                                .addAssignmentPageFieldSpacing),
-                        _getTextFormFields(isLoading: true),
-                      ],
-                    ),
-                  ),
-                );
-              }
               return SliverToBoxAdapter(
-                child: Center(
-                  child: CircularProgressIndicator(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal:
+                          SpacingsAndHeights.addAssignmentPageSidePadding),
+                  child: Column(
+                    children: <Widget>[
+                      _getRadioSelectors(state),
+                      _getTextFormFields(state),
+                    ],
+                  ),
                 ),
               );
             },
@@ -106,17 +69,14 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
     );
   }
 
-  Widget _getRadioSelectors() {
+  Widget _getRadioSelectors(AddTuteeFormState state) {
     return Column(
       children: <Widget>[
         CustomSelector(
           title: 'Level',
-          defaultSelected: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-              .currentLevelIndex,
-          labels:
-              BlocProvider.of<AddTuteeAssignmentBloc>(context).initialLevels,
-          values: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-              .initialLevelsValue,
+          defaultSelected: state.currentLevelIndex,
+          labels: state.initialLevels,
+          values: state.initialLevelsValue,
           onPressed: (dynamic value, int index) {
             BlocProvider.of<AddTuteeAssignmentBloc>(context).add(
               LevelChanged(
@@ -128,12 +88,9 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
         ),
         CustomSelector(
           title: '',
-          defaultSelected: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-              .currentSpecificLevelIndex,
-          labels:
-              BlocProvider.of<AddTuteeAssignmentBloc>(context).specificLevels,
-          values: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-              .specificLevelsValue,
+          defaultSelected: state.currentSpecificLevelIndex,
+          labels: state.specificLevels,
+          values: state.specificLevelsValue,
           onPressed: (dynamic value, int index) {
             BlocProvider.of<AddTuteeAssignmentBloc>(context).add(
               SpecificLevelChanged(
@@ -145,10 +102,9 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
         ),
         CustomSelector(
           title: 'Subject',
-          defaultSelected: BlocProvider.of<AddTuteeAssignmentBloc>(context)
-              .currentSubjectIndex,
-          labels: BlocProvider.of<AddTuteeAssignmentBloc>(context).subjects,
-          values: BlocProvider.of<AddTuteeAssignmentBloc>(context).subjects,
+          defaultSelected: state.currentSubjectIndex,
+          labels: state.subjects,
+          values: state.subjects,
           onPressed: (dynamic value, int index) {
             BlocProvider.of<AddTuteeAssignmentBloc>(context).add(
               SubjectClicked(
@@ -196,12 +152,13 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
             );
           },
           isRadio: false,
+          paddingAfter: SpacingsAndHeights.addAssignmentPageFieldSpacing,
         ),
       ],
     );
   }
 
-  Widget _getTextFormFields({bool isLoading = false}) {
+  Widget _getTextFormFields(AddTuteeFormState state) {
     return FocusScope(
       node: _focusScopeNode,
       child: Form(
@@ -318,7 +275,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
               width: MediaQuery.of(context).size.width,
               child: CustomRaisedButton(
                 onPressed: _formSubmit,
-                loading: isLoading,
+                loading: state.isSubmitting,
                 color: ColorsAndFonts.primaryColor,
                 child: Text(
                   Strings.addAssignment,
@@ -441,15 +398,17 @@ class CustomTextField extends StatelessWidget {
 }
 
 class CustomSelector extends StatelessWidget {
-  const CustomSelector(
-      {this.title,
-      this.defaultSelected,
-      this.labels,
-      this.values,
-      this.onPressed,
-      this.fontSize = 12.0,
-      this.isRadio = true,
-      this.checkBoxOnPressed});
+  const CustomSelector({
+    this.title,
+    this.defaultSelected,
+    this.labels,
+    this.values,
+    this.onPressed,
+    this.fontSize = 12.0,
+    this.isRadio = true,
+    this.checkBoxOnPressed,
+    this.paddingAfter = 10.0,
+  });
   final String title;
   final int defaultSelected;
   final List<String> labels;
@@ -458,6 +417,7 @@ class CustomSelector extends StatelessWidget {
   final Function(List<dynamic>) checkBoxOnPressed;
   final double fontSize;
   final bool isRadio;
+  final double paddingAfter;
 
   // final List<Level> levelValues;
   @override
@@ -500,6 +460,7 @@ class CustomSelector extends StatelessWidget {
                 checkBoxButtonValues: checkBoxOnPressed,
                 selectedColor: Theme.of(context).accentColor,
               ),
+        SizedBox(height: paddingAfter),
       ],
     );
   }

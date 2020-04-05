@@ -36,7 +36,7 @@ class SubjectClicked extends AddTuteeAssignmentEvent {
   List<Object> get props => [value, index];
 
   @override
-  String toString() => 'SubjectChanged { option: $value, index: $index }';
+  String toString() => 'SubjectClicked{ option: $value, index: $index }';
 }
 
 class EventClicked extends AddTuteeAssignmentEvent {
@@ -48,7 +48,7 @@ class EventClicked extends AddTuteeAssignmentEvent {
   List<Object> get props => [value];
 
   @override
-  String toString() => 'EventChanged { option: $value }';
+  String toString() => 'EventClicked { option: $value }';
 }
 
 class FormSaved extends AddTuteeAssignmentEvent {

@@ -11,14 +11,9 @@ part 'add_tutee_assignment_event.dart';
 part 'add_tutee_assignment_state.dart';
 
 class AddTuteeAssignmentBloc
-    extends Bloc<AddTuteeAssignmentEvent, AddTuteeAssignmentState> {
+    extends Bloc<AddTuteeAssignmentEvent, AddTuteeFormState> {
   AddTuteeAssignmentBloc();
-  Level currentLevel = Level.pri;
-  int currentLevelIndex = 0;
-  Level currentSpecificLevel = Level.pri1;
-  int currentSpecificLevelIndex = 0;
-  String currentSubject = Languages.ENG;
-  int currentSubjectIndex = 0;
+
   Map<String, List<dynamic>> values = <String, List<dynamic>>{};
   Map<String, String> stringValues = <String, String>{};
 
@@ -29,17 +24,30 @@ class AddTuteeAssignmentBloc
   List<String> subjects;
 
   @override
-  AddTuteeAssignmentState get initialState {
-    initialLevels = Helper.initialiseLevels();
-    initialLevelsValue = Helper.initialiseLevelValues();
-    specificLevels = Helper.getSpecificLevels(currentLevel);
-    specificLevelsValue = Helper.getSpecificLevelValues(currentLevel);
-    subjects = Helper.getAppropriateSubjectList(currentSpecificLevel);
-    return AddTuteeAssignmentInitial();
+  AddTuteeFormState get initialState {
+    const Level currentLevel = Level.pri;
+    const Level currentSpecificLevel = Level.pri1;
+
+    return AddTuteeFormState(
+      currentLevel: currentLevel,
+      currentLevelIndex: 0,
+      currentSpecificLevel: currentSpecificLevel,
+      currentSpecificLevelIndex: 0,
+      currentSubject: Languages.ENG,
+      currentSubjectIndex: 0,
+      initialLevels: Helper.initialiseLevels(),
+      initialLevelsValue: Helper.initialiseLevelValues(),
+      specificLevels: Helper.getSpecificLevels(currentLevel),
+      specificLevelsValue: Helper.getSpecificLevelValues(currentLevel),
+      subjects: Helper.getAppropriateSubjectList(currentSpecificLevel),
+      isSubmitting: false,
+      isSuccess: false,
+      isFailure: false,
+    );
   }
 
   @override
-  Stream<AddTuteeAssignmentState> mapEventToState(
+  Stream<AddTuteeFormState> mapEventToState(
     AddTuteeAssignmentEvent event,
   ) async* {
     if (event is LevelChanged) {
@@ -58,31 +66,36 @@ class AddTuteeAssignmentBloc
     }
   }
 
-  Stream<AddTuteeAssignmentState> _mapLevelChangedToState(
+  Stream<AddTuteeFormState> _mapLevelChangedToState(
       Level level, int index) async* {
-    yield Loading();
-    currentLevelIndex = index;
-    currentLevel = level;
-    specificLevels = Helper.getSpecificLevels(level);
-    specificLevelsValue = Helper.getSpecificLevelValues(currentLevel);
-    yield Loaded();
+    yield state.copyWith(
+        currentLevel: level,
+        currentLevelIndex: index,
+        specificLevels: Helper.getSpecificLevels(level),
+        specificLevelsValue: Helper.getSpecificLevelValues(level));
   }
 
-  Stream<AddTuteeAssignmentState> _mapSpecificLevelChangedToState(
+  Stream<AddTuteeFormState> _mapSpecificLevelChangedToState(
       Level specificLevel, int specificLevelIndex) async* {
-    yield Loading();
-    currentSpecificLevel = specificLevel;
-    currentSpecificLevelIndex = specificLevelIndex;
-    subjects = Helper.getAppropriateSubjectList(specificLevel);
     values.addAll(<String, List<Level>>{
       LEVEL: [specificLevel]
     });
-    yield Loaded();
+    yield state.copyWith(
+      currentSpecificLevel: specificLevel,
+      currentSpecificLevelIndex: specificLevelIndex,
+      subjects: Helper.getAppropriateSubjectList(specificLevel),
+    );
   }
 
-  Stream<AddTuteeAssignmentState> _mapEventClickedToState(
+  Stream<AddTuteeFormState> _mapSubjectClickedToState(dynamic value) async* {
+    values.addAll(<String, List<Subject>>{
+      SUBJECT: [Subject(level: state.currentSpecificLevel, subjectArea: value)]
+    });
+    yield state;
+  }
+
+  Stream<AddTuteeFormState> _mapEventClickedToState(
       List<dynamic> value) async* {
-    yield Loading();
     if (value.isNotEmpty) {
       if (value.first is Gender) {
         print('adding gender');
@@ -94,28 +107,18 @@ class AddTuteeAssignmentBloc
       }
     }
     print('values so far for the map ' + values.toString());
-    yield Loaded();
+    yield state;
   }
 
-  Stream<AddTuteeAssignmentState> _mapSubjectClickedToState(
-      dynamic value) async* {
-    yield Loading();
-    values.addAll(<String, List<Subject>>{
-      SUBJECT: [Subject(level: currentSpecificLevel, subjectArea: value)]
-    });
-    yield Loaded();
-  }
-
-  Stream<AddTuteeAssignmentState> _mapFormSavedToState(
+  Stream<AddTuteeFormState> _mapFormSavedToState(
       String key, String value) async* {
-    yield Loading();
     stringValues.addAll({key: value});
     print(stringValues);
-    yield Loaded();
+    yield state;
   }
 
-  Stream<AddTuteeAssignmentState> _mapFormSubmitToState() async* {
-    yield SubmissionLoading();
+  Stream<AddTuteeFormState> _mapFormSubmitToState() async* {
+    yield state.copyWith(isSubmitting: true);
     // TODO(ElasticBottle): Figure out how to mash everything together in terms of state.
   }
 }

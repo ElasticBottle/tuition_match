@@ -84,10 +84,13 @@
 // }
 
 import 'package:cotor/constants/spacings_and_heights.dart';
+import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:cotor/features/add_tutee_assignment/pages/add_assignment_page.dart';
 import 'package:cotor/features/tutee_assignment_list/pages/assignment_list_page.dart';
+import 'package:cotor/injection_container.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -140,7 +143,10 @@ class _HomePageState extends State<HomePage> {
         children: [
           AssignmentListPage(),
           TutorListPage(),
-          AddAssignmentPage(),
+          BlocProvider(
+            create: (BuildContext context) => sl<AddTuteeAssignmentBloc>(),
+            child: AddAssignmentPage(),
+          ),
           NotificationPage(),
           ProfilePage(),
         ],

@@ -7,7 +7,7 @@ class AddTuteeFormState extends Equatable {
     this.formatError,
     this.locationError,
     this.timingError,
-    this.frewError,
+    this.freqError,
     this.rateMinError,
     this.rateMaxError,
     @required this.isSubmitting,
@@ -42,7 +42,7 @@ class AddTuteeFormState extends Equatable {
   final String formatError;
   final String locationError;
   final String timingError;
-  final String frewError;
+  final String freqError;
   final String rateMinError;
   final String rateMaxError;
   final bool isSubmitting;
@@ -66,7 +66,7 @@ class AddTuteeFormState extends Equatable {
     String formatError,
     String locationError,
     String timingError,
-    String frewError,
+    String freqError,
     String rateMinError,
     String rateMaxError,
     bool isSubmitting,
@@ -74,14 +74,14 @@ class AddTuteeFormState extends Equatable {
     bool isFailure,
   }) {
     return AddTuteeFormState(
-      genderError: genderError ?? this.genderError,
-      occupationError: occupationError ?? this.occupationError,
-      formatError: formatError ?? this.formatError,
-      locationError: locationError ?? this.locationError,
-      timingError: timingError ?? this.timingError,
-      frewError: frewError ?? this.frewError,
-      rateMinError: rateMinError ?? this.rateMinError,
-      rateMaxError: rateMaxError ?? this.rateMaxError,
+      genderError: genderError,
+      occupationError: occupationError,
+      formatError: formatError,
+      locationError: locationError,
+      timingError: timingError,
+      freqError: freqError,
+      rateMinError: rateMinError,
+      rateMaxError: rateMaxError,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
@@ -107,7 +107,7 @@ class AddTuteeFormState extends Equatable {
         formatError,
         locationError,
         timingError,
-        frewError,
+        freqError,
         rateMinError,
         rateMaxError,
         isSubmitting,
@@ -147,7 +147,7 @@ class AddTuteeFormState extends Equatable {
     formatError: $formatError,
     locationError: $locationError,
     timingError: $timingError,
-    frewError: $frewError,
+    freqError: $freqError,
     rateMinError: $rateMinError,
     rateMaxError: $rateMaxError,
   }''';

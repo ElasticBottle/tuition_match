@@ -5,6 +5,8 @@ class ColorsAndFonts {
   static const Color primaryColor = Colors.black;
   static const Color backgroundColor = Colors.white;
   static const Color secondaryColor = Colors.blueAccent;
+  static const Color errorColor = Colors.red;
+
   //fonts
   static const String primaryFont = 'Quicksand';
 

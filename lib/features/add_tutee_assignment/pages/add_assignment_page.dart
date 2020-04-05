@@ -126,6 +126,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
             );
           },
           isRadio: false,
+          errorText: state.genderError,
         ),
         CustomSelector(
           title: 'Tutor Occupation',
@@ -139,6 +140,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
             );
           },
           isRadio: false,
+          errorText: state.occupationError,
         ),
         CustomSelector(
           title: 'Class Format',
@@ -153,6 +155,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
           },
           isRadio: false,
           paddingAfter: SpacingsAndHeights.addAssignmentPageFieldSpacing,
+          errorText: state.formatError,
         ),
       ],
     );
@@ -173,6 +176,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
               maxLines: SpacingsAndHeights.locationMaxLines,
               textInputAction: TextInputAction.newline,
               prefixIcon: Icon(Icons.location_on),
+              errorText: state.locationError,
               onSaved: (String field) =>
                   BlocProvider.of<AddTuteeAssignmentBloc>(context)
                       .add(FormSaved(
@@ -180,13 +184,13 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                 key: LOCATION,
               )),
             ),
-            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
             CustomTextField(
               labelText: Strings.timing,
               helpText: Strings.timingHelperText,
               maxLines: SpacingsAndHeights.timingMaxLines,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: _handleSubmitted,
+              errorText: state.timingError,
               prefixIcon: Icon(Icons.watch),
               onSaved: (String field) =>
                   BlocProvider.of<AddTuteeAssignmentBloc>(context)
@@ -195,12 +199,12 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                 key: TIMING,
               )),
             ),
-            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
             CustomTextField(
               labelText: Strings.freq,
               helpText: Strings.freqHelperText,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: _handleSubmitted,
+              errorText: state.freqError,
               prefixIcon: Icon(Icons.av_timer),
               onSaved: (String field) =>
                   BlocProvider.of<AddTuteeAssignmentBloc>(context)
@@ -209,7 +213,6 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                 key: FREQ,
               )),
             ),
-            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
             Text(
               Strings.rate,
               style: TextStyle(
@@ -227,6 +230,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                     labelText: Strings.rateMin,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
+                    errorText: state.rateMinError,
                     prefixIcon: Icon(Icons.attach_money),
                     onSaved: (String field) =>
                         BlocProvider.of<AddTuteeAssignmentBloc>(context)
@@ -244,6 +248,7 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                     labelText: Strings.rateMax,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
+                    errorText: state.rateMaxError,
                     prefixIcon: Icon(Icons.attach_money),
                     onSaved: (String field) =>
                         BlocProvider.of<AddTuteeAssignmentBloc>(context)
@@ -255,7 +260,6 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                 ),
               ],
             ),
-            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
             CustomTextField(
               labelText: Strings.additionalRemarks,
               helpText: Strings.additionalRemarksHelperText,
@@ -270,7 +274,6 @@ class _AddAssignmentPageState extends State<AddAssignmentPage> {
                 key: ADDITIONAL_REMARKS,
               )),
             ),
-            SizedBox(height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
             Container(
               width: MediaQuery.of(context).size.width,
               child: CustomRaisedButton(
@@ -322,6 +325,7 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.prefixIcon,
     this.maxLines = 1,
+    this.bottomPadding = 30.0,
   });
   final Function(String) onFieldSubmitted;
   final Function(String) onSaved;
@@ -335,6 +339,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction textInputAction;
   final Icon prefixIcon;
   final int maxLines;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -346,52 +351,55 @@ class CustomTextField extends StatelessWidget {
           currentFocus.unfocus();
         }
       },
-      child: TextFormField(
-        initialValue: initialText,
-        textInputAction: textInputAction,
-        onFieldSubmitted: onFieldSubmitted,
-        validator: validator,
-        onSaved: onSaved,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: labelText,
-          labelStyle: TextStyle(
-            color: ColorsAndFonts.primaryColor,
-            fontFamily: ColorsAndFonts.primaryFont,
-            fontSize: labelFontSize,
-          ),
-          helperText: helpText,
-          helperStyle: TextStyle(
-            color: ColorsAndFonts.primaryColor,
-            fontFamily: ColorsAndFonts.primaryFont,
-            fontWeight: FontWeight.normal,
-            fontSize: helperFontSize,
-          ),
-          errorText: errorText,
-          prefixIcon: prefixIcon,
-          fillColor: Colors.grey[200],
-          filled: true,
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.grey,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: TextFormField(
+          initialValue: initialText,
+          textInputAction: textInputAction,
+          onFieldSubmitted: onFieldSubmitted,
+          validator: validator,
+          onSaved: onSaved,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: labelText,
+            labelStyle: TextStyle(
+              color: ColorsAndFonts.primaryColor,
+              fontFamily: ColorsAndFonts.primaryFont,
+              fontSize: labelFontSize,
             ),
-            borderRadius: BorderRadius.circular(5.0),
+            helperText: helpText,
+            helperStyle: TextStyle(
+              color: ColorsAndFonts.primaryColor,
+              fontFamily: ColorsAndFonts.primaryFont,
+              fontWeight: FontWeight.normal,
+              fontSize: helperFontSize,
+            ),
+            errorText: errorText,
+            prefixIcon: prefixIcon,
+            fillColor: Colors.grey[200],
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey,
+              ),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide:
+                  BorderSide(color: ColorsAndFonts.primaryColor, width: 1.0),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red, width: 1.0),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red, width: 1.0),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: ColorsAndFonts.primaryColor, width: 1.0),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 1.0),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 1.0),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
+          maxLines: maxLines,
         ),
-        maxLines: maxLines,
       ),
     );
   }
@@ -408,6 +416,7 @@ class CustomSelector extends StatelessWidget {
     this.isRadio = true,
     this.checkBoxOnPressed,
     this.paddingAfter = 10.0,
+    this.errorText,
   });
   final String title;
   final int defaultSelected;
@@ -418,6 +427,7 @@ class CustomSelector extends StatelessWidget {
   final double fontSize;
   final bool isRadio;
   final double paddingAfter;
+  final String errorText;
 
   // final List<Level> levelValues;
   @override
@@ -428,7 +438,9 @@ class CustomSelector extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            color: ColorsAndFonts.primaryColor,
+            color: errorText == null
+                ? ColorsAndFonts.primaryColor
+                : ColorsAndFonts.errorColor,
             fontFamily: ColorsAndFonts.primaryFont,
             fontSize: fontSize,
           ),
@@ -460,6 +472,15 @@ class CustomSelector extends StatelessWidget {
                 checkBoxButtonValues: checkBoxOnPressed,
                 selectedColor: Theme.of(context).accentColor,
               ),
+        if (errorText != null)
+          Text(
+            errorText,
+            style: TextStyle(
+              color: ColorsAndFonts.errorColor,
+              fontFamily: ColorsAndFonts.primaryFont,
+              fontSize: fontSize,
+            ),
+          ),
         SizedBox(height: paddingAfter),
       ],
     );

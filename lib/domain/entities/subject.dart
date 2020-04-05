@@ -31,6 +31,12 @@ class Science extends SubjectArea {
   static const String CHEM = 'Chem';
   static const String BIO = 'Bio';
   static const String PHY = 'Phy';
+  static const String H1CHEM = 'H1Chem';
+  static const String H1BIO = 'H1Bio';
+  static const String H1PHY = 'H1Phy';
+  static const String H2CHEM = 'H2Chem';
+  static const String H2BIO = 'H2Bio';
+  static const String H2PHY = 'H2Phy';
 }
 
 class Math extends SubjectArea {
@@ -38,6 +44,8 @@ class Math extends SubjectArea {
   static const String MATH = 'Math';
   static const String AMATH = 'AMath';
   static const String FMATH = 'FMath';
+  static const String H1MATH = 'H1 Math';
+  static const String H2MATH = 'H2 Math';
 }
 
 class Humans extends SubjectArea {

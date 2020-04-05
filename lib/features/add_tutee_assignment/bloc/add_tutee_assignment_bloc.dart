@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/subject.dart';
 import 'package:equatable/equatable.dart';
@@ -14,14 +15,14 @@ class AddTuteeAssignmentBloc
     extends Bloc<AddTuteeAssignmentEvent, AddTuteeFormState> {
   AddTuteeAssignmentBloc();
 
-  Map<String, List<dynamic>> values = <String, List<dynamic>>{};
+  Map<String, List<dynamic>> values = <String, List<dynamic>>{
+    LEVEL: <dynamic>[],
+    SUBJECT: <dynamic>[],
+    GENDER: <dynamic>[],
+    TUTOR_OCCUPATION: <dynamic>[],
+    CLASSFORMAT: <dynamic>[]
+  };
   Map<String, String> stringValues = <String, String>{};
-
-  List<String> initialLevels;
-  List<Level> initialLevelsValue;
-  List<String> specificLevels;
-  List<Level> specificLevelsValue;
-  List<String> subjects;
 
   @override
   AddTuteeFormState get initialState {
@@ -119,20 +120,50 @@ class AddTuteeAssignmentBloc
 
   Stream<AddTuteeFormState> _mapFormSubmitToState() async* {
     yield state.copyWith(isSubmitting: true);
-    // TODO(ElasticBottle): Figure out how to mash everything together in terms of state.
+    final FormError error = FormError.validateFields(values, stringValues);
+    await Future<dynamic>.delayed(Duration(seconds: 1));
+    if (error.hasErrors) {
+      yield state.copyWith(
+        isSubmitting: false,
+        isFailure: true,
+        genderError: error.gender,
+        formatError: error.classFormat,
+        freqError: error.freq,
+        locationError: error.location,
+        rateMaxError: error.rateMax,
+        rateMinError: error.rateMin,
+        occupationError: error.tutorOccupation,
+        timingError: error.timing,
+      );
+    } else {
+      yield state.copyWith(isSuccess: true, isSubmitting: false);
+    }
   }
 }
 
 class FormError {
-  String gender;
-  String tutorOccupation;
-  String classFormat;
-  String location;
-  String timing;
-  String freq;
-  String rateMin;
-  String rateMax;
-  String additionalRemarks;
+  FormError({
+    this.gender,
+    this.tutorOccupation,
+    this.classFormat,
+    this.location,
+    this.timing,
+    this.freq,
+    this.rateMin,
+    this.rateMax,
+    this.additionalRemarks,
+    this.hasErrors,
+  });
+  final String gender;
+  final String tutorOccupation;
+  final String classFormat;
+  final String location;
+  final String timing;
+  final String freq;
+  final String rateMin;
+  final String rateMax;
+  final String additionalRemarks;
+  bool hasErrors;
 
   @override
   String toString() => 'Errors: { gender: $gender '
@@ -144,6 +175,80 @@ class FormError {
       'rateMin: $rateMin'
       'rateMax: $rateMax'
       'additional Remarks: $additionalRemarks';
+
+  static FormError validateFields(
+      Map<String, List> values, Map<String, String> stringValues) {
+    String gender;
+    String tutorOccupation;
+    String classFormat;
+    String location;
+    String timing;
+    String freq;
+    String rateMin;
+    String rateMax;
+    String additionalRemarks;
+    bool hasErrors = false;
+
+    for (MapEntry<String, List> entry in values.entries) {
+      print('list entry : ' + entry.value.toString());
+      if (entry.value.isEmpty) {
+        hasErrors = true;
+        switch (entry.key) {
+          case GENDER:
+            gender = Strings.addTuteeCheckBoxError;
+            break;
+          case TUTOR_OCCUPATION:
+            tutorOccupation = Strings.addTuteeCheckBoxError;
+            break;
+          case CLASSFORMAT:
+            classFormat = Strings.addTuteeCheckBoxError;
+            break;
+        }
+      }
+    }
+
+    for (MapEntry<String, String> entry in stringValues.entries) {
+      if (entry.value.isEmpty) {
+        if (entry.key != ADDITIONAL_REMARKS) {
+          hasErrors = true;
+        }
+        switch (entry.key) {
+          case LOCATION:
+            location = Strings.addTuteeTextFieldError;
+            break;
+          case TIMING:
+            timing = Strings.addTuteeTextFieldError;
+            break;
+          case FREQ:
+            freq = Strings.addTuteeTextFieldError;
+            break;
+          case RATEMIN:
+            rateMin = Strings.addTuteeTextFieldError;
+            break;
+          case RATEMAX:
+            rateMax = Strings.addTuteeTextFieldError;
+            break;
+          case ADDITIONAL_REMARKS:
+            break;
+        }
+      }
+    }
+
+    final FormError error = FormError(
+      gender: gender,
+      tutorOccupation: tutorOccupation,
+      classFormat: classFormat,
+      location: location,
+      timing: timing,
+      freq: freq,
+      rateMin: rateMin,
+      rateMax: rateMax,
+      additionalRemarks: additionalRemarks,
+      hasErrors: hasErrors,
+    );
+    print(error.toString());
+    return error;
+  }
 }
 
 class Helper {
@@ -153,6 +258,8 @@ class Helper {
       case Level.K1:
       case Level.K2:
         results.addAll([
+          Music.PIANO,
+          Music.VIOLIN,
           Languages.ENG,
           Languages.CHI,
           Languages.MALAY,
@@ -171,6 +278,8 @@ class Helper {
           Languages.HINDI,
           Languages.TAMIL,
           Math.MATH,
+          Music.PIANO,
+          Music.VIOLIN
         ]);
         break;
       case Level.pri4:
@@ -184,6 +293,8 @@ class Helper {
           Languages.TAMIL,
           Math.MATH,
           Science.SCIENCE,
+          Music.PIANO,
+          Music.VIOLIN,
         ]);
         break;
       case Level.sec1:
@@ -198,7 +309,9 @@ class Helper {
           Science.SCIENCE,
           Science.BIO,
           Science.CHEM,
-          Science.PHY
+          Science.PHY,
+          Music.PIANO,
+          Music.VIOLIN,
         ]);
         break;
       case Level.sec3:
@@ -221,11 +334,32 @@ class Helper {
           Humans.POA,
           Humans.SS,
           Music.PIANO,
+          Music.VIOLIN,
         ]);
         break;
       case Level.jC1:
       case Level.jC2:
-        // TODO(ElasticBottle): Handle this case.
+        results.addAll([
+          Languages.ENG,
+          Math.H1MATH,
+          Math.H2MATH,
+          Science.H1BIO,
+          Science.H2BIO,
+          Science.H1CHEM,
+          Science.H2CHEM,
+          Science.H1PHY,
+          Science.H2PHY,
+          Humans.ART,
+          Humans.GEOG,
+          Humans.HIST,
+          Humans.LIT,
+          Languages.CHI,
+          Languages.MALAY,
+          Languages.HINDI,
+          Languages.TAMIL,
+          Music.PIANO,
+          Music.VIOLIN,
+        ]);
         break;
       case Level.poly:
         // TODO(ElasticBottle): Handle this case.
@@ -234,7 +368,12 @@ class Helper {
         // TODO(ElasticBottle): Handle this case.
         break;
       case Level.other:
-        // TODO(ElasticBottle): Handle this case.
+        results.addAll([
+          Music.PIANO,
+          Music.VIOLIN,
+          Music.GUITAR,
+          Music.DRUMS,
+        ]);
         break;
       default:
         break;

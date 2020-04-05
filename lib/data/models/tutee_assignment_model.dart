@@ -26,7 +26,7 @@ class TuteeAssignmentModel extends TuteeAssignment {
     int applied,
     int liked,
     String photoUrl,
-    String timeSincePost,
+    String dateAdded,
   }) : super(
             postId: postId,
             additionalRemarks: additionalRemarks,
@@ -46,35 +46,38 @@ class TuteeAssignmentModel extends TuteeAssignment {
             tuteeName: tuteeNameModel,
             liked: liked,
             photoUrl: photoUrl,
-            timeSincePost: timeSincePost);
+            dateAdded: dateAdded);
 
   factory TuteeAssignmentModel.fromJson(Map<String, dynamic> json) {
     return TuteeAssignmentModel(
-        postId: json[POSTID],
-        username: json[USERNAME],
-        level: Level.values[json[LEVEL]],
-        tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
-        format: ClassFormat.values[json[CLASSFORMAT]],
-        gender: Gender.values[json[GENDER]],
-        status: Status.values[json[STATUS]],
-        subjectModel: SubjectModel.fromJson(json[SUBJECT]),
-        additionalRemarks: json[ADDITIONAL_REMARKS],
-        applied: json[APPLIED],
-        freq: json[FREQ],
-        liked: json[LIKED],
-        location: json[LOCATION],
-        timing: json[TIMING],
-        tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
-        rateMax: json[RATEMAX].toDouble(),
-        rateMin: json[RATEMIN].toDouble(),
-        photoUrl: json[PHOTOURL],
-        timeSincePost:
-            timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
+      postId: json[POSTID],
+      username: json[USERNAME],
+      level: Level.values[json[LEVEL]],
+      tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
+      format: ClassFormat.values[json[CLASSFORMAT]],
+      gender: Gender.values[json[GENDER]],
+      status: Status.values[json[STATUS]],
+      subjectModel: SubjectModel.fromJson(json[SUBJECT]),
+      additionalRemarks: json[ADDITIONAL_REMARKS],
+      applied: json[APPLIED],
+      freq: json[FREQ],
+      liked: json[LIKED],
+      location: json[LOCATION],
+      timing: json[TIMING],
+      tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
+      rateMax: json[RATEMAX].toDouble(),
+      rateMin: json[RATEMIN].toDouble(),
+      photoUrl: json[PHOTOURL],
+      dateAdded: json[DATE_ADDED].toString(),
+    );
+
+    // timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
   }
 
   factory TuteeAssignmentModel.fromDocumentSnapshot(
       {Map<String, dynamic> json, String postId}) {
     json.addAll(<String, String>{POSTID: postId});
+    json[DATE_ADDED] = json[DATE_ADDED].toDate();
     return TuteeAssignmentModel.fromJson(json);
   }
 
@@ -101,6 +104,7 @@ class TuteeAssignmentModel extends TuteeAssignment {
       USERNAME: username,
       TUTEE_NAME: tuteeNameModel.toJson(),
       PHOTOURL: photoUrl,
+      DATE_ADDED: dateAdded,
     };
   }
 }

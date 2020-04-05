@@ -24,7 +24,7 @@ class TuteeAssignment extends Equatable {
     this.applied,
     this.liked,
     this.photoUrl,
-    this.timeSincePost,
+    this.dateAdded,
   });
   final String postId;
   final Gender gender;
@@ -44,7 +44,7 @@ class TuteeAssignment extends Equatable {
   final int applied;
   final int liked;
   final String photoUrl;
-  final String timeSincePost;
+  final String dateAdded;
 
   @override
   List<Object> get props => [

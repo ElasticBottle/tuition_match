@@ -1,82 +1,30 @@
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/subject.dart';
 import 'package:equatable/equatable.dart';
 
 import 'name.dart';
 
-enum Gender {
-  male,
-  female,
-}
-
-enum Level {
-  preSchool,
-  K1,
-  K2,
-  pri1,
-  pri2,
-  pri3,
-  pri4,
-  pri5,
-  pri6,
-  pri,
-  sec1,
-  sec2,
-  sec3,
-  sec4,
-  sec,
-  jC1,
-  jC2,
-  jc,
-  poly,
-  poly1,
-  poly2,
-  poly3,
-  uni,
-  other,
-  all,
-}
-
-String describeEnum(dynamic value) {
-  final List<String> output = value.toString().split('.');
-  return output[1];
-}
-
-enum ClassFormat {
-  online,
-  private,
-  group,
-}
-
-enum TutorOccupation {
-  partTime,
-  fullTime,
-  moe,
-}
-
-enum Status {
-  open,
-  close,
-}
-
 class TuteeAssignment extends Equatable {
   const TuteeAssignment({
+    this.postId,
     this.username,
     this.tuteeName,
-    this.postId,
     this.gender,
     this.level,
     this.subject,
     this.format,
+    this.tutorOccupation,
     this.timing,
+    this.freq,
+    this.location,
     this.rateMax,
     this.rateMin,
-    this.location,
-    this.freq,
-    this.tutorOccupation,
     this.additionalRemarks,
     this.status,
     this.applied,
     this.liked,
+    this.photoUrl,
+    this.timeSincePost,
   });
   final String postId;
   final Gender gender;
@@ -95,6 +43,8 @@ class TuteeAssignment extends Equatable {
   final Name tuteeName;
   final int applied;
   final int liked;
+  final String photoUrl;
+  final String timeSincePost;
 
   @override
   List<Object> get props => [

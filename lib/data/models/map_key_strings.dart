@@ -15,6 +15,8 @@ const String LOCATION = 'location';
 const String LIKED = 'liked';
 const String TIMING = 'timing';
 const String POSTID = 'postId';
+const String PHOTOURL = 'photoUrl';
+const String DATE_ADDED = 'dateAdded';
 
 const String SUBJECTAREA = 'subjectArea';
 

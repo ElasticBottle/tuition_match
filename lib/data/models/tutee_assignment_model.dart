@@ -1,5 +1,7 @@
 import 'package:cotor/data/models/subject_model.dart';
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import 'map_key_strings.dart';
 import 'name_model.dart';
@@ -23,6 +25,8 @@ class TuteeAssignmentModel extends TuteeAssignment {
     this.tuteeNameModel,
     int applied,
     int liked,
+    String photoUrl,
+    String timeSincePost,
   }) : super(
             postId: postId,
             additionalRemarks: additionalRemarks,
@@ -40,28 +44,32 @@ class TuteeAssignmentModel extends TuteeAssignment {
             status: status,
             username: username,
             tuteeName: tuteeNameModel,
-            liked: liked);
+            liked: liked,
+            photoUrl: photoUrl,
+            timeSincePost: timeSincePost);
 
   factory TuteeAssignmentModel.fromJson(Map<String, dynamic> json) {
     return TuteeAssignmentModel(
-      postId: json[POSTID],
-      username: json[USERNAME],
-      level: Level.values[json[LEVEL]],
-      tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
-      format: ClassFormat.values[json[CLASSFORMAT]],
-      gender: Gender.values[json[GENDER]],
-      status: Status.values[json[STATUS]],
-      subjectModel: SubjectModel.fromJson(json[SUBJECT]),
-      additionalRemarks: json[ADDITIONAL_REMARKS],
-      applied: json[APPLIED],
-      freq: json[FREQ],
-      liked: json[LIKED],
-      location: json[LOCATION],
-      timing: json[TIMING],
-      tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
-      rateMax: json[RATEMAX].toDouble(),
-      rateMin: json[RATEMIN].toDouble(),
-    );
+        postId: json[POSTID],
+        username: json[USERNAME],
+        level: Level.values[json[LEVEL]],
+        tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
+        format: ClassFormat.values[json[CLASSFORMAT]],
+        gender: Gender.values[json[GENDER]],
+        status: Status.values[json[STATUS]],
+        subjectModel: SubjectModel.fromJson(json[SUBJECT]),
+        additionalRemarks: json[ADDITIONAL_REMARKS],
+        applied: json[APPLIED],
+        freq: json[FREQ],
+        liked: json[LIKED],
+        location: json[LOCATION],
+        timing: json[TIMING],
+        tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
+        rateMax: json[RATEMAX].toDouble(),
+        rateMin: json[RATEMIN].toDouble(),
+        photoUrl: json[PHOTOURL],
+        timeSincePost:
+            timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
   }
 
   factory TuteeAssignmentModel.fromDocumentSnapshot(
@@ -92,6 +100,7 @@ class TuteeAssignmentModel extends TuteeAssignment {
       STATUS: status.index,
       USERNAME: username,
       TUTEE_NAME: tuteeNameModel.toJson(),
+      PHOTOURL: photoUrl,
     };
   }
 }

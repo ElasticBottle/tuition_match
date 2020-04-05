@@ -4,6 +4,7 @@ import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/features/tutee_assignment_list/widgets/assignment_badge.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AssignmentItemTile extends StatelessWidget {

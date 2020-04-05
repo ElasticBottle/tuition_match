@@ -1,4 +1,4 @@
-import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:equatable/equatable.dart';
 
 class Subject extends Equatable {

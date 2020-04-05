@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cotor/data/models/name_model.dart';
 import 'package:cotor/data/models/subject_model.dart';
 import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:flutter_test/flutter_test.dart';
 

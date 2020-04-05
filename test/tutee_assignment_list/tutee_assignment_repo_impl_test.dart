@@ -8,6 +8,7 @@ import 'package:cotor/data/models/name_model.dart';
 import 'package:cotor/data/models/subject_model.dart';
 import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/data/repository_implementations/tutee_assignment_repository_impl.dart';
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';

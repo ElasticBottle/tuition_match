@@ -6,8 +6,9 @@ import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

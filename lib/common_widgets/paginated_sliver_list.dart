@@ -38,11 +38,10 @@ class PaginatedSliverList<T> extends StatelessWidget {
                 return EndTile(loadState: LoadState.allLoaded);
                 break;
             }
-          } else if (index >= assignments.length) {
-            return null;
           }
           return builder(context, assignments[index]);
         },
+        childCount: assignments.length + 1,
       ),
     );
   }

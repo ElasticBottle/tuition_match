@@ -41,6 +41,7 @@ class ViewAssignmentPage extends StatelessWidget {
                   final TuteeAssignment assignment = state.assignment;
                   return SliverToBoxAdapter(
                     child: Container(
+                      padding: EdgeInsets.all(20.0),
                       child: Column(
                         children: <Widget>[
                           TuteeCardHeader(
@@ -53,6 +54,9 @@ class ViewAssignmentPage extends StatelessWidget {
                             level: assignment.level,
                             subject: assignment.subject,
                             format: assignment.format,
+                          ),
+                          SizedBox(
+                            height: 10.0,
                           ),
                           InfoDisplay(
                             icons: [
@@ -75,6 +79,7 @@ class ViewAssignmentPage extends StatelessWidget {
                               describeEnum(assignment.tutorOccupation),
                               assignment.additionalRemarks,
                             ],
+                            spacingBetweenFields: 20.0,
                             tag: assignment.username,
                           ),
                         ],
@@ -90,16 +95,19 @@ class ViewAssignmentPage extends StatelessWidget {
               child: BlocBuilder<ViewAssignmentBloc, ViewAssignmentState>(
                 builder: (context, state) {
                   final TuteeAssignment assignment = state.assignment;
-                  return BottomActionBar(
-                    heroTag: assignment.username +
-                        assignment.subject.toString() +
-                        assignment.level.toString(),
-                    numClickAction: assignment.liked,
-                    mainOnPressed: () {},
-                    actionOnPressed: () {},
-                    callToActionText: Strings.apply,
-                    numClickCallToAction:
-                        assignment.applied.toString() + Strings.applied,
+                  return Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: BottomActionBar(
+                      heroTag: assignment.username +
+                          assignment.subject.toString() +
+                          assignment.level.toString(),
+                      numClickAction: assignment.liked,
+                      mainOnPressed: () {},
+                      actionOnPressed: () {},
+                      callToActionText: Strings.apply,
+                      numClickCallToAction:
+                          assignment.applied.toString() + Strings.applied,
+                    ),
                   );
                 },
               )),

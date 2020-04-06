@@ -1,4 +1,4 @@
-import 'package:cotor/common_widgets/form_submit_button.dart';
+import 'package:cotor/common_widgets/buttons/form_submit_button.dart';
 import 'package:cotor/common_widgets/platform_alert_dialog.dart';
 import 'package:cotor/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:cotor/constants/strings.dart';

@@ -12,11 +12,13 @@ class CustomSliverAppbar extends StatelessWidget {
     this.isSnapped = false,
     this.isPinned = false,
     this.isTitleCenter = false,
+    this.leading,
   });
   final String title;
   final bool showActions;
   final double elevation;
   final Color bgColor;
+  final Widget leading;
   final bool isFloating;
   final bool isPinned;
   final bool isSnapped;
@@ -32,6 +34,7 @@ class CustomSliverAppbar extends StatelessWidget {
       snap: isSnapped,
       pinned: isPinned,
       centerTitle: isTitleCenter,
+      leading: leading,
       title: Text(
         title,
         style: TextStyle(

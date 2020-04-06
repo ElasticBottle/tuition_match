@@ -1,7 +1,7 @@
-import 'package:cotor/common_widgets/custom_radio_button.dart';
-import 'package:cotor/common_widgets/custom_check_box_group.dart';
-import 'package:cotor/common_widgets/custom_raised_button.dart';
-import 'package:cotor/common_widgets/custom_sliver_app_bar.dart';
+import 'package:cotor/common_widgets/buttons/custom_radio_button.dart';
+import 'package:cotor/common_widgets/buttons/custom_check_box_group.dart';
+import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
+import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';

@@ -1,7 +1,6 @@
 //..lib/main.dart
 
-import 'package:auto_route/auto_route.dart';
-import 'package:cotor/common_widgets/custom_raised_button.dart';
+import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/constants/keys.dart';
 import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';

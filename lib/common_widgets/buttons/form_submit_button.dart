@@ -1,4 +1,4 @@
-import 'package:cotor/common_widgets/custom_raised_button.dart';
+import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:flutter/material.dart';
 
 class FormSubmitButton extends CustomRaisedButton {

@@ -1,4 +1,4 @@
-import 'package:cotor/common_widgets/avatar.dart';
+import 'package:cotor/common_widgets/information_display/avatar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/domain/entities/name.dart';

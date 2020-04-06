@@ -73,6 +73,10 @@ class Strings {
   static const String assignmentTitle = 'Assignments';
   static const String cachedAssignmentLoadedMsg = 'Last retrieved copy loaded';
 
+  // AssignmentListTile
+  static const String applied = 'Applied';
+  static const String apply = 'Apply';
+
   // AddAssignment page
   static const String addAssignment = 'Add Assignment';
   static const String subject = 'Subject';
@@ -105,4 +109,7 @@ class Strings {
   static const String addTuteeCheckBoxError =
       'Please select at least one option';
   static const String addTuteeTextFieldError = 'Field cannot be empty';
+
+  // ViewAssignmentPage
+  static const String assignment = 'Assignment';
 }

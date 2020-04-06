@@ -99,7 +99,6 @@ class AddTuteeAssignmentBloc
       List<dynamic> value) async* {
     if (value.isNotEmpty) {
       if (value.first is Gender) {
-        print('adding gender');
         values.addAll(<String, List<dynamic>>{GENDER: value});
       } else if (value.first is TutorOccupation) {
         values.addAll(<String, List<dynamic>>{TUTOR_OCCUPATION: value});
@@ -375,7 +374,6 @@ class Helper {
       default:
         break;
     }
-    print(results);
     return results;
   }
 
@@ -434,7 +432,6 @@ class Helper {
       default:
         break;
     }
-    print(temp);
     return temp;
   }
 

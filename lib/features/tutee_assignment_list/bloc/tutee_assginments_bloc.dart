@@ -32,7 +32,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
   final GetCachedTuteeAssignmentList getCachedAssignments;
   List<TuteeAssignment> assignments = [];
   @override
-  AssignmentsState get initialState => InitialAssignmentsState();
+  AssignmentsState get initialState => Loading();
 
   @override
   Stream<AssignmentsState> transformEvents(
@@ -66,7 +66,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
 
   Stream<AssignmentsState> _mapGetAssignmentListToState(
       GetAssignmentList event) async* {
-    yield AssignmentLoading();
+    yield Loading();
     assignments.clear();
     final result = await getAssignmentList(NoParams());
     yield* result.fold(
@@ -75,14 +75,19 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
       },
       (assignmentList) async* {
         assignments.addAll(assignmentList);
-        yield AssignmentLoaded(assignments: assignments);
+        yield AssignmentLoaded(
+            assignments: assignments,
+            isCachedList: false,
+            isEnd: false,
+            isFetching: false);
       },
     );
   }
 
   Stream<AssignmentsState> _mepGetNextAssignmentListToState(
       GetNextAssignmentList event) async* {
-    yield NextAssignmentLoading(assignments: assignments);
+    final AssignmentLoaded currentState = state;
+    yield currentState.copyWith(isFetching: true);
     final result = await getNextAssignments(NoParams());
     yield* result.fold(
       (failure) async* {
@@ -91,9 +96,9 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
       (assignmentList) async* {
         if (assignmentList != null) {
           assignments.addAll(assignmentList);
-          yield AssignmentLoaded(assignments: assignments);
+          yield currentState.copyWith(assignments: assignments);
         } else {
-          yield AllAssignmentLoaded(assignments: assignments);
+          yield currentState.copyWith(assignments: assignments, isEnd: true);
         }
       },
     );
@@ -101,7 +106,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
 
   Stream<AssignmentsState> _mapGetCachedAssignmentListToState(
       GetCachedAssignmentList event) async* {
-    yield AssignmentLoading();
+    final AssignmentLoaded currentState = state;
+    yield currentState.copyWith(isFetching: true);
     final result = await getCachedAssignments(NoParams());
     yield* result.fold(
       (failure) async* {
@@ -110,7 +116,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
       },
       (assignmentList) async* {
         assignments.addAll(assignmentList);
-        yield CachedAssignmentLoaded(assignments: assignmentList);
+        yield currentState.copyWith(
+            assignments: assignmentList, isCachedList: true);
       },
     );
   }

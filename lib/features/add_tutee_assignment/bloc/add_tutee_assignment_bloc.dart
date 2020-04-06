@@ -107,7 +107,6 @@ class AddTuteeAssignmentBloc
         values.addAll(<String, List<dynamic>>{CLASSFORMAT: value});
       }
     }
-    print('values so far for the map ' + values.toString());
     yield state;
   }
 
@@ -190,7 +189,6 @@ class FormError {
     bool hasErrors = false;
 
     for (MapEntry<String, List> entry in values.entries) {
-      print('list entry : ' + entry.value.toString());
       if (entry.value.isEmpty) {
         hasErrors = true;
         switch (entry.key) {
@@ -246,7 +244,6 @@ class FormError {
       additionalRemarks: additionalRemarks,
       hasErrors: hasErrors,
     );
-    print(error.toString());
     return error;
   }
 }

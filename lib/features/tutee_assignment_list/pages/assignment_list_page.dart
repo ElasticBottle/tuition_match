@@ -17,16 +17,15 @@ class AssignmentListPage extends StatefulWidget {
 
 class _AssignmentListPageState extends State<AssignmentListPage>
     with AutomaticKeepAliveClientMixin<AssignmentListPage> {
-  int loadMoreParam = 10;
   final ScrollController _scrollController = ScrollController();
 
   void _scrollListener() {
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
-      print('at the end of list');
-      if (BlocProvider.of<AssignmentsBloc>(context).state
-          is! AllAssignmentLoaded) {
+      final AssignmentsState currentState =
+          BlocProvider.of<AssignmentsBloc>(context).state;
+      if (currentState is AssignmentLoaded && !currentState.isEnd) {
         BlocProvider.of<AssignmentsBloc>(context).add(GetNextAssignmentList());
       }
     }
@@ -85,7 +84,7 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                   ),
                 );
               }
-              if (state is CachedAssignmentLoaded) {
+              if (state is AssignmentLoaded && state.isCachedList) {
                 _displaySnacBar(
                   context: context,
                   message: Strings.cachedAssignmentLoadedMsg,
@@ -100,32 +99,15 @@ class _AssignmentListPageState extends State<AssignmentListPage>
             child: BlocBuilder<AssignmentsBloc, AssignmentsState>(
                 bloc: BlocProvider.of<AssignmentsBloc>(context),
                 builder: (BuildContext context, AssignmentsState state) {
-                  if (state is AssignmentLoading) {
+                  if (state is Loading) {
                     return LoadingWidget();
-                  } else if (state is NextAssignmentLoading) {
+                  } else if (state is AssignmentLoaded) {
+                    final LoadState currentLoadState = state.isFetching
+                        ? LoadState.loading
+                        : state.isEnd ? LoadState.allLoaded : LoadState.normal;
                     return PaginatedSliverList<TuteeAssignment>(
                       assignments: state.assignments,
-                      loadState: LoadState.loading,
-                      builder:
-                          (BuildContext context, TuteeAssignment assignment) {
-                        return AssignmentItemTile(
-                          assignment: assignment,
-                        );
-                      },
-                    );
-                  } else if (state is AssignmentLoaded) {
-                    return PaginatedSliverList(
-                      assignments: state.assignments,
-                      builder:
-                          (BuildContext context, TuteeAssignment assignment) {
-                        return AssignmentItemTile(
-                          assignment: assignment,
-                        );
-                      },
-                    );
-                  } else if (state is CachedAssignmentLoaded) {
-                    return PaginatedSliverList(
-                      assignments: state.assignments,
+                      loadState: currentLoadState,
                       builder:
                           (BuildContext context, TuteeAssignment assignment) {
                         return AssignmentItemTile(
@@ -139,17 +121,6 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                     return LoadingWidget();
                   } else if (state is CachedAssignmentError) {
                     // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
-                  } else if (state is AllAssignmentLoaded) {
-                    return PaginatedSliverList(
-                      assignments: state.assignments,
-                      loadState: LoadState.allLoaded,
-                      builder:
-                          (BuildContext context, TuteeAssignment assignment) {
-                        return AssignmentItemTile(
-                          assignment: assignment,
-                        );
-                      },
-                    );
                   }
                   // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any
                   return SliverToBoxAdapter(

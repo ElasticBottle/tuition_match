@@ -6,7 +6,7 @@ abstract class AssignmentsState extends Equatable {
   const AssignmentsState();
 }
 
-class InitialAssignmentsState extends AssignmentsState {
+class Loading extends AssignmentsState {
   @override
   List<Object> get props => [];
 
@@ -14,24 +14,46 @@ class InitialAssignmentsState extends AssignmentsState {
   String toString() => 'InitialAssignmentsState';
 }
 
-class AssignmentLoading extends AssignmentsState {
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'AssignmentLoading';
-}
-
 class AssignmentLoaded extends AssignmentsState {
-  const AssignmentLoaded({this.assignments});
+  const AssignmentLoaded({
+    this.assignments,
+    this.isFetching,
+    this.isEnd,
+    this.isCachedList,
+  });
   final List<TuteeAssignment> assignments;
+  final bool isFetching;
+  final bool isEnd;
+  final bool isCachedList;
+
+  AssignmentLoaded copyWith({
+    List<TuteeAssignment> assignments,
+    bool isFetching,
+    bool isEnd,
+    bool isCachedList,
+  }) {
+    return AssignmentLoaded(
+      assignments: assignments ?? this.assignments,
+      isFetching: isFetching ?? this.isFetching,
+      isEnd: isEnd ?? this.isEnd,
+      isCachedList: isCachedList ?? this.isCachedList,
+    );
+  }
+
   @override
   List<Object> get props => [
         assignments,
+        isFetching,
+        isEnd,
       ];
 
   @override
-  String toString() => 'AssignmentLoaded { assignments : $assignments }';
+  String toString() => '''AssignmentLoaded {
+     assignments : $assignments 
+     isFetching: $isFetching
+     isEnd: $isEnd
+     isCachedList : $isCachedList
+     }''';
 }
 
 class AssignmentError extends AssignmentsState {
@@ -43,41 +65,6 @@ class AssignmentError extends AssignmentsState {
 
   @override
   String toString() => 'AssignmentError { error: $message }';
-}
-
-class NextAssignmentLoading extends AssignmentsState {
-  const NextAssignmentLoading({@required this.assignments});
-  final List<TuteeAssignment> assignments;
-
-  @override
-  List<Object> get props => [assignments];
-
-  @override
-  String toString() => 'NextAssignmentLoading { assignments : $assignments }';
-}
-
-class AllAssignmentLoaded extends AssignmentsState {
-  const AllAssignmentLoaded({this.assignments});
-  final List<TuteeAssignment> assignments;
-  @override
-  List<Object> get props => [
-        assignments,
-      ];
-
-  @override
-  String toString() => 'AllAssignmentLoaded { assignments : $assignments }';
-}
-
-class CachedAssignmentLoaded extends AssignmentsState {
-  const CachedAssignmentLoaded({this.assignments});
-  final List<TuteeAssignment> assignments;
-  @override
-  List<Object> get props => [
-        assignments,
-      ];
-
-  @override
-  String toString() => 'CachedAssignmentLoaded { assignments: $assignments }';
 }
 
 class CachedAssignmentError extends AssignmentsState {

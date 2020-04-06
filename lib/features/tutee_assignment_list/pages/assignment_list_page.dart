@@ -1,4 +1,4 @@
-import 'package:cotor/common_widgets/custom_sliver_app_bar.dart';
+import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
 import 'package:cotor/common_widgets/paginated_sliver_list.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';

@@ -14,6 +14,7 @@ import 'package:cotor/features/onboarding/domain/repositories/onboarding_reposit
 import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc.dart';
+import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -40,6 +41,10 @@ Future<void> init() async {
 
   sl.registerFactory<AddTuteeAssignmentBloc>(
     () => AddTuteeAssignmentBloc(),
+  );
+
+  sl.registerFactory<ViewAssignmentBloc>(
+    () => ViewAssignmentBloc(),
   );
 
   // UseCase

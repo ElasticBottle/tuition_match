@@ -9,10 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:cotor/features/sign-in/app/email_link_error_presenter.dart';
 import 'package:cotor/features/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:cotor/features/view_assignment/pages/view_assignment_page.dart';
 
 abstract class Routes {
   static const emailLinkErrorPresenter = '/';
   static const signInPageBuilder = '/sign-in-page-builder';
+  static const viewAssignmentpage = '/view-assignmentpage';
 }
 
 class Router extends RouterBase {
@@ -41,6 +43,11 @@ class Router extends RouterBase {
       case Routes.signInPageBuilder:
         return MaterialPageRoute<dynamic>(
           builder: (_) => SignInPageBuilder(),
+          settings: settings,
+        );
+      case Routes.viewAssignmentpage:
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => ViewAssignmentPage(),
           settings: settings,
         );
       default:
@@ -75,4 +82,5 @@ extension RouterNavigationHelperMethods on ExtendedNavigatorState {
           arguments: EmailLinkErrorPresenterArguments(
               key: key, context: context, child: child));
   Future pushSignInPageBuilder() => pushNamed(Routes.signInPageBuilder);
+  Future pushViewAssignmentpage() => pushNamed(Routes.viewAssignmentpage);
 }

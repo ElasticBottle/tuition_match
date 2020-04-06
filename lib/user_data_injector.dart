@@ -1,6 +1,7 @@
 import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:cotor/features/sign-in/services/auth_service.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc.dart';
+import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,9 @@ class UserDataInjector extends StatelessWidget {
               BlocProvider<AssignmentsBloc>(
                 create: (context) => sl<AssignmentsBloc>(),
               ),
+              BlocProvider(
+                create: (context) => ViewAssignmentBloc(),
+              )
             ],
             child: builder(context, snapshot),
           );

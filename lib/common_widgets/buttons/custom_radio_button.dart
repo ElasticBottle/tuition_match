@@ -168,6 +168,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> rowButtons = buildButtonsRow();
     return Container(
       height: widget.vertical
           ? widget.height * (widget.buttonLables.length + 0.5)
@@ -180,9 +181,9 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
               )
             : ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: buildButtonsRow().length,
+                itemCount: rowButtons.length,
                 itemBuilder: (context, index) {
-                  return buildButtonsRow()[index];
+                  return rowButtons[index];
                 },
                 separatorBuilder: (context, index) => SizedBox(
                   width: widget.checkBoxSpacing,

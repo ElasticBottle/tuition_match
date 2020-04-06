@@ -1,8 +1,8 @@
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/data/models/criteria_params.dart';
+import 'package:cotor/data/models/del_params.dart';
 import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/domain/usecases/tutee_assignments/del_tutee_assignment.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class TuteeAssignmentRepo {

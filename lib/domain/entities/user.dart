@@ -10,6 +10,7 @@ class User extends Equatable {
     this.photoUrl,
     this.isTutor,
     this.isVerifiedAccount,
+    this.isEmailVerified,
     this.isVerifiedTutor,
     this.userAssignments,
     this.profile,
@@ -19,6 +20,7 @@ class User extends Equatable {
   final String photoUrl;
   final bool isTutor;
   final bool isVerifiedAccount;
+  final bool isEmailVerified;
   final bool isVerifiedTutor;
   final List<TuteeAssignment> userAssignments;
   final TutorProfile profile;

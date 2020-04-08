@@ -10,7 +10,7 @@ class Strings {
   static const String logoutFailed = 'Logout failed';
 
   // Sign In Page
-  static const String signIn = 'Sign in';
+  static const String signIn = 'Sign In';
   static const String signInWithEmailPassword =
       'Sign in with email and password';
   static const String signInWithEmailLink = 'Sign in with email link';
@@ -47,7 +47,6 @@ class Strings {
   static const String submitEmailAddressLink =
       'Submit your email address to receive an activation link.';
   static const String checkYourEmail = 'Check your email';
-
   static String activationLinkSent(String email) =>
       'We have sent an activation link to $email';
   static const String errorSendingEmail = 'Error sending email';
@@ -68,6 +67,8 @@ class Strings {
   static const String authenticationType = 'Authentication type';
   static const String firebase = 'Firebase';
   static const String mock = 'Mock';
+  //Snac bars
+  static const String dismiss = 'dismiss';
 
   // AssignmentList page
   static const String assignmentTitle = 'Assignments';

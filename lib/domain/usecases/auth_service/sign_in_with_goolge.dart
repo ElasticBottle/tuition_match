@@ -1,5 +1,6 @@
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
+import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:dartz/dartz.dart';
 

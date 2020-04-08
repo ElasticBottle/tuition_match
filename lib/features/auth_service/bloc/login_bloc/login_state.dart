@@ -4,32 +4,50 @@ abstract class LoginState extends Equatable {
   const LoginState({
     this.emailError,
     this.passwordError,
+    this.loginError,
     this.isSubmitting,
-    this.isLoginSuccess,
     this.isLoginFailure,
     this.hasErrors,
   });
   final String emailError;
   final String passwordError;
+  final String loginError;
   final bool isSubmitting;
-  final bool isLoginSuccess;
   final bool isLoginFailure;
   final bool hasErrors;
+
+  LoginState copyWith({
+    String emailError,
+    String passwordError,
+    String loginError,
+    bool isSubmitting,
+    final bool isLoginFailure,
+    bool hasErrors,
+  }) {
+    return LoginFormState(
+      emailError: emailError,
+      passwordError: passwordError,
+      loginError: loginError,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      isLoginFailure: isLoginFailure ?? this.isLoginFailure,
+      hasErrors: hasErrors ?? this.hasErrors,
+    );
+  }
 }
 
 class LoginFormState extends LoginState {
-  LoginFormState({
+  const LoginFormState({
     String emailError,
     String passwordError,
+    String loginError,
     bool isSubmitting,
-    bool isLoginSuccess,
     bool isLoginFailure,
     bool hasErrors,
   }) : super(
           emailError: emailError,
           passwordError: passwordError,
+          loginError: loginError,
           isSubmitting: isSubmitting,
-          isLoginSuccess: isLoginSuccess,
           isLoginFailure: isLoginFailure,
           hasErrors: hasErrors,
         );
@@ -37,20 +55,8 @@ class LoginFormState extends LoginState {
   factory LoginFormState.initial() {
     return LoginFormState(
       isSubmitting: false,
-      isLoginSuccess: false,
       isLoginFailure: false,
       hasErrors: false,
-    );
-  }
-
-  LoginFormState copyWith(String emailError, String passwordError,
-      bool isSubmitting, bool isLoginSuccess, bool hasErrors) {
-    return LoginFormState(
-      emailError: emailError,
-      passwordError: passwordError,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isLoginSuccess: isLoginSuccess ?? this.isLoginSuccess,
-      hasErrors: hasErrors ?? this.hasErrors,
     );
   }
 
@@ -58,8 +64,8 @@ class LoginFormState extends LoginState {
   List<Object> get props => [
         emailError,
         passwordError,
+        loginError,
         isSubmitting,
-        isLoginSuccess,
         isLoginFailure,
         hasErrors,
       ];
@@ -68,9 +74,20 @@ class LoginFormState extends LoginState {
   String toString() => '''LoginFormState {
     emailError : $emailError ,
     passwordError : $passwordError ,
+    loginError : $loginError ,
     isSubmitting : $isSubmitting ,
-    isLoginSuccess : $isLoginSuccess , 
     isLoginFailure: $isLoginFailure ,
     hasErrors : $hasErrors ,
   }''';
+}
+
+class LoginSuccess extends LoginState {
+  const LoginSuccess({this.user});
+  final User user;
+
+  @override
+  List<Object> get props => [user];
+
+  @override
+  String toString() => 'LoginSuccess { LoginSuccess : $user }';
 }

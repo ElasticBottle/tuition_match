@@ -91,3 +91,13 @@ class LoginSuccess extends LoginState {
   @override
   String toString() => 'LoginSuccess { LoginSuccess : $user }';
 }
+
+class NewGoogleAccountSetUp extends LoginState {
+  const NewGoogleAccountSetUp();
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'NewGoogleAccountSetUp {}';
+}

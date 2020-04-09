@@ -4,6 +4,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/usecases/user/get_user_profile.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/validator.dart';
 import 'package:dartz/dartz.dart';
@@ -19,16 +20,18 @@ part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
-    this.signInWithEmail,
-    this.signInWithGoogle,
-    this.validator,
-    this.authServiceBloc,
+    @required this.signInWithEmail,
+    @required this.signInWithGoogle,
+    @required this.validator,
+    @required this.authServiceBloc,
+    @required this.getUserProfile,
   });
 
-  SignInWithEmail signInWithEmail;
-  SignInWithGoogle signInWithGoogle;
-  EmailAndPasswordValidators validator;
-  AuthServiceBloc authServiceBloc;
+  final SignInWithEmail signInWithEmail;
+  final SignInWithGoogle signInWithGoogle;
+  final EmailAndPasswordValidators validator;
+  final AuthServiceBloc authServiceBloc;
+  final GetUserProfile getUserProfile;
 
   @override
   LoginState get initialState => LoginFormState.initial();
@@ -96,11 +99,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       isSubmitting: true,
     );
     final Either<Failure, User> result = await signInWithGoogle(NoParams());
-    result.fold((l) async* {
+    result.fold((Failure failure) async* {
       yield state.copyWith(
           isLoginFailure: true, loginError: Strings.signInFailed);
-    }, (r) async* {
-      yield LoginSuccess(user: r);
+    }, (User user) async* {
+      final result = await getUserProfile(UserParams(username: user.username));
+
+      result.fold((Failure failure) async* {
+        yield NewGoogleAccountSetUp();
+      }, (User user) async* {
+        yield LoginSuccess(user: user);
+      });
     });
   }
 

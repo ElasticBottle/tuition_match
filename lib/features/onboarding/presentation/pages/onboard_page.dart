@@ -95,7 +95,7 @@ class OnboardPageSlideState extends State<OnboardPageSlide> {
                     textColor: BLUE_GRAY,
                     color: ORANGE_ACCENT,
                     onPressed: () => Navigator.of(context, rootNavigator: true)
-                        .pushNamed(Routes.signInPageBuilder),
+                        .pushNamed(Routes.initialPage),
                   ),
                 ),
               ),

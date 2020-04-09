@@ -15,7 +15,7 @@ Future<void> main() async {
   await di.init();
   runApp(
     BlocProvider(
-      create: (context) => sl<AuthServiceBloc>()..add(AppStarted()),
+      create: (context) => sl<AuthServiceBloc>(),
       child: MyApp(),
     ),
   );

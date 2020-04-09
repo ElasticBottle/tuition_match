@@ -2,16 +2,17 @@
 
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/constants/keys.dart';
+import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
-import 'package:cotor/routing/router.gr.dart';
 
 const Color BLUE_GRAY = Colors.blueGrey;
 const Color ORANGE_ACCENT = Colors.orangeAccent;
+const Color BACKGROUND_COLOR = Colors.white;
 
 class OnboardPage extends StatelessWidget {
   @override
@@ -87,16 +88,33 @@ class OnboardPageSlideState extends State<OnboardPageSlide> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 25.0, 25.0),
                   child: CustomRaisedButton(
-                    key: Key(Keys.finishOnboard),
-                    child: Icon(Icons.arrow_forward_ios),
-                    borderRadius: 150.0,
-                    width: 50.0,
-                    height: 50.0,
-                    textColor: BLUE_GRAY,
-                    color: ORANGE_ACCENT,
-                    onPressed: () => Navigator.of(context, rootNavigator: true)
-                        .pushNamed(Routes.initialPage),
-                  ),
+                      key: Key(Keys.finishOnboard),
+                      child: Icon(Icons.arrow_forward_ios),
+                      borderRadius: 150.0,
+                      width: 50.0,
+                      height: 50.0,
+                      textColor: BLUE_GRAY,
+                      color: ORANGE_ACCENT,
+                      onPressed: () => BlocProvider.of<AuthServiceBloc>(context)
+                          .add(AppStarted())),
+                ),
+              ),
+            if (currentIndex + 1 !=
+                BlocProvider.of<OnboardingBloc>(context).initialState.props[0])
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 25.0, 25.0),
+                  child: CustomRaisedButton(
+                      key: Key(Keys.finishOnboard),
+                      child: Text('Skip'),
+                      borderRadius: 150.0,
+                      width: 50.0,
+                      height: 50.0,
+                      textColor: BLUE_GRAY,
+                      color: BACKGROUND_COLOR,
+                      onPressed: () => BlocProvider.of<AuthServiceBloc>(context)
+                          .add(AppStarted())),
                 ),
               ),
           ],

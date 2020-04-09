@@ -8,6 +8,7 @@ import 'package:cotor/features/auth_service/bloc/login_bloc/login_bloc.dart';
 import 'package:cotor/features/auth_service/widgets/social_sign_in_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cotor/routing/router.gr.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -77,72 +78,82 @@ class _LoginFormState extends State<LoginForm> {
         builder: (context, state) {
           return Padding(
             padding: EdgeInsets.all(20.0),
-            child: Form(
-              child: ListView(
-                children: <Widget>[
-                  // Padding(
-                  //   padding: EdgeInsets.symmetric(vertical: 20),
-                  //   child: Image.asset('assets/flutter_logo.png', height: 200),
-                  // ),
-                  FocusScope(
-                    node: _focusScopeNode,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          CustomTextField(
-                            labelText: Strings.emailLabel,
-                            textInputAction: TextInputAction.next,
-                            onFieldSubmitted: _handleSubmitted,
-                            errorText: state.emailError,
-                          ),
-                          CustomTextField(
-                            labelText: Strings.passwordLabel,
-                            textInputAction: TextInputAction.send,
-                            onFieldSubmitted: isLoginButtonEnabled(state)
-                                ? (value) => _onFormSubmitted
-                                : null,
-                            errorText: state.passwordError,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: CustomRaisedButton(
-                      onPressed:
-                          isLoginButtonEnabled(state) ? _onFormSubmitted : null,
-                      loading: state.isSubmitting,
-                      color: ColorsAndFonts.primaryColor,
-                      child: Text(
-                        Strings.signIn,
-                        style: TextStyle(
-                          color: ColorsAndFonts.backgroundColor,
-                          fontFamily: ColorsAndFonts.primaryFont,
-                          fontWeight: FontWeight.normal,
-                          fontSize:
-                              ColorsAndFonts.AddAssignmntSubmitButtonFontSize,
+            child: ListView(
+              children: <Widget>[
+                // Padding(
+                //   padding: EdgeInsets.symmetric(vertical: 20),
+                //   child: Image.asset('assets/flutter_logo.png', height: 200),
+                // ),
+                FocusScope(
+                  node: _focusScopeNode,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        CustomTextField(
+                          labelText: Strings.emailLabel,
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: _handleSubmitted,
+                          errorText: state.emailError,
                         ),
+                        CustomTextField(
+                          labelText: Strings.passwordLabel,
+                          textInputAction: TextInputAction.send,
+                          onFieldSubmitted: isLoginButtonEnabled(state)
+                              ? (value) => _onFormSubmitted
+                              : null,
+                          errorText: state.passwordError,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: CustomRaisedButton(
+                    onPressed:
+                        isLoginButtonEnabled(state) ? _onFormSubmitted : null,
+                    loading: state.isSubmitting,
+                    color: ColorsAndFonts.primaryColor,
+                    child: Text(
+                      Strings.signIn,
+                      style: TextStyle(
+                        color: ColorsAndFonts.backgroundColor,
+                        fontFamily: ColorsAndFonts.primaryFont,
+                        fontWeight: FontWeight.normal,
+                        fontSize:
+                            ColorsAndFonts.AddAssignmntSubmitButtonFontSize,
                       ),
                     ),
                   ),
-                  SizedBox(
-                      height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
-                  SocialSignInButton(
-                    key: googleButtonKey,
-                    assetName: 'assets/sign_in/go-logo.png',
-                    text: Strings.signInWithGoogle,
-                    onPressed:
-                        state.isSubmitting ? null : () => _onFormSubmitted(),
-                    color: Colors.white,
+                ),
+                SizedBox(
+                    height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+                SocialSignInButton(
+                  key: googleButtonKey,
+                  assetName: 'assets/sign_in/go-logo.png',
+                  text: Strings.signInWithGoogle,
+                  onPressed: () {
+                    BlocProvider.of<LoginBloc>(context).add(
+                      LoginWithGooglePressed(),
+                    );
+                  },
+                  color: Colors.white,
+                ),
+                FlatButton(
+                  child: Text(
+                    Strings.createAnAccount,
                   ),
-                  // GoogleLoginButton(),
-                  // CreateAccountButton(userRepository: _userRepository),
-                ],
-              ),
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamed(Routes.registrationPage);
+                  },
+                ),
+                // GoogleLoginButton(),
+                // CreateAccountButton(userRepository: _userRepository),
+              ],
             ),
           );
         },

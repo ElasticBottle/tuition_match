@@ -7,14 +7,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:cotor/features/sign-in/app/email_link_error_presenter.dart';
-import 'package:cotor/features/sign-in/app/sign_in/sign_in_page.dart';
+import 'package:cotor/initial_page_decider.dart';
 import 'package:cotor/features/view_assignment/pages/view_assignment_page.dart';
+import 'package:cotor/features/auth_service/pages/registration_page.dart';
 
 abstract class Routes {
-  static const emailLinkErrorPresenter = '/';
-  static const signInPageBuilder = '/sign-in-page-builder';
+  static const initialPage = '/';
   static const viewAssignmentpage = '/view-assignmentpage';
+  static const registrationPage = '/registration-page';
 }
 
 class Router extends RouterBase {
@@ -27,27 +27,24 @@ class Router extends RouterBase {
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final args = settings.arguments;
     switch (settings.name) {
-      case Routes.emailLinkErrorPresenter:
-        if (hasInvalidArgs<EmailLinkErrorPresenterArguments>(args)) {
-          return misTypedArgsRoute<EmailLinkErrorPresenterArguments>(args);
-        }
-        final typedArgs = args as EmailLinkErrorPresenterArguments ??
-            EmailLinkErrorPresenterArguments();
+      case Routes.initialPage:
         return MaterialPageRoute<dynamic>(
-          builder: (_) => EmailLinkErrorPresenter(
-              key: typedArgs.key,
-              context: typedArgs.context,
-              child: typedArgs.child),
-          settings: settings,
-        );
-      case Routes.signInPageBuilder:
-        return MaterialPageRoute<dynamic>(
-          builder: (_) => SignInPageBuilder(),
+          builder: (_) => InitialPageDecider(),
           settings: settings,
         );
       case Routes.viewAssignmentpage:
         return MaterialPageRoute<dynamic>(
           builder: (_) => ViewAssignmentPage(),
+          settings: settings,
+        );
+      case Routes.registrationPage:
+        if (hasInvalidArgs<RegistrationPageArguments>(args)) {
+          return misTypedArgsRoute<RegistrationPageArguments>(args);
+        }
+        final typedArgs =
+            args as RegistrationPageArguments ?? RegistrationPageArguments();
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => RegistrationPage(key: typedArgs.key),
           settings: settings,
         );
       default:
@@ -60,12 +57,10 @@ class Router extends RouterBase {
 // Arguments holder classes
 //***************************************************************************
 
-//EmailLinkErrorPresenter arguments holder class
-class EmailLinkErrorPresenterArguments {
+//RegistrationPage arguments holder class
+class RegistrationPageArguments {
   final Key key;
-  final BuildContext context;
-  final Widget child;
-  EmailLinkErrorPresenterArguments({this.key, this.context, this.child});
+  RegistrationPageArguments({this.key});
 }
 
 //**************************************************************************
@@ -73,14 +68,11 @@ class EmailLinkErrorPresenterArguments {
 //***************************************************************************
 
 extension RouterNavigationHelperMethods on ExtendedNavigatorState {
-  Future pushEmailLinkErrorPresenter({
-    Key key,
-    BuildContext context,
-    Widget child,
-  }) =>
-      pushNamed(Routes.emailLinkErrorPresenter,
-          arguments: EmailLinkErrorPresenterArguments(
-              key: key, context: context, child: child));
-  Future pushSignInPageBuilder() => pushNamed(Routes.signInPageBuilder);
+  Future pushInitialPage() => pushNamed(Routes.initialPage);
   Future pushViewAssignmentpage() => pushNamed(Routes.viewAssignmentpage);
+  Future pushRegistrationPage({
+    Key key,
+  }) =>
+      pushNamed(Routes.registrationPage,
+          arguments: RegistrationPageArguments(key: key));
 }

@@ -43,21 +43,17 @@ class Strings {
   static const String invalidPasswordTooShort = 'Password is too short';
   static const String invalidPasswordEmpty = 'Password can\'t be empty';
 
-  // Email link page
-  static const String submitEmailAddressLink =
-      'Submit your email address to receive an activation link.';
-  static const String checkYourEmail = 'Check your email';
-  static String activationLinkSent(String email) =>
-      'We have sent an activation link to $email';
-  static const String errorSendingEmail = 'Error sending email';
-  static const String sendActivationLink = 'Send activation link';
-  static const String activationLinkError = 'Email activation error';
-  static const String submitEmailAgain =
-      'Please submit your email address again to receive a new activation link.';
-  static const String userAlreadySignedIn =
-      'Received an activation link but you are already signed in.';
-  static const String isNotSignInWithEmailLinkMessage =
-      'Invalid activation link';
+  // registration page
+  static const String usernameLabel = 'Username';
+  static const String chooseYourUsername = 'Choos your username!';
+  static const String firstnameLabel = 'First Name';
+  static const String lastnameLabel = 'Last Name';
+  static const String invalidFieldCannotBeEmpty =
+      'This field should not be empty';
+  static const String invalidUsernameTaken =
+      'This username has already been taken';
+  static const String usernameServerError =
+      'Our server is having troubles verifying your username, please try again';
 
   // Home page
   static const String homePage = 'Home Page';

@@ -7,9 +7,11 @@ class CustomTextField extends StatelessWidget {
     this.onSaved,
     this.validator,
     this.initialText = '',
+    this.hintText,
     this.helpText,
     this.labelText,
     this.errorText,
+    this.hintFontSize = 12.0,
     this.helperFontSize = 12.0,
     this.labelFontSize = 18.0,
     this.textInputAction = TextInputAction.next,
@@ -21,11 +23,13 @@ class CustomTextField extends StatelessWidget {
   final Function(String) onSaved;
   final Function(String) validator;
   final String initialText;
+  final String hintText;
   final String helpText;
   final String labelText;
   final String errorText;
   final double labelFontSize;
   final double helperFontSize;
+  final double hintFontSize;
   final TextInputAction textInputAction;
   final Icon prefixIcon;
   final int maxLines;
@@ -63,6 +67,13 @@ class CustomTextField extends StatelessWidget {
               fontFamily: ColorsAndFonts.primaryFont,
               fontWeight: FontWeight.normal,
               fontSize: helperFontSize,
+            ),
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: ColorsAndFonts.primaryColor,
+              fontFamily: ColorsAndFonts.primaryFont,
+              fontWeight: FontWeight.normal,
+              fontSize: hintFontSize,
             ),
             errorText: errorText,
             prefixIcon: prefixIcon,

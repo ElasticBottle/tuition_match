@@ -25,29 +25,61 @@ class User extends Equatable {
   final List<TuteeAssignment> userAssignments;
   final TutorProfile profile;
 
-  User copyWith() {
-    return User();
+  User copyWith(
+    String username,
+    Name name,
+    String photoUrl,
+    bool isTutor,
+    bool isVerifiedAccount,
+    bool isVerifiedTutor,
+    List<TuteeAssignment> userAssignments,
+    TutorProfile profile,
+  ) {
+    return User(
+      username: username ?? this.username,
+      name: name ?? this.name,
+      photoUrl: photoUrl ?? this.photoUrl,
+      isTutor: isTutor ?? this.isTutor,
+      isVerifiedAccount: isVerifiedAccount ?? this.isVerifiedAccount,
+      isVerifiedTutor: isVerifiedTutor ?? this.isVerifiedTutor,
+      userAssignments: userAssignments ?? this.userAssignments,
+      profile: profile ?? this.profile,
+    );
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [
+        username,
+        name,
+        photoUrl,
+        isTutor,
+        isVerifiedAccount,
+        isVerifiedTutor,
+        userAssignments,
+        profile,
+      ];
 
   @override
   String toString() => '''User {
-    
+    username : $username,
+    name : $name,
+    photoUrl : $photoUrl,
+    isTutor : $isTutor,
+    isVerifiedAccount : $isVerifiedAccount,
+    isVerifiedTutor : $isVerifiedTutor,
+    userAssignments : $userAssignments,
+    profile : $profile,
   }''';
 }
 
 class PrivateUserInfo extends Equatable {
   const PrivateUserInfo({
     this.email,
-    this.isEmailVerified,
     this.phoneNum,
     this.nric,
     this.documentsUrl,
   });
   final String email;
-  final bool isEmailVerified;
   final String phoneNum;
   final String nric;
   final List<String> documentsUrl;

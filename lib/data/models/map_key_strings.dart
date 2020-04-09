@@ -1,3 +1,4 @@
+// tutee and tutor keys
 const String USERNAME = 'username';
 const String LEVEL = 'level';
 const String TUTOR_OCCUPATION = 'tutorOccupation';
@@ -20,5 +21,15 @@ const String DATE_ADDED = 'dateAdded';
 
 const String SUBJECTAREA = 'subjectArea';
 
+// name model keys
 const String FIRSTNAME = 'firstName';
 const String LASTNAME = 'lastName';
+
+// User keys
+const String NAME = 'name';
+const String IS_TUTOR = 'isTutor';
+const String IS_VERIFIED_ACCOUNT = 'verifiedAccount';
+const String IS_EMAIL_VERIFIED = 'isEmailVerified';
+const String IS_VERIFIED_TUTOR = 'isVerifiedTutor';
+const String USER_ASSIGNMENTS = 'userAssignments';
+const String PROFILE = 'profile';

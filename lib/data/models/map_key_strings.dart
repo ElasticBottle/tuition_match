@@ -33,3 +33,13 @@ const String IS_EMAIL_VERIFIED = 'isEmailVerified';
 const String IS_VERIFIED_TUTOR = 'isVerifiedTutor';
 const String USER_ASSIGNMENTS = 'userAssignments';
 const String PROFILE = 'profile';
+
+// Tutor Profile Keys
+const String DATE_MODIFIED = 'dateModified';
+const String QUALIFICATIONS = 'qualifications';
+const String SELLING_POINTS = 'selling_points';
+const String RATING = 'rating';
+const String REQUEST = 'request';
+const String LEVELS_TAUGHT = 'levelsTaught';
+const String SUBJECTS = 'subjects';
+const String CLASS_FORMATS = 'classFormats';

@@ -11,6 +11,7 @@ class TutorProfile extends Equatable {
     this.username,
     this.tuteeName,
     this.dateAdded,
+    this.dateModified,
     this.gender,
     this.tutorOccupation,
     this.levelsTaught,
@@ -18,7 +19,7 @@ class TutorProfile extends Equatable {
     this.rateMax,
     this.rateMin,
     this.timing,
-    this.format,
+    this.formats,
     this.qualifications,
     this.sellingPoints,
     this.location,
@@ -32,6 +33,7 @@ class TutorProfile extends Equatable {
   final Name tuteeName;
   final String username;
   final String dateAdded;
+  final String dateModified;
   final Gender gender;
   final TutorOccupation tutorOccupation;
   final List<Level> levelsTaught;
@@ -39,7 +41,7 @@ class TutorProfile extends Equatable {
   final double rateMin;
   final double rateMax;
   final String timing;
-  final List<ClassFormat> format;
+  final List<ClassFormat> formats;
   final String qualifications;
   final String sellingPoints;
   final String location;
@@ -54,6 +56,7 @@ class TutorProfile extends Equatable {
     Name tuteeName,
     String username,
     String dateAdded,
+    String dateModified,
     Gender gender,
     TutorOccupation tutorOccupation,
     List<Level> levelsTaught,
@@ -61,7 +64,7 @@ class TutorProfile extends Equatable {
     double rateMin,
     double rateMax,
     String timing,
-    List<ClassFormat> format,
+    List<ClassFormat> formats,
     String sellingPoints,
     String location,
     Status status,
@@ -75,6 +78,7 @@ class TutorProfile extends Equatable {
       tuteeName: tuteeName ?? this.tuteeName,
       username: username ?? this.username,
       dateAdded: dateAdded ?? this.dateAdded,
+      dateModified: dateModified ?? this.dateModified,
       gender: gender ?? this.gender,
       tutorOccupation: tutorOccupation ?? this.tutorOccupation,
       levelsTaught: levelsTaught ?? this.levelsTaught,
@@ -82,7 +86,7 @@ class TutorProfile extends Equatable {
       rateMin: rateMin ?? this.rateMin,
       rateMax: rateMax ?? this.rateMax,
       timing: timing ?? this.timing,
-      format: format ?? this.format,
+      formats: formats ?? this.formats,
       sellingPoints: sellingPoints ?? this.sellingPoints,
       location: location ?? this.location,
       status: status ?? this.status,
@@ -99,6 +103,7 @@ class TutorProfile extends Equatable {
         tuteeName,
         username,
         dateAdded,
+        dateModified,
         gender,
         tutorOccupation,
         levelsTaught,
@@ -106,7 +111,7 @@ class TutorProfile extends Equatable {
         rateMin,
         rateMax,
         timing,
-        format,
+        formats,
         sellingPoints,
         location,
         status,
@@ -122,6 +127,7 @@ class TutorProfile extends Equatable {
     tuteeName : $tuteeName ,
     username : $username ,
     dateAdded : $dateAdded ,
+    dateModified: $dateModified,
     gender : $gender ,
     tutorOccupation : $tutorOccupation ,
     levelsTaught : $levelsTaught ,
@@ -129,7 +135,7 @@ class TutorProfile extends Equatable {
     rateMin : $rateMin ,
     rateMax : $rateMax ,
     timing : $timing ,
-    format : $format ,
+    format : $formats ,
     sellingPoints : $sellingPoints ,
     location : $location ,
     status : $status ,

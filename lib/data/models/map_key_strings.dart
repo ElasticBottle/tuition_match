@@ -43,3 +43,5 @@ const String REQUEST = 'request';
 const String LEVELS_TAUGHT = 'levelsTaught';
 const String SUBJECTS = 'subjects';
 const String CLASS_FORMATS = 'classFormats';
+const String GENDERS = 'genders';
+const String TUTOR_OCCUPATIONS = 'tutorOccupations';

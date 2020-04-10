@@ -55,8 +55,8 @@ class TutorCriteriaParams extends CriteriaParams {
     ),
     double rateMin = 0,
     double rateMax = 999,
-    this.gender,
-    this.tutorOccupation,
+    this.genders,
+    this.tutorOccupations,
   }) : super(
           level: level,
           subject: subject,
@@ -64,6 +64,41 @@ class TutorCriteriaParams extends CriteriaParams {
           rateMax: rateMax,
         );
 
-  final Gender gender;
-  final TutorOccupation tutorOccupation;
+  factory TutorCriteriaParams.fromMap(Map<String, dynamic> map) {
+    return TutorCriteriaParams(
+      level: map[LEVEL],
+      subject: SubjectModel.fromJson(map[SUBJECT]),
+      rateMax: double.parse(map[RATEMAX]),
+      rateMin: double.parse(map[RATEMIN]),
+      genders: map[GENDER].map((int e) => Gender.values[e]).toList(),
+      tutorOccupations: map[TUTOR_OCCUPATION]
+          .map((int e) => TutorOccupation.values[e])
+          .toList(),
+    );
+  }
+
+  final List<Gender> genders;
+  final List<TutorOccupation> tutorOccupations;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      LEVEL: level.index,
+      SUBJECT: subject.toJson(),
+      RATEMIN: rateMin,
+      RATEMAX: rateMax,
+      GENDERS: genders.map((e) => e.index).toList(),
+      TUTOR_OCCUPATIONS: tutorOccupations.map((e) => e.index).toList(),
+    };
+  }
+
+  @override
+  List<Object> get props => [
+        level,
+        subject,
+        rateMin,
+        rateMax,
+        genders,
+        tutorOccupations,
+      ];
 }

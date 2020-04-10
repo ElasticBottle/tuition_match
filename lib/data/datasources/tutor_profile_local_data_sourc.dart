@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/data/models/tutor_profile_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,9 +32,9 @@ abstract class TutorProfileLocalDataSource {
   /// Throws [CacheException] if no cached data is present.
   Future<TutorCriteriaParams> getCachedParams();
 
-  Future<TuteeAssignmentModel> getCachedTutorProfileToSet();
-
+  Future<TutorProfileModel> getCachedTutorProfileToSet();
   Future<void> cacheTutorProfileToSet(TutorProfileModel params);
+  Future<bool> clearCacheTutorProfile();
 }
 
 class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
@@ -112,13 +111,13 @@ class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
   }
 
   @override
-  Future<TuteeAssignmentModel> getCachedTutorProfileToSet() {
+  Future<TutorProfileModel> getCachedTutorProfileToSet() {
     final String jsonString = sharedPreferences.getString(CACHED_PROFILE_LIST);
     if (jsonString != null) {
       final Map<String, dynamic> cachedAssignmentString =
           json.decode(jsonString);
-      final TuteeAssignmentModel result =
-          TuteeAssignmentModel.fromJson(cachedAssignmentString);
+      final TutorProfileModel result =
+          TutorProfileModel.fromJson(cachedAssignmentString);
       return Future.value(result);
     } else {
       throw CacheException();
@@ -132,5 +131,10 @@ class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
       CACHED_PROFILE,
       json.encode(toEncode),
     );
+  }
+
+  @override
+  Future<bool> clearCacheTutorProfile() async {
+    return await sharedPreferences.remove(CACHED_PROFILE_LIST);
   }
 }

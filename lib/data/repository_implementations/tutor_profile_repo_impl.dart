@@ -6,7 +6,6 @@ import 'package:cotor/data/datasources/tutor_profile_local_data_sourc.dart';
 import 'package:cotor/data/datasources/tutor_profile_remote_data_source.dart';
 import 'package:cotor/data/models/criteria_params.dart';
 import 'package:cotor/data/models/del_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/data/models/tutor_profile_model.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:cotor/domain/repositories/tutor_profile_repo.dart';

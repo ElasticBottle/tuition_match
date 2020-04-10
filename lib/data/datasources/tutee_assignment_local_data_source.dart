@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/data/models/criteria_params.dart';
 import 'package:cotor/data/models/tutee_assignment_model.dart';
-import 'package:cotor/domain/entities/enums.dart';
-import 'package:cotor/domain/entities/subject.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_ASSIGNMENT_LIST = 'CACHED_ASSIGNMENT_LIST';

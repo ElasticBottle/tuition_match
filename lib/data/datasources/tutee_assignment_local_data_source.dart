@@ -46,32 +46,9 @@ class TuteeAssignmentLocalDataSourceImpl
 
   @override
   Future<void> cacheCriterion(CriteriaParams params) {
-    final List<String> toEncode = _criterionToListString(params);
-    print(toEncode);
     return sharedPreferences.setString(
       CACHED_CRITERION,
-      json.encode(toEncode),
-    );
-  }
-
-  List<String> _criterionToListString(CriteriaParams params) {
-    return [
-      params.level.index.toString(),
-      params.subject.level.index.toString(),
-      params.subject.subjectArea,
-      params.rateMin.toString(),
-      params.rateMax.toString()
-    ];
-  }
-
-  CriteriaParams _criterionFromListString(List<dynamic> toConvert) {
-    return CriteriaParams(
-      level: Level.values[int.parse(toConvert[0])],
-      subject: Subject(
-          level: Level.values[int.parse(toConvert[1])],
-          subjectArea: toConvert[2]),
-      rateMin: double.parse(toConvert[3]),
-      rateMax: double.parse(toConvert[4]),
+      json.encode(params.toMap()),
     );
   }
 
@@ -79,8 +56,8 @@ class TuteeAssignmentLocalDataSourceImpl
   Future<CriteriaParams> getCachedParams() {
     final String jsonString = sharedPreferences.getString(CACHED_CRITERION);
     if (jsonString != null) {
-      final List<dynamic> criterionList = json.decode(jsonString);
-      final CriteriaParams result = _criterionFromListString(criterionList);
+      final Map<String, dynamic> criterionList = json.decode(jsonString);
+      final CriteriaParams result = CriteriaParams.fromMap(criterionList);
       return Future.value(result);
     } else {
       throw CacheException();

@@ -20,9 +20,9 @@ abstract class TuteeAssignmentRemoteDataSource {
 
   Future<bool> delAssignment(DelParams params);
 
-  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParmas});
+  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParams});
 
-  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParmas});
+  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParams});
 }
 
 const int DOCUMENT_RETRIEVAL_LIMIT = 2;
@@ -116,13 +116,13 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParmas}) {
+  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParams}) {
     // TODO: implement setTuteeAssignment
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParmas}) {
+  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParams}) {
     // TODO: implement updateTuteeAssignment
     throw UnimplementedError();
   }

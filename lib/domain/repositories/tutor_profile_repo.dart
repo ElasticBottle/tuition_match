@@ -14,7 +14,7 @@ abstract class TutorProfileRepo {
 
   // Retrieving Searched List
   Future<Either<Failure, List<TutorProfile>>> getByCriterion(
-      CriteriaParams params);
+      TutorCriteriaParams params);
   Future<Either<Failure, List<TutorProfile>>> getByCachedCriterion();
   Future<Either<Failure, List<TutorProfile>>> getNextCriterionList();
 

@@ -126,13 +126,13 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
 
   // Deleting Assingments
   @override
-  Future<Either<Failure, bool>> delAssignment(DelParams params) async {
+  Future<Either<Failure, bool>> delProfile(DelParams params) async {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await remoteDs.delAssignment(params);
+            final bool result = await remoteDs.delProfile(params);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -146,7 +146,7 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
       getCachedTutorProfileToSet() async {
     try {
       final TutorProfileModel result =
-          await localDs.getCachedTTutorProfileToSet();
+          await localDs.getCachedTutorProfileToSet();
       return Right<Failure, TutorProfileModel>(result);
     } on CacheException {
       return Left<Failure, TutorProfileModel>(CacheFailure());
@@ -159,15 +159,12 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
-          localDs.cacheTutorProfile(params);
-          try {
-            final bool result =
-                await remoteDs.setTutorProfile(tutorParams: params);
-            localDs.clearCacheTutorProfile();
-            return Right<Failure, bool>(result);
-          } on ServerException {
-            return Left<Failure, bool>(ServerFailure());
-          }
+          return await _setTutorProfile(
+            params,
+            () {
+              return remoteDs.setTutorProfile(tutorParams: params);
+            },
+          );
         });
   }
 
@@ -177,15 +174,28 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
-          localDs.cacheTutorProfile(params);
-          try {
-            final bool result =
-                await remoteDs.updateTutorProfile(tutorParams: params);
-            localDs.clearCacheTutorProfile();
-            return Right<Failure, bool>(result);
-          } on ServerException {
-            return Left<Failure, bool>(ServerFailure());
-          }
+          return await _setTutorProfile(
+            params,
+            () {
+              return remoteDs.updateTutorProfile(tutorParams: params);
+            },
+          );
         });
+  }
+
+  Future<Either<Failure, bool>> _setTutorProfile(
+      TutorProfileModel params, Function settingCall) async {
+    localDs.cacheTutorProfileToSet(params);
+    try {
+      final bool result = await settingCall();
+      bool isCacheCleared = false;
+      while (!isCacheCleared) {
+        isCacheCleared = await localDs.clearCacheTutorProfile();
+      }
+      localDs.clearCacheTutorProfile();
+      return Right<Failure, bool>(result);
+    } on ServerException {
+      return Left<Failure, bool>(ServerFailure());
+    }
   }
 }

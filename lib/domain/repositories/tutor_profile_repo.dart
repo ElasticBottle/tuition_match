@@ -23,5 +23,5 @@ abstract class TutorProfileRepo {
   Future<Either<Failure, bool>> updateTutorProfile(TutorProfileModel params);
 
   // Deleting Assignment
-  Future<Either<Failure, bool>> delAssignment(DelParams params);
+  Future<Either<Failure, bool>> delProfile(DelParams params);
 }

@@ -107,4 +107,8 @@ class TuteeAssignmentModel extends TuteeAssignment {
       DATE_ADDED: dateAdded,
     };
   }
+
+  List<dynamic> toDocumentSnapshot() {
+    return <dynamic>[postId, toJson().remove(POSTID)];
+  }
 }

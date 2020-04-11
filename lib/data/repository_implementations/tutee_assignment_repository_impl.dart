@@ -175,7 +175,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOnline: () async {
           try {
             final bool result =
-                await remoteDs.setTuteeAssignment(tuteeParams: params);
+                await userDs.setTuteeAssignment(tuteeParams: params);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());

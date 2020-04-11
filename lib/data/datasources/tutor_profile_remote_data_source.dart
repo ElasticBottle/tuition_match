@@ -1,40 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/del_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/data/models/tutor_profile_model.dart';
 
-abstract class TuteeAssignmentRemoteDataSource {
+abstract class TutorProfileRemoteDataSource {
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TuteeAssignmentModel>> getAssignmentByCriterion(
-      CriteriaParams params);
-  Future<List<TuteeAssignmentModel>> getNextCriterionList();
+  Future<List<TutorProfileModel>> getProfileByCriterion(
+      TutorCriteriaParams params);
+  Future<List<TutorProfileModel>> getNextCriterionList();
 
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TuteeAssignmentModel>> getAssignmentList();
-  Future<List<TuteeAssignmentModel>> getNextAssignmentList();
+  Future<List<TutorProfileModel>> getProfileList();
+  Future<List<TutorProfileModel>> getNextProfileList();
 }
 
 const int DOCUMENT_RETRIEVAL_LIMIT = 2;
 
-class TuteeAssignmentRemoteDataSourceImpl
-    implements TuteeAssignmentRemoteDataSource {
+class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   // firebase dependency here
-  TuteeAssignmentRemoteDataSourceImpl({this.remoteStore});
+  TutorProfileRemoteDataSourceImpl({this.remoteStore});
   Firestore remoteStore;
-  DocumentSnapshot mostRecentAssignmentDocument;
+  DocumentSnapshot mostRecentProfileDocument;
   DocumentSnapshot mostRecentCriterionDocument;
   Query mostRecentCriterionQuery;
 
   @override
-  Future<List<TuteeAssignmentModel>> getAssignmentByCriterion(
-      CriteriaParams params) async {
+  Future<List<TutorProfileModel>> getProfileByCriterion(
+      TutorCriteriaParams params) async {
     final Query query = remoteStore
-        .collection('assignments')
+        .collection('tutors')
         .where('status', isEqualTo: 0)
         .where('level', isEqualTo: params.level)
         .where('subject', isEqualTo: params.subject)
@@ -49,7 +47,7 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getNextCriterionList() async {
+  Future<List<TutorProfileModel>> getNextCriterionList() async {
     final Query query = mostRecentCriterionQuery
         .startAfterDocument(mostRecentCriterionDocument);
 
@@ -59,38 +57,38 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getAssignmentList() async {
+  Future<List<TutorProfileModel>> getProfileList() async {
     final Query query = remoteStore
-        .collection('assignments')
+        .collection('tutor')
         .where('status', isEqualTo: 0)
-        .orderBy('dateAdded', descending: true)
+        .orderBy('dateModified', descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
-      mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
+      mostRecentProfileDocument = snapshot[snapshot.length - 1];
     });
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getNextAssignmentList() async {
+  Future<List<TutorProfileModel>> getNextProfileList() async {
     final Query query = remoteStore
         .collection('assignments')
         .where('status', isEqualTo: 0)
+        .orderBy('dateModified', descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
-        .orderBy('dateAdded', descending: true)
-        .startAfterDocument(mostRecentAssignmentDocument);
+        .startAfterDocument(mostRecentProfileDocument);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
-      mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
+      mostRecentProfileDocument = snapshot[snapshot.length - 1];
     });
   }
 
-  Future<List<TuteeAssignmentModel>> _attemptQuery(
+  Future<List<TutorProfileModel>> _attemptQuery(
       Query query, Function toSave) async {
     try {
       final QuerySnapshot snapshot = await query.getDocuments();
       // print(snapshot.documents[0].data);
       if (snapshot.documents.isNotEmpty) {
-        final List<TuteeAssignmentModel> result = snapshot.documents
-            .map((e) => TuteeAssignmentModel.fromDocumentSnapshot(
+        final List<TutorProfileModel> result = snapshot.documents
+            .map((e) => TutorProfileModel.fromDocumentSnapshot(
                 json: e.data, postId: e.documentID))
             .toList();
         toSave(snapshot.documents);

@@ -7,10 +7,15 @@ import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class AuthServiceRepoImpl implements AuthServiceRepo {
-  AuthServiceRepoImpl({this.networkInfo, this.auth, this.userRepo});
+  AuthServiceRepoImpl({
+    @required this.networkInfo,
+    @required this.auth,
+    @required this.userRepo,
+  });
   final NetworkInfo networkInfo;
   final AuthServiceRemote auth;
   final UserRepo userRepo;

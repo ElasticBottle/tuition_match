@@ -4,17 +4,25 @@ import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/data/datasources/tutor_profile_local_data_sourc.dart';
 import 'package:cotor/data/datasources/tutor_profile_remote_data_source.dart';
+import 'package:cotor/data/datasources/user_remote_data_source.dart';
 import 'package:cotor/data/models/criteria_params.dart';
 import 'package:cotor/data/models/del_params.dart';
 import 'package:cotor/data/models/tutor_profile_model.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:cotor/domain/repositories/tutor_profile_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 
 class TutorProfileRepoImpl implements TutorProfileRepo {
-  TutorProfileRepoImpl({this.remoteDs, this.localDs, this.networkInfo});
+  TutorProfileRepoImpl({
+    @required this.remoteDs,
+    @required this.localDs,
+    @required this.networkInfo,
+    @required this.userDs,
+  });
   final TutorProfileRemoteDataSource remoteDs;
   final TutorProfileLocalDataSource localDs;
+  final UserRemoteDataSource userDs;
   final NetworkInfo networkInfo;
   Left<Failure, List<TutorProfile>> _failure(Failure fail) {
     return Left<Failure, List<TutorProfile>>(fail);
@@ -132,7 +140,8 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await remoteDs.delProfile(params);
+            final bool result =
+                await userDs.delProfile(username: params.username);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -162,7 +171,7 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
           return await _setTutorProfile(
             params,
             () {
-              return remoteDs.setTutorProfile(tutorParams: params);
+              return userDs.setTutorProfile(tutorParams: params);
             },
           );
         });
@@ -177,7 +186,7 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
           return await _setTutorProfile(
             params,
             () {
-              return remoteDs.updateTutorProfile(tutorParams: params);
+              return userDs.updateTutorProfile(tutorParams: params);
             },
           );
         });

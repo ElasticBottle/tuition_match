@@ -8,11 +8,12 @@ import 'package:cotor/data/datasources/user_remote_data_source.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 
 class UserRepoImpl implements UserRepo {
   UserRepoImpl({
-    this.userData,
-    this.networkInfo,
+    @required this.userData,
+    @required this.networkInfo,
   });
   final UserRemoteDataSource userData;
   final NetworkInfo networkInfo;

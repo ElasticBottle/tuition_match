@@ -4,17 +4,25 @@ import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/data/datasources/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/data/datasources/user_remote_data_source.dart';
 import 'package:cotor/data/models/criteria_params.dart';
 import 'package:cotor/data/models/del_params.dart';
 import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 
 class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
-  TuteeAssignmentRepoImpl({this.remoteDs, this.localDs, this.networkInfo});
+  TuteeAssignmentRepoImpl({
+    @required this.remoteDs,
+    @required this.localDs,
+    @required this.networkInfo,
+    @required this.userDs,
+  });
   final TuteeAssignmentRemoteDataSource remoteDs;
   final TuteeAssignmentLocalDataSource localDs;
+  final UserRemoteDataSource userDs;
   final NetworkInfo networkInfo;
   Left<Failure, List<TuteeAssignment>> _failure(Failure fail) {
     return Left<Failure, List<TuteeAssignment>>(fail);
@@ -136,7 +144,8 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await remoteDs.delAssignment(params);
+            final bool result = await userDs.delAssignment(
+                postId: params.postId, username: params.username);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -183,22 +192,11 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOnline: () async {
           try {
             final bool result =
-                await remoteDs.updateTuteeAssignment(tuteeParams: params);
+                await userDs.updateTuteeAssignment(tuteeParams: params);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
           }
         });
-  }
-}
-
-class MakeDSCall<Exception, T> {
-  Future<Either<Failure, T>> call({Function dsCall, Failure ifFail}) async {
-    try {
-      final T result = await dsCall();
-      return Right<Failure, T>(result);
-    } on Exception {
-      return Left<Failure, T>(ifFail);
-    }
   }
 }

@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
-import 'package:cotor/domain/usecases/auth_service/is_username_valid.dart';
 import 'package:cotor/features/auth_service/validator.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
@@ -17,11 +16,9 @@ part 'registration_state.dart';
 class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   RegistrationBloc({
     @required this.validator,
-    @required this.usernameValidator,
     @required this.createAccountWithEmail,
   });
   EmailAndPasswordValidators validator;
-  IsUsernameValid usernameValidator;
   CreateAccountWithEmail createAccountWithEmail;
   @override
   RegistrationState get initialState => RegistrationState.empty();
@@ -32,14 +29,10 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     Stream<RegistrationState> Function(RegistrationEvent) next,
   ) {
     final nonDebounceStream = events.where((event) {
-      return event is! EmailChanged &&
-          event is! PasswordChanged &&
-          event is! UsernameChanged;
+      return event is! EmailChanged && event is! PasswordChanged;
     });
     final debounceStream = events.where((event) {
-      return event is EmailChanged ||
-          event is PasswordChanged ||
-          event is UsernameChanged;
+      return event is EmailChanged || event is PasswordChanged;
     }).debounceTime(Duration(milliseconds: 500));
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
@@ -55,8 +48,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       yield* _mapEmailChangedToState(event.email);
     } else if (event is PasswordChanged) {
       yield* _mapPasswordChangedToState(event.password);
-    } else if (event is UsernameChanged) {
-      yield* _mapUsernameChangedToState(event.username);
     } else if (event is FirstNameChanged) {
       yield* _mapFirstNameChangedToState(event.firstName);
     } else if (event is LastNameChanged) {
@@ -65,7 +56,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       yield* _mapFormSubmittedToState(
         email: event.email,
         password: event.password,
-        username: event.username,
         firstName: event.firstName,
         lastName: event.lastName,
       );
@@ -112,21 +102,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     }
   }
 
-  Stream<RegistrationState> _mapUsernameChangedToState(String username) async* {
-    final Either<Failure, bool> result =
-        await usernameValidator(UsernameValidatorParams(username: username));
-
-    result.fold((l) async* {
-      yield state.copyWith(usernameError: Strings.usernameServerError);
-    }, (r) sync* {
-      if (r) {
-        yield state.copyWith();
-      } else {
-        yield state.copyWith(usernameError: Strings.invalidUsernameTaken);
-      }
-    });
-  }
-
   Stream<RegistrationState> _mapFormSubmittedToState({
     String email,
     String password,
@@ -136,10 +111,9 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   }) async* {
     yield RegistrationState.loading();
     final Either<Failure, bool> result =
-        await createAccountWithEmail(CreateAccoutnParams(
+        await createAccountWithEmail(CreateAccountParams(
       email: email,
       password: password,
-      username: username,
       firstName: firstName,
       lastName: lastName,
     ));

@@ -7,7 +7,8 @@ import 'name.dart';
 class TuteeAssignment extends Equatable {
   const TuteeAssignment({
     this.postId,
-    this.username,
+    this.photoUrl,
+    this.uid,
     this.tuteeName,
     this.gender,
     this.level,
@@ -21,10 +22,10 @@ class TuteeAssignment extends Equatable {
     this.rateMin,
     this.additionalRemarks,
     this.status,
-    this.applied,
-    this.liked,
-    this.photoUrl,
+    this.numApplied,
+    this.numLiked,
     this.dateAdded,
+    this.isVerifiedAccount,
   });
   final String postId;
   final Gender gender;
@@ -39,12 +40,13 @@ class TuteeAssignment extends Equatable {
   final TutorOccupation tutorOccupation;
   final String additionalRemarks;
   final Status status;
-  final String username;
+  final String uid;
   final Name tuteeName;
-  final int applied;
-  final int liked;
+  final int numApplied;
+  final int numLiked;
   final String photoUrl;
   final String dateAdded;
+  final bool isVerifiedAccount;
 
   TuteeAssignment copyWith({
     String postId,
@@ -60,16 +62,17 @@ class TuteeAssignment extends Equatable {
     TutorOccupation tutorOccupation,
     String additionalRemarks,
     Status status,
-    String username,
+    String uid,
     Name tuteeName,
-    int applied,
-    int liked,
+    int numApplied,
+    int numLiked,
     String photoUrl,
     String dateAdded,
+    bool isVerifiedAccount,
   }) {
     return TuteeAssignment(
       postId: postId ?? this.postId,
-      username: username ?? this.username,
+      uid: uid ?? this.uid,
       tuteeName: tuteeName ?? this.tuteeName,
       gender: gender ?? this.gender,
       level: level ?? this.level,
@@ -83,10 +86,11 @@ class TuteeAssignment extends Equatable {
       rateMin: rateMin ?? this.rateMin,
       additionalRemarks: additionalRemarks ?? this.additionalRemarks,
       status: status ?? this.status,
-      applied: applied ?? this.applied,
-      liked: liked ?? this.liked,
+      numApplied: numApplied ?? this.numApplied,
+      numLiked: numLiked ?? this.numLiked,
       photoUrl: photoUrl ?? this.photoUrl,
       dateAdded: dateAdded ?? this.dateAdded,
+      isVerifiedAccount: isVerifiedAccount ?? this.isVerifiedAccount,
     );
   }
 
@@ -105,12 +109,13 @@ class TuteeAssignment extends Equatable {
         tutorOccupation,
         additionalRemarks,
         status,
-        applied,
-        username,
+        numApplied,
+        uid,
         tuteeName,
-        liked,
+        numLiked,
         photoUrl,
         dateAdded,
+        isVerifiedAccount,
       ];
 
   @override
@@ -128,11 +133,12 @@ class TuteeAssignment extends Equatable {
     tutorOccupation : $tutorOccupation ,
     additionalRemarks : $additionalRemarks ,
     status : $status ,
-    applied : $applied ,
-    username : $username ,
+    numApplied : $numApplied ,
+    uid : $uid ,
     tuteeName : $tuteeName ,
-    liked : $liked ,
+    numLiked : $numLiked ,
     photoUrl : $photoUrl ,
     dateAdded : $dateAdded ,
+    isVerifiedAccount: $isVerifiedAccount, 
     ''';
 }

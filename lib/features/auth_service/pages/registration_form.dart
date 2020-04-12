@@ -2,7 +2,6 @@ import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/registraiton_bloc/registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +16,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
 
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
@@ -32,8 +30,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
       _emailController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty &&
       _firstNameController.text.isNotEmpty &&
-      _lastNameController.text.isNotEmpty &&
-      _usernameController.text.isNotEmpty;
+      _lastNameController.text.isNotEmpty;
 
   bool isRegisterButtonEnabled(RegistrationState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
@@ -45,7 +42,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
     _registrationBloc = BlocProvider.of<RegistrationBloc>(context);
     _emailController.addListener(_onEmailChanged);
     _passwordController.addListener(_onPasswordChanged);
-    _usernameController.addListener(_onUsernameChanged);
     _firstNameController.addListener(_onFirstNameChanged);
     _lastNameController.addListener(_onLastNameChanged);
   }
@@ -55,8 +51,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
     return BlocListener<RegistrationBloc, RegistrationState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
           Navigator.of(context).pop();
+          // BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
           Scaffold.of(context)
@@ -101,13 +97,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
                           errorText: state.passwordError,
-                        ),
-                        CustomTextField(
-                          labelText: Strings.usernameLabel,
-                          hintText: Strings.chooseYourUsername,
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: _handleSubmitted,
-                          errorText: state.usernameError,
                         ),
                         CustomTextField(
                           labelText: Strings.firstnameLabel,
@@ -161,7 +150,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
     _passwordController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _usernameController.dispose();
     super.dispose();
   }
 
@@ -174,12 +162,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
   void _onPasswordChanged() {
     _registrationBloc.add(
       PasswordChanged(password: _passwordController.text),
-    );
-  }
-
-  void _onUsernameChanged() {
-    _registrationBloc.add(
-      UsernameChanged(username: _usernameController.text),
     );
   }
 
@@ -202,7 +184,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
         password: _passwordController.text,
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
-        username: _usernameController.text,
+        phoneNum: '87654321',
       ),
     );
   }

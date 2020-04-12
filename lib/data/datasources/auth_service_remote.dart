@@ -13,7 +13,6 @@ abstract class AuthServiceRemote {
   Future<bool> createAccountWithEmail({
     String email,
     String password,
-    String username,
   });
   Future<bool> isUsernameValid(String username);
   Future<void> sendEmailVerification();
@@ -38,7 +37,7 @@ class FirebaseAuthService implements AuthServiceRemote {
       return null;
     }
     return User(
-      username: user.displayName,
+      uid: user.displayName,
       photoUrl: user.photoUrl,
     );
   }
@@ -130,12 +129,8 @@ class FirebaseAuthService implements AuthServiceRemote {
   }) async {
     String errorMessage = '';
     try {
-      final AuthResult result = await auth.createUserWithEmailAndPassword(
+      await auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      final UserUpdateInfo info = UserUpdateInfo();
-      info.displayName = username;
-      result.user.updateProfile(info);
-      await result.user.reload();
 
       await sendEmailVerification();
       // user = result.user;

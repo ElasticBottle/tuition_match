@@ -5,81 +5,84 @@ import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
   const User({
-    this.username,
     this.name,
+    this.uid,
     this.photoUrl,
     this.isTutor,
     this.isVerifiedAccount,
-    this.isEmailVerified,
     this.isVerifiedTutor,
+    this.isEmailVerified,
     this.userAssignments,
-    this.profile,
+    this.tutorProfile,
   });
-  final String username;
   final Name name;
+  final String uid;
   final String photoUrl;
   final bool isTutor;
   final bool isVerifiedAccount;
-  final bool isEmailVerified;
   final bool isVerifiedTutor;
+  final bool isEmailVerified;
   final List<TuteeAssignment> userAssignments;
-  final TutorProfile profile;
+  final TutorProfile tutorProfile;
 
   User copyWith(
     String username,
     Name name,
+    String uid,
     String photoUrl,
     bool isTutor,
     bool isVerifiedAccount,
     bool isVerifiedTutor,
+    bool isEmailVerified,
     List<TuteeAssignment> userAssignments,
-    TutorProfile profile,
+    TutorProfile tutorProfile,
   ) {
     return User(
-      username: username ?? this.username,
       name: name ?? this.name,
+      uid: uid ?? this.uid,
       photoUrl: photoUrl ?? this.photoUrl,
       isTutor: isTutor ?? this.isTutor,
       isVerifiedAccount: isVerifiedAccount ?? this.isVerifiedAccount,
       isVerifiedTutor: isVerifiedTutor ?? this.isVerifiedTutor,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       userAssignments: userAssignments ?? this.userAssignments,
-      profile: profile ?? this.profile,
+      tutorProfile: tutorProfile ?? this.tutorProfile,
     );
   }
 
   @override
   List<Object> get props => [
-        username,
         name,
+        uid,
         photoUrl,
         isTutor,
         isVerifiedAccount,
         isVerifiedTutor,
+        isEmailVerified,
         userAssignments,
-        profile,
+        tutorProfile,
       ];
 
   @override
   String toString() => '''User {
-    username : $username,
     name : $name,
+    uid : $uid,
     photoUrl : $photoUrl,
     isTutor : $isTutor,
     isVerifiedAccount : $isVerifiedAccount,
     isVerifiedTutor : $isVerifiedTutor,
+    isEmailVerified : $isEmailVerified,
     userAssignments : $userAssignments,
-    profile : $profile,
+    profile : $tutorProfile,
   }''';
 }
 
 class PrivateUserInfo extends Equatable {
   const PrivateUserInfo({
-    this.email,
     this.phoneNum,
     this.nric,
     this.documentsUrl,
   });
-  final String email;
   final String phoneNum;
   final String nric;
   final List<String> documentsUrl;
@@ -89,30 +92,26 @@ class PrivateUserInfo extends Equatable {
   }
 
   @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => '''PrivateUserInfo {
-
-  }''';
-}
-
-class UserFavourites extends Equatable {
-  const UserFavourites({
-    this.likedAssignments,
-    this.likedTutorProfiles,
-  });
-  final List<TuteeAssignment> likedAssignments;
-  final List<TutorProfile> likedTutorProfiles;
-  @override
   List<Object> get props => [
-        likedAssignments,
-        likedTutorProfiles,
+        phoneNum,
+        nric,
+        documentsUrl,
       ];
 
   @override
-  String toString() => '''UserFavourites {
-    likedAssignments: $likedAssignments , 
-    likedTutorProfiles: $likedTutorProfiles , 
+  String toString() => '''PrivateUserInfo {
+    phoneNum: $phoneNum,
+    nric: $nric,
+    documentsUrl: $documentsUrl,
   }''';
+}
+
+class WithheldInfo extends Equatable {
+  const WithheldInfo({this.email});
+  final String email;
+  @override
+  List<Object> get props => [email];
+
+  @override
+  String toString() => 'withheldInfo {email: $email}';
 }

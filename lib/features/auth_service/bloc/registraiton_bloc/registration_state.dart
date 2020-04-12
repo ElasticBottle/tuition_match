@@ -5,7 +5,6 @@ class RegistrationState {
   const RegistrationState({
     @required this.emailError,
     @required this.passwordError,
-    @required this.usernameError,
     @required this.firstNameError,
     @required this.lastNameError,
     @required this.loginError,
@@ -18,7 +17,6 @@ class RegistrationState {
     return RegistrationState(
       emailError: null,
       passwordError: null,
-      usernameError: null,
       firstNameError: null,
       lastNameError: null,
       loginError: null,
@@ -32,7 +30,6 @@ class RegistrationState {
     return RegistrationState(
       emailError: null,
       passwordError: null,
-      usernameError: null,
       firstNameError: null,
       lastNameError: null,
       loginError: null,
@@ -46,7 +43,6 @@ class RegistrationState {
     return RegistrationState(
       emailError: null,
       passwordError: null,
-      usernameError: null,
       firstNameError: null,
       lastNameError: null,
       loginError: Strings.registrationFailed,
@@ -60,7 +56,6 @@ class RegistrationState {
     return RegistrationState(
       emailError: null,
       passwordError: null,
-      usernameError: null,
       firstNameError: null,
       lastNameError: null,
       loginError: null,
@@ -72,7 +67,6 @@ class RegistrationState {
 
   final String emailError;
   final String passwordError;
-  final String usernameError;
   final String firstNameError;
   final String lastNameError;
   final String loginError;
@@ -84,14 +78,12 @@ class RegistrationState {
   bool get isFormValid =>
       emailError.isEmpty &&
       passwordError.isEmpty &&
-      usernameError.isEmpty &&
       firstNameError.isEmpty &&
       lastNameError.isEmpty;
 
   RegistrationState copyWith({
     String emailError,
     String passwordError,
-    String usernameError,
     String firstNameError,
     String lastNameError,
     String loginError,
@@ -102,7 +94,6 @@ class RegistrationState {
     return RegistrationState(
       emailError: emailError,
       passwordError: passwordError,
-      usernameError: usernameError,
       firstNameError: firstNameError,
       lastNameError: lastNameError,
       loginError: loginError,
@@ -117,7 +108,6 @@ class RegistrationState {
     return '''RegistrationState {
       emailError: $emailError,
       passwordError: $passwordError,
-      usernameError: $usernameError,
       firstNameError: $firstNameError,
       lastNameError: $lastNameError,
       loginError: $loginError,

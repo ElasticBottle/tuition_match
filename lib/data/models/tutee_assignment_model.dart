@@ -1,6 +1,7 @@
 import 'package:cotor/data/models/subject_model.dart';
 import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'map_key_strings.dart';
@@ -9,49 +10,52 @@ import 'name_model.dart';
 class TuteeAssignmentModel extends TuteeAssignment {
   const TuteeAssignmentModel({
     String postId,
-    Gender gender,
-    Level level,
-    this.subjectModel,
-    ClassFormat format,
-    String timing,
-    double rateMin,
-    double rateMax,
-    String location,
-    String freq,
-    TutorOccupation tutorOccupation,
-    String additionalRemarks,
+    @required String photoUrl,
+    @required String uid,
+    @required this.tuteeNameModel,
+    @required Gender gender,
+    @required Level level,
+    @required this.subjectModel,
+    @required ClassFormat format,
+    @required TutorOccupation tutorOccupation,
+    @required String timing,
+    @required String location,
+    @required String freq,
+    @required double rateMin,
+    @required double rateMax,
+    @required String additionalRemarks,
     Status status,
-    String username,
-    this.tuteeNameModel,
-    int applied,
-    int liked,
-    String photoUrl,
+    int numApplied,
+    int numLiked,
     String dateAdded,
+    @required bool isVerifiedAccount,
   }) : super(
-            postId: postId,
-            additionalRemarks: additionalRemarks,
-            applied: applied,
-            format: format,
-            gender: gender,
-            level: level,
-            subject: subjectModel,
-            timing: timing,
-            rateMax: rateMax,
-            rateMin: rateMin,
-            location: location,
-            freq: freq,
-            tutorOccupation: tutorOccupation,
-            status: status,
-            username: username,
-            tuteeName: tuteeNameModel,
-            liked: liked,
-            photoUrl: photoUrl,
-            dateAdded: dateAdded);
+          postId: postId,
+          additionalRemarks: additionalRemarks,
+          numApplied: numApplied,
+          format: format,
+          gender: gender,
+          level: level,
+          subject: subjectModel,
+          timing: timing,
+          rateMax: rateMax,
+          rateMin: rateMin,
+          location: location,
+          freq: freq,
+          tutorOccupation: tutorOccupation,
+          status: status,
+          uid: uid,
+          tuteeName: tuteeNameModel,
+          numLiked: numLiked,
+          photoUrl: photoUrl,
+          dateAdded: dateAdded,
+          isVerifiedAccount: isVerifiedAccount,
+        );
 
   factory TuteeAssignmentModel.fromJson(Map<String, dynamic> json) {
     return TuteeAssignmentModel(
       postId: json[POSTID],
-      username: json[USERNAME],
+      uid: json[UID],
       level: Level.values[json[LEVEL]],
       tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
       format: ClassFormat.values[json[CLASSFORMAT]],
@@ -59,9 +63,9 @@ class TuteeAssignmentModel extends TuteeAssignment {
       status: Status.values[json[STATUS]],
       subjectModel: SubjectModel.fromJson(json[SUBJECT]),
       additionalRemarks: json[ADDITIONAL_REMARKS],
-      applied: json[APPLIED],
+      numApplied: json[NUM_APPLIED],
       freq: json[FREQ],
-      liked: json[LIKED],
+      numLiked: json[NUM_LIKED],
       location: json[LOCATION],
       timing: json[TIMING],
       tuteeNameModel: NameModel.fromJson(json[TUTEE_NAME]),
@@ -69,6 +73,7 @@ class TuteeAssignmentModel extends TuteeAssignment {
       rateMin: json[RATEMIN].toDouble(),
       photoUrl: json[PHOTOURL],
       dateAdded: json[DATE_ADDED].toString(),
+      isVerifiedAccount: json[IS_VERIFIED_ACCOUNT],
     );
 
     // timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
@@ -87,6 +92,10 @@ class TuteeAssignmentModel extends TuteeAssignment {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       POSTID: postId,
+      UID: uid,
+      TUTEE_NAME: tuteeNameModel.toJson(),
+      PHOTOURL: photoUrl,
+      DATE_ADDED: dateAdded,
       LEVEL: level.index,
       SUBJECT: subjectModel.toJson(),
       TIMING: timing,
@@ -98,17 +107,23 @@ class TuteeAssignmentModel extends TuteeAssignment {
       TUTOR_OCCUPATION: tutorOccupation.index,
       CLASSFORMAT: format.index,
       ADDITIONAL_REMARKS: additionalRemarks,
-      APPLIED: applied,
-      LIKED: liked,
+      NUM_APPLIED: numApplied,
+      NUM_LIKED: numLiked,
       STATUS: status.index,
-      USERNAME: username,
-      TUTEE_NAME: tuteeNameModel.toJson(),
-      PHOTOURL: photoUrl,
-      DATE_ADDED: dateAdded,
+      IS_VERIFIED_ACCOUNT: isVerifiedAccount,
     };
   }
 
   List<dynamic> toDocumentSnapshot() {
-    return <dynamic>[postId, toJson().remove(POSTID)];
+    final List<String> toExclude = [
+      POSTID,
+      DATE_ADDED,
+      NUM_APPLIED,
+      NUM_LIKED,
+      STATUS,
+    ];
+    final Map<String, dynamic> toUpdate = toJson();
+    toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
+    return <dynamic>[postId, toUpdate];
   }
 }

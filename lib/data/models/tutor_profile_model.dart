@@ -7,9 +7,8 @@ import 'name_model.dart';
 
 class TutorProfileModel extends TutorProfile {
   const TutorProfileModel({
-    String postId,
     String photoUrl,
-    String username,
+    String uid,
     this.tutorNameModel,
     String dateAdded,
     String dateModified,
@@ -25,14 +24,15 @@ class TutorProfileModel extends TutorProfile {
     String sellingPoints,
     String location,
     Status status,
-    int request,
-    int liked,
+    int numClicks,
+    int numRequest,
+    int numLiked,
     double rating,
+    bool isVerifiedTutor,
   }) : super(
-          postId: postId,
           photoUrl: photoUrl,
-          username: username,
-          tuteeName: tutorNameModel,
+          uid: uid,
+          tutorName: tutorNameModel,
           dateAdded: dateAdded,
           dateModified: dateModified,
           gender: gender,
@@ -47,46 +47,48 @@ class TutorProfileModel extends TutorProfile {
           sellingPoints: sellingPoints,
           location: location,
           status: status,
-          request: request,
-          liked: liked,
+          numClicks: numClicks,
+          numRequest: numRequest,
+          numLiked: numLiked,
           rating: rating,
+          isVerifiedTutor: isVerifiedTutor,
         );
 
   factory TutorProfileModel.fromJson(Map<String, dynamic> json) {
     return TutorProfileModel(
-      postId: json[POSTID],
-      photoUrl: json[PHOTOURL],
-      username: json[USERNAME],
-      tutorNameModel: NameModel.fromJson(json[TUTEE_NAME]),
-      dateAdded: json[DATE_ADDED].toString(),
-      dateModified: json[DATE_MODIFIED].toString(),
-      gender: Gender.values[json[GENDER]],
-      tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
-      levelsTaught:
-          json[LEVELS_TAUGHT].map((int e) => Level.values[e]).toList(),
-      subjectModelList: json[SUBJECTS]
-          .map((Map<String, dynamic> e) => SubjectModel.fromJson(e))
-          .toList(),
-      rateMax: json[RATEMAX].toDouble(),
-      rateMin: json[RATEMIN].toDouble(),
-      timing: json[TIMING],
-      formats:
-          json[CLASS_FORMATS].map((int e) => ClassFormat.values[e]).toList(),
-      qualifications: json[QUALIFICATIONS],
-      sellingPoints: json[SELLING_POINTS],
-      location: json[LOCATION],
-      status: Status.values[json[STATUS]],
-      request: json[REQUEST],
-      liked: json[LIKED],
-      rating: json[RATING],
-    );
+        photoUrl: json[PHOTOURL],
+        uid: json[UID],
+        tutorNameModel: NameModel.fromJson(json[TUTEE_NAME]),
+        dateAdded: json[DATE_ADDED].toString(),
+        dateModified: json[DATE_MODIFIED].toString(),
+        gender: Gender.values[json[GENDER]],
+        tutorOccupation: TutorOccupation.values[json[TUTOR_OCCUPATION]],
+        levelsTaught:
+            json[LEVELS_TAUGHT].map((int e) => Level.values[e]).toList(),
+        subjectModelList: json[SUBJECTS]
+            .map((Map<String, dynamic> e) => SubjectModel.fromJson(e))
+            .toList(),
+        rateMax: json[RATEMAX].toDouble(),
+        rateMin: json[RATEMIN].toDouble(),
+        timing: json[TIMING],
+        formats:
+            json[CLASS_FORMATS].map((int e) => ClassFormat.values[e]).toList(),
+        qualifications: json[QUALIFICATIONS],
+        sellingPoints: json[SELLING_POINTS],
+        location: json[LOCATION],
+        status: Status.values[json[STATUS]],
+        numClicks: json[NUM_CLICKS],
+        numRequest: json[NUM_REQUEST],
+        numLiked: json[NUM_LIKED],
+        rating: json[RATING],
+        isVerifiedTutor: json[IS_VERIFIED_TUTOR]);
 
     // timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
   }
 
   factory TutorProfileModel.fromDocumentSnapshot(
       {Map<String, dynamic> json, String postId}) {
-    json.addAll(<String, String>{POSTID: postId});
+    json.addAll(<String, String>{UID: postId});
     json[DATE_ADDED] = json[DATE_ADDED].toDate();
     json[DATE_MODIFIED] = json[DATE_MODIFIED].toDate();
     return TutorProfileModel.fromJson(json);
@@ -97,9 +99,8 @@ class TutorProfileModel extends TutorProfile {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      POSTID: postId,
       PHOTOURL: photoUrl,
-      USERNAME: username,
+      UID: uid,
       TUTEE_NAME: tutorNameModel.toJson(),
       DATE_ADDED: dateAdded,
       DATE_MODIFIED: dateModified,
@@ -115,13 +116,28 @@ class TutorProfileModel extends TutorProfile {
       SELLING_POINTS: sellingPoints,
       LOCATION: location,
       STATUS: status.index,
-      REQUEST: request,
-      LIKED: liked,
+      IS_VERIFIED_TUTOR: isVerifiedTutor,
+      NUM_CLICKS: numClicks,
+      NUM_REQUEST: numRequest,
+      NUM_LIKED: numLiked,
       RATING: rating,
     };
   }
 
   List<dynamic> toDocumentSnapshot() {
-    return <dynamic>[postId, toJson().remove(POSTID)];
+    final List<String> toExclude = [
+      UID,
+      DATE_ADDED,
+      DATE_MODIFIED,
+      NUM_CLICKS,
+      NUM_REQUEST,
+      NUM_LIKED,
+      RATING,
+      STATUS,
+    ];
+
+    final Map<String, dynamic> toUpdate = toJson();
+    toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
+    return <dynamic>[uid, toUpdate];
   }
 }

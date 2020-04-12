@@ -7,17 +7,6 @@ abstract class RegistrationEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UsernameChanged extends RegistrationEvent {
-  const UsernameChanged({@required this.username});
-  final String username;
-
-  @override
-  List<Object> get props => [username];
-
-  @override
-  String toString() => 'UsernameChanged { username :$username }';
-}
-
 class FirstNameChanged extends RegistrationEvent {
   const FirstNameChanged({@required this.firstName});
   final String firstName;
@@ -62,17 +51,29 @@ class PasswordChanged extends RegistrationEvent {
   String toString() => 'PasswordChanged { password: $password }';
 }
 
+class PhoneNumChanged extends RegistrationEvent {
+  const PhoneNumChanged({@required this.phoneNum});
+  final String phoneNum;
+
+  @override
+  List<Object> get props => [phoneNum];
+
+  @override
+  String toString() => 'PhoneNumChanged { phoneNum: $phoneNum }';
+}
+
 class Submitted extends RegistrationEvent {
   const Submitted({
-    @required this.username,
     @required this.firstName,
     @required this.lastName,
     @required this.email,
     @required this.password,
+    @required this.phoneNum,
   });
   final String email;
   final String password;
-  final String username;
+  final String phoneNum;
+
   final String firstName;
   final String lastName;
 

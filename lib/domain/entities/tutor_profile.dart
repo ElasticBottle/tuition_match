@@ -6,10 +6,9 @@ import 'enums.dart';
 
 class TutorProfile extends Equatable {
   const TutorProfile({
-    this.postId,
     this.photoUrl,
-    this.username,
-    this.tuteeName,
+    this.uid,
+    this.tutorName,
     this.dateAdded,
     this.dateModified,
     this.gender,
@@ -24,14 +23,15 @@ class TutorProfile extends Equatable {
     this.sellingPoints,
     this.location,
     this.status,
-    this.request,
-    this.liked,
+    this.numClicks,
+    this.numRequest,
+    this.numLiked,
     this.rating,
+    this.isVerifiedTutor,
   });
-  final String postId;
   final String photoUrl;
-  final Name tuteeName;
-  final String username;
+  final String uid;
+  final Name tutorName;
   final String dateAdded;
   final String dateModified;
   final Gender gender;
@@ -46,15 +46,16 @@ class TutorProfile extends Equatable {
   final String sellingPoints;
   final String location;
   final Status status;
-  final int request;
-  final int liked;
+  final int numClicks;
+  final int numRequest;
+  final int numLiked;
   final double rating;
+  final bool isVerifiedTutor;
 
   TutorProfile copyWith({
-    String postId,
     String photoUrl,
-    Name tuteeName,
-    String username,
+    String uid,
+    Name tutorName,
     String dateAdded,
     String dateModified,
     Gender gender,
@@ -65,18 +66,20 @@ class TutorProfile extends Equatable {
     double rateMax,
     String timing,
     List<ClassFormat> formats,
+    String qualifications,
     String sellingPoints,
     String location,
     Status status,
-    int request,
-    int liked,
+    int numClicks,
+    int numRequest,
+    int numLiked,
     double rating,
+    bool isVerifiedTutor,
   }) {
     return TutorProfile(
-      postId: postId ?? this.postId,
       photoUrl: photoUrl ?? this.photoUrl,
-      tuteeName: tuteeName ?? this.tuteeName,
-      username: username ?? this.username,
+      uid: uid ?? this.uid,
+      tutorName: tutorName ?? this.tutorName,
       dateAdded: dateAdded ?? this.dateAdded,
       dateModified: dateModified ?? this.dateModified,
       gender: gender ?? this.gender,
@@ -87,21 +90,23 @@ class TutorProfile extends Equatable {
       rateMax: rateMax ?? this.rateMax,
       timing: timing ?? this.timing,
       formats: formats ?? this.formats,
+      qualifications: qualifications ?? this.qualifications,
       sellingPoints: sellingPoints ?? this.sellingPoints,
       location: location ?? this.location,
       status: status ?? this.status,
-      request: request ?? this.request,
-      liked: liked ?? this.liked,
+      numClicks: numClicks ?? this.numClicks,
+      numRequest: numRequest ?? this.numRequest,
+      numLiked: numLiked ?? this.numLiked,
       rating: rating ?? this.rating,
+      isVerifiedTutor: isVerifiedTutor ?? this.isVerifiedTutor,
     );
   }
 
   @override
   List<Object> get props => [
-        postId,
         photoUrl,
-        tuteeName,
-        username,
+        uid,
+        tutorName,
         dateAdded,
         dateModified,
         gender,
@@ -112,20 +117,22 @@ class TutorProfile extends Equatable {
         rateMax,
         timing,
         formats,
+        qualifications,
         sellingPoints,
         location,
         status,
-        request,
-        liked,
+        numClicks,
+        numRequest,
+        numLiked,
         rating,
+        isVerifiedTutor,
       ];
 
   @override
   String toString() => '''TuteeAssignmet {
-    postId : $postId ,
     photoUrl : $photoUrl ,
-    tuteeName : $tuteeName ,
-    username : $username ,
+    uid : $uid ,
+    tutorName : $tutorName ,
     dateAdded : $dateAdded ,
     dateModified: $dateModified,
     gender : $gender ,
@@ -136,11 +143,14 @@ class TutorProfile extends Equatable {
     rateMax : $rateMax ,
     timing : $timing ,
     format : $formats ,
+    qualifications : $qualifications,
     sellingPoints : $sellingPoints ,
     location : $location ,
     status : $status ,
-    request : $request ,
-    liked : $liked ,
+    numClicks: $numClicks,
+    numRequest : $numRequest ,
+    numLiked : $numLiked ,
     rating : $rating ,
+    isVerifiedTutor: $isVerifiedTutor,
     ''';
 }

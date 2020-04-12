@@ -39,7 +39,7 @@ void main() {
       additionalRemarks:
           'Sch girl who tries her best for the subject but can be a little distracted when learning. It\'d be good if the tutor could inspire her through different teaching methods like games and fun quizzes.',
       status: Status.open,
-      username: 'test',
+      uid: 'test',
     );
 
     void _setUpMockRepoCriterionCall({bool success}) {

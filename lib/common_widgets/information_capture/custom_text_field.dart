@@ -18,7 +18,8 @@ class CustomTextField extends StatelessWidget {
     this.prefixIcon,
     this.maxLines = 1,
     this.bottomPadding = 30.0,
-  });
+    this.controller,
+  }) : assert(controller == null || initialText == null);
   final Function(String) onFieldSubmitted;
   final Function(String) onSaved;
   final Function(String) validator;
@@ -34,6 +35,7 @@ class CustomTextField extends StatelessWidget {
   final Icon prefixIcon;
   final int maxLines;
   final double bottomPadding;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,7 @@ class CustomTextField extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.only(bottom: bottomPadding),
         child: TextFormField(
+          controller: controller,
           initialValue: initialText,
           textInputAction: textInputAction,
           onFieldSubmitted: onFieldSubmitted,

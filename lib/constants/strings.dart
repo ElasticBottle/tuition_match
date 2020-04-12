@@ -55,6 +55,16 @@ class Strings {
   static const String usernameServerError =
       'Our server is having troubles verifying your username, please try again';
 
+  // First time google sign in page
+  static const String saveDetails = 'Save Details';
+  static const String cannotSaveNameAndPhoneNumber =
+      'An error occured trying to process the application';
+  static const String invalidPhoneNum =
+      'Please enter a real phone number so you can connect with students/tutors!';
+  static const String phoneLabel = 'Phone Number';
+  static const String validPhoneNumber = '87654321';
+  static const String phoneNumberForContact =
+      'Only provided with your consent to make arrangements';
   // Home page
   static const String homePage = 'Home Page';
 

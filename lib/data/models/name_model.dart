@@ -11,7 +11,7 @@ class NameModel extends Name {
           lastName: lastName,
         );
 
-  factory NameModel.fromJson(Map json) {
+  factory NameModel.fromJson(Map<String, dynamic> json) {
     return NameModel(
       firstName: json[FIRSTNAME],
       lastName: json[LASTNAME],

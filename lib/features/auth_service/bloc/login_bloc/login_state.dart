@@ -9,6 +9,7 @@ abstract class LoginState extends Equatable {
     this.isLoginFailure,
     this.hasErrors,
   });
+
   final String emailError;
   final String passwordError;
   final String loginError;
@@ -22,7 +23,6 @@ abstract class LoginState extends Equatable {
     String loginError,
     bool isSubmitting,
     final bool isLoginFailure,
-    bool hasErrors,
   }) {
     return LoginFormState(
       emailError: emailError,
@@ -30,7 +30,6 @@ abstract class LoginState extends Equatable {
       loginError: loginError,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isLoginFailure: isLoginFailure ?? this.isLoginFailure,
-      hasErrors: hasErrors ?? this.hasErrors,
     );
   }
 }
@@ -42,24 +41,45 @@ class LoginFormState extends LoginState {
     String loginError,
     bool isSubmitting,
     bool isLoginFailure,
-    bool hasErrors,
   }) : super(
           emailError: emailError,
           passwordError: passwordError,
           loginError: loginError,
           isSubmitting: isSubmitting,
           isLoginFailure: isLoginFailure,
-          hasErrors: hasErrors,
         );
 
   factory LoginFormState.initial() {
     return LoginFormState(
       isSubmitting: false,
       isLoginFailure: false,
-      hasErrors: false,
     );
   }
 
+  factory LoginFormState.submitting() {
+    return LoginFormState(
+      isLoginFailure: false,
+      isSubmitting: true,
+    );
+  }
+
+  factory LoginFormState.failure(String message) {
+    return LoginFormState(
+      isLoginFailure: true,
+      isSubmitting: false,
+      loginError: message,
+    );
+  }
+
+  factory LoginFormState.success() {
+    return LoginFormState(
+      emailError: null,
+      loginError: null,
+      passwordError: null,
+      isSubmitting: false,
+      isLoginFailure: false,
+    );
+  }
   @override
   List<Object> get props => [
         emailError,
@@ -67,7 +87,6 @@ class LoginFormState extends LoginState {
         loginError,
         isSubmitting,
         isLoginFailure,
-        hasErrors,
       ];
 
   @override
@@ -77,27 +96,5 @@ class LoginFormState extends LoginState {
     loginError : $loginError ,
     isSubmitting : $isSubmitting ,
     isLoginFailure: $isLoginFailure ,
-    hasErrors : $hasErrors ,
   }''';
-}
-
-class LoginSuccess extends LoginState {
-  const LoginSuccess({this.user});
-  final User user;
-
-  @override
-  List<Object> get props => [user];
-
-  @override
-  String toString() => 'LoginSuccess { LoginSuccess : $user }';
-}
-
-class NewGoogleAccountSetUp extends LoginState {
-  const NewGoogleAccountSetUp();
-
-  @override
-  List<Object> get props => [];
-
-  @override
-  String toString() => 'NewGoogleAccountSetUp {}';
 }

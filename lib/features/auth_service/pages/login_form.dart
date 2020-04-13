@@ -3,7 +3,6 @@ import 'package:cotor/common_widgets/information_capture/custom_text_field.dart'
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/login_bloc/login_bloc.dart';
 import 'package:cotor/features/auth_service/widgets/social_sign_in_button.dart';
 import 'package:flutter/material.dart';
@@ -32,11 +31,10 @@ class _LoginFormState extends State<LoginForm> {
     _focusScopeNode.nextFocus();
   }
 
-  bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
-
   bool isLoginButtonEnabled(LoginState state) {
-    return isPopulated && !state.isSubmitting;
+    return state.emailError == null &&
+        state.passwordError == null &&
+        !state.isSubmitting;
   }
 
   @override
@@ -70,9 +68,6 @@ class _LoginFormState extends State<LoginForm> {
               ),
             );
         }
-        if (state is LoginSuccess) {
-          BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
-        }
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
@@ -93,17 +88,22 @@ class _LoginFormState extends State<LoginForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         CustomTextField(
+                          controller: _emailController,
                           labelText: Strings.emailLabel,
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
                           errorText: state.emailError,
                         ),
                         CustomTextField(
+                          controller: _passwordController,
+                          isObscureText: true,
                           labelText: Strings.passwordLabel,
                           textInputAction: TextInputAction.send,
-                          onFieldSubmitted: isLoginButtonEnabled(state)
-                              ? (value) => _onFormSubmitted
-                              : null,
+                          onFieldSubmitted: (String value) {
+                            if (isLoginButtonEnabled(state)) {
+                              _onFormSubmitted();
+                            }
+                          },
                           errorText: state.passwordError,
                         ),
                       ],
@@ -113,8 +113,13 @@ class _LoginFormState extends State<LoginForm> {
                 Container(
                   width: MediaQuery.of(context).size.width,
                   child: CustomRaisedButton(
-                    onPressed:
-                        isLoginButtonEnabled(state) ? _onFormSubmitted : null,
+                    onPressed: () async {
+                      _onEmailChanged();
+                      _onPasswordChanged();
+                      if (isLoginButtonEnabled(state)) {
+                        _onFormSubmitted();
+                      }
+                    },
                     loading: state.isSubmitting,
                     color: ColorsAndFonts.primaryColor,
                     child: Text(
@@ -135,11 +140,13 @@ class _LoginFormState extends State<LoginForm> {
                   key: googleButtonKey,
                   assetName: 'assets/sign_in/go-logo.png',
                   text: Strings.signInWithGoogle,
-                  onPressed: () {
-                    BlocProvider.of<LoginBloc>(context).add(
-                      LoginWithGooglePressed(),
-                    );
-                  },
+                  onPressed: state.isSubmitting
+                      ? null
+                      : () {
+                          BlocProvider.of<LoginBloc>(context).add(
+                            LoginWithGooglePressed(),
+                          );
+                        },
                   color: Colors.white,
                 ),
                 FlatButton(

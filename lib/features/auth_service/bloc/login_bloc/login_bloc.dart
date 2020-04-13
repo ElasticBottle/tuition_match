@@ -6,6 +6,7 @@ import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/usecases/user/get_user_profile.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
+import 'package:cotor/features/auth_service/pages/login_form.dart';
 import 'package:cotor/features/auth_service/validator.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
@@ -23,15 +24,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     @required this.signInWithEmail,
     @required this.signInWithGoogle,
     @required this.validator,
-    @required this.authServiceBloc,
-    @required this.getUserProfile,
   });
 
   final SignInWithEmail signInWithEmail;
   final SignInWithGoogle signInWithGoogle;
   final EmailAndPasswordValidators validator;
-  final AuthServiceBloc authServiceBloc;
-  final GetUserProfile getUserProfile;
 
   @override
   LoginState get initialState => LoginFormState.initial();
@@ -73,13 +70,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Stream<LoginState> _mapEmailChangedToState(String email) async* {
     final bool isValidEmail = validator.emailSubmitValidator.isValid(email);
-    if (isValidEmail) {
+    final bool notEmpty = validator.nonEmptyStringValidator.isValid(email);
+    if (isValidEmail && notEmpty) {
       yield state.copyWith(
-        hasErrors: false,
+        passwordError: state.passwordError,
+        isLoginFailure: false,
       );
     } else {
       yield state.copyWith(
-          hasErrors: true, emailError: Strings.invalidEmailErrorText);
+        emailError: Strings.invalidEmailErrorText,
+        passwordError: state.passwordError,
+        isLoginFailure: false,
+      );
     }
   }
 
@@ -87,46 +89,53 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     final bool isValidPassword =
         validator.passwordSignInSubmitValidator.isValid(password);
     if (isValidPassword) {
-      yield state.copyWith(hasErrors: false);
+      yield state.copyWith(
+        emailError: state.emailError,
+        isLoginFailure: false,
+      );
     } else {
       yield state.copyWith(
-          hasErrors: true, passwordError: Strings.invalidPasswordEmpty);
+        emailError: state.emailError,
+        passwordError: Strings.invalidPasswordEmpty,
+        isLoginFailure: false,
+      );
     }
   }
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
-    yield state.copyWith(
-      isSubmitting: true,
-    );
-    final Either<Failure, User> result = await signInWithGoogle(NoParams());
-    result.fold((Failure failure) async* {
-      yield state.copyWith(
-          isLoginFailure: true, loginError: Strings.signInFailed);
-    }, (User user) async* {
-      final result = await getUserProfile(UserParams(username: user.username));
+    yield LoginFormState.submitting();
 
-      result.fold((Failure failure) async* {
-        yield NewGoogleAccountSetUp();
-      }, (User user) async* {
-        yield LoginSuccess(user: user);
-      });
-    });
+    final Either<Failure, User> result = await signInWithGoogle(NoParams());
+    yield* result.fold(
+      (Failure failure) async* {
+        final AuthenticationFailure fail = failure;
+        yield LoginFormState.failure(fail.message);
+      },
+      (User user) async* {
+        yield LoginFormState.success();
+      },
+    );
   }
 
-  Stream<LoginState> _mapLoginWithCredentialsPressedToState({
-    String email,
-    String password,
-  }) async* {
-    yield state.copyWith(
-      isSubmitting: true,
-    );
+  Stream<LoginState> _mapLoginWithCredentialsPressedToState(
+      {String email, String password}) async* {
+    yield LoginFormState.submitting();
+
     final Either<Failure, User> result = await signInWithEmail(
-        EmailSignInParams(email: email, password: password));
-    result.fold((l) async* {
-      yield state.copyWith(
-          isLoginFailure: true, loginError: Strings.signInFailed);
-    }, (r) async* {
-      yield LoginSuccess(user: r);
-    });
+      EmailSignInParams(
+        email: email,
+        password: password,
+      ),
+    );
+
+    yield* result.fold(
+      (Failure failure) async* {
+        final AuthenticationFailure fail = failure;
+        yield LoginFormState.failure(fail.message);
+      },
+      (User user) async* {
+        yield LoginFormState.success();
+      },
+    );
   }
 }

@@ -102,7 +102,7 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
   }
 
   @override
-  Future<Either<Failure, List<TutorProfile>>> getNextCriterionList() {
+  Future<Either<Failure, List<TutorProfile>>> getNextCriterionList() async {
     return IsNetworkOnline<Failure, List<TutorProfile>>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
@@ -140,8 +140,7 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result =
-                await userDs.delProfile(username: params.username);
+            final bool result = await userDs.delProfile(uid: params.uid);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -163,7 +162,8 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> setTutorProfile(TutorProfileModel params) {
+  Future<Either<Failure, bool>> setTutorProfile(
+      TutorProfileModel params) async {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
@@ -178,7 +178,8 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> updateTutorProfile(TutorProfileModel params) {
+  Future<Either<Failure, bool>> updateTutorProfile(
+      TutorProfileModel params) async {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),

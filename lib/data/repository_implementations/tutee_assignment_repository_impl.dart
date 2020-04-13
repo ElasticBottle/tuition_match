@@ -106,7 +106,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   }
 
   @override
-  Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() {
+  Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() async {
     return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
@@ -145,7 +145,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         ifOnline: () async {
           try {
             final bool result = await userDs.delAssignment(
-                postId: params.postId, username: params.username);
+                postId: params.postId, uid: params.uid);
             return Right<Failure, bool>(result);
           } on ServerException {
             return Left<Failure, bool>(ServerFailure());
@@ -168,7 +168,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, bool>> setTuteeAssignment(
-      TuteeAssignmentModel params) {
+      TuteeAssignmentModel params) async {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
@@ -185,7 +185,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
 
   @override
   Future<Either<Failure, bool>> updateTuteeAssignment(
-      TuteeAssignmentModel params) {
+      TuteeAssignmentModel params) async {
     return IsNetworkOnline<Failure, bool>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),

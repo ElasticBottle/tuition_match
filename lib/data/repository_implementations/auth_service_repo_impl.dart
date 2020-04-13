@@ -21,11 +21,7 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   final UserRepo userRepo;
 
   @override
-  // TODO: implement onAuthStateChanged
-  Stream<User> get onAuthStateChanged => throw UnimplementedError();
-
-  @override
-  Future<Either<Failure, bool>> isUsernameValid(String username) {
+  Future<Either<Failure, bool>> isUsernameValid(String username) async {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
@@ -53,21 +49,20 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
     String username,
     String firstName,
     String lastName,
-  }) {
+  }) async {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
           final bool result = await auth.createAccountWithEmail(
-              username: username, email: email, password: password);
-          userRepo.createNewUser(
-            emaail: email,
-            username: username,
+              email: email, password: password);
+          await userRepo.createNewUser(
+            email: email,
             firstname: firstName,
             lastname: lastName,
           );
-          return result;
+          return Right<Failure, bool>(result);
         } catch (e) {
           if (e is AuthenticationException) {
             return Left<Failure, bool>(
@@ -84,23 +79,24 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<Either<Failure, void>> sendEmailVerification() {
+  Future<Either<Failure, void>> sendEmailVerification() async {
     return IsNetworkOnline<Failure, void>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await auth.sendEmailVerification();
+          return Right<Failure, void>(await auth.sendEmailVerification());
         } catch (e) {
           final AuthenticationException exception = e;
-          return AuthenticationFailure(message: exception.authError);
+          return Left<Failure, void>(
+              AuthenticationFailure(message: exception.authError));
         }
       },
     );
   }
 
   @override
-  Future<Either<Failure, bool>> isUserEmailVerified() {
+  Future<Either<Failure, bool>> isUserEmailVerified() async {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
@@ -117,13 +113,13 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<void> sendPasswordResetEmail(String email) {
+  Future<void> sendPasswordResetEmail(String email) async {
     return IsNetworkOnline<Failure, void>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await auth.sendPasswordResetEmail(email);
+          return Right<Failure, void>(await auth.sendPasswordResetEmail(email));
         } catch (e) {
           final AuthenticationException exception = e;
           return Left<Failure, bool>(
@@ -135,33 +131,51 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
 
   @override
   Future<Either<Failure, User>> signInWithEmailAndPassword(
-      String email, String password) {
+      String email, String password) async {
     return IsNetworkOnline<Failure, User>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await auth.signInWithEmailAndPassword(email, password);
+          return Right<Failure, User>(
+              await auth.signInWithEmailAndPassword(email, password));
         } catch (e) {
           final AuthenticationException exception = e;
-          return Left<Failure, bool>(
+          return Left<Failure, User>(
               AuthenticationFailure(message: exception.authError));
         }
       },
     );
   }
 
+  // @override
+  // Future<Either<Failure, User>> signInWithFacebook() async {
+  //   return IsNetworkOnline<Failure, User>().call(
+  //     networkInfo: networkInfo,
+  //     ifOffline: NetworkFailure(),
+  //     ifOnline: () async {
+  //       try {
+  //         return Right<Failure, User>(await auth.signInWithFacebook());
+  //       } catch (e) {
+  //         final PlatformException exception = e;
+  //         return Left<Failure, User>(
+  //             AuthenticationFailure(message: exception.message));
+  //       }
+  //     },
+  //   );
+  // }
+
   @override
-  Future<Either<Failure, User>> signInWithFacebook() {
+  Future<Either<Failure, User>> signInWithGoogle() async {
     return IsNetworkOnline<Failure, User>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await auth.signInWithFacebook();
+          return Right<Failure, User>(await auth.signInWithGoogle());
         } catch (e) {
           final PlatformException exception = e;
-          return Left<Failure, bool>(
+          return Left<Failure, User>(
               AuthenticationFailure(message: exception.message));
         }
       },
@@ -169,33 +183,16 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<Either<Failure, User>> signInWithGoogle() {
-    return IsNetworkOnline<Failure, User>().call(
-      networkInfo: networkInfo,
-      ifOffline: NetworkFailure(),
-      ifOnline: () async {
-        try {
-          return await auth.signInWithGoogle();
-        } catch (e) {
-          final PlatformException exception = e;
-          return Left<Failure, bool>(
-              AuthenticationFailure(message: exception.message));
-        }
-      },
-    );
-  }
-
-  @override
-  Future<Either<Failure, void>> signOut() {
+  Future<Either<Failure, void>> signOut() async {
     return IsNetworkOnline<Failure, void>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await auth.signOut();
+          return Right<Failure, void>(await auth.signOut());
         } catch (e) {
           final AuthenticationException exception = e;
-          return Left<Failure, bool>(
+          return Left<Failure, void>(
               AuthenticationFailure(message: exception.authError));
         }
       },

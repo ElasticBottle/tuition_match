@@ -75,6 +75,7 @@ class AuthServiceBloc extends Bloc<AuthServiceEvent, AuthServiceState> {
   }
 
   Stream<AuthServiceState> _mapLoggedInToState() async* {
+    yield Uninitialized();
     final user = await getCurrentUser(NoParams());
     yield* user.fold(
       (Failure noLoggedInUser) async* {
@@ -84,7 +85,7 @@ class AuthServiceBloc extends Bloc<AuthServiceEvent, AuthServiceState> {
         // User is logged in, checking to see if the user is in one of three categories:
         // - First time goolge sign in
         // - Needs to verify email
-        // - Is exidting user
+        // - Is existing user
         final Either<Failure, User> databaseProfile =
             await getUserProfile(UserParams(uid: user.uid));
         yield* databaseProfile.fold(
@@ -110,9 +111,9 @@ class AuthServiceBloc extends Bloc<AuthServiceEvent, AuthServiceState> {
   }
 
   Stream<AuthServiceState> _mapLoggedOutToState() async* {
-    userSubscription?.cancel();
+    yield Uninitialized();
+    await signOut(NoParams());
     yield Unauthenticated();
-    signOut(NoParams());
   }
 
   @override

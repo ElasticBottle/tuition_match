@@ -1,7 +1,7 @@
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/pages/first_time_google_sign_in_page.dart';
 import 'package:cotor/features/auth_service/pages/login_page.dart';
-import 'package:cotor/features/auth_service/pages/verify_email_page.dart';
+import 'package:cotor/features/auth_service/verify_email/pages/verify_email_page.dart';
 import 'package:cotor/features/onboarding/presentation/pages/onboard_page.dart';
 import 'package:cotor/home_page.dart';
 import 'package:flutter/material.dart';

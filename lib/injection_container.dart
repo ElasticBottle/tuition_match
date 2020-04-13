@@ -5,16 +5,21 @@ import 'package:cotor/data/datasources/tutee_assignment_local_data_source.dart';
 import 'package:cotor/data/datasources/tutee_assignment_remote_data_source.dart';
 import 'package:cotor/data/datasources/user_remote_data_source.dart';
 import 'package:cotor/data/repository_implementations/auth_service_repo_impl.dart';
+import 'package:cotor/data/repository_implementations/misc_repo_impl.dart';
 import 'package:cotor/data/repository_implementations/tutee_assignment_repository_impl.dart';
 import 'package:cotor/data/repository_implementations/user_repo_impl.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
+import 'package:cotor/domain/repositories/misc_repo.dart';
 import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
 import 'package:cotor/domain/usecases/auth_service/create_user_profile_for_google_sign_in.dart';
+import 'package:cotor/domain/usecases/auth_service/send_email_verification.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_in_with_email.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_in_with_goolge.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_out.dart';
+import 'package:cotor/domain/usecases/is_first_app_launch.dart';
+import 'package:cotor/domain/usecases/set_is_first_app_launch_false.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
@@ -27,6 +32,7 @@ import 'package:cotor/features/auth_service/bloc/first_time_google_sign_in/first
 import 'package:cotor/features/auth_service/bloc/login_bloc/login_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/registraiton_bloc/registration_bloc.dart';
 import 'package:cotor/features/auth_service/validator.dart';
+import 'package:cotor/features/auth_service/verify_email/bloc/verify_email_bloc.dart';
 import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
 import 'package:cotor/features/onboarding/data/repositories/onboarding_repository_adapter.dart';
 import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -70,6 +76,9 @@ Future<void> init() async {
 
   sl.registerFactory<AuthServiceBloc>(
     () => AuthServiceBloc(
+      isFirstAppLaunch: sl(),
+      setIsFirstAppLaunchFalse: sl(),
+      getCurrentUser: sl(),
       userStream: sl(),
       getUserProfile: sl(),
       signOut: sl(),
@@ -78,8 +87,6 @@ Future<void> init() async {
 
   sl.registerFactory<LoginBloc>(
     () => LoginBloc(
-      authServiceBloc: sl(),
-      getUserProfile: sl(),
       signInWithEmail: sl(),
       signInWithGoogle: sl(),
       validator: sl(),
@@ -97,6 +104,14 @@ Future<void> init() async {
     () => FirstTimeGoogleSignInBloc(
       createUserProfileForGoogleSignIn: sl(),
       validator: sl(),
+      getCurrentUser: sl(),
+    ),
+  );
+
+  sl.registerFactory<VerifyEmailBloc>(
+    () => VerifyEmailBloc(
+      sendEmailVerification: sl(),
+      signOut: sl(),
     ),
   );
   // UseCase
@@ -111,11 +126,15 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetUserProfile(repo: sl()));
   sl.registerLazySingleton(() => CreateAccountWithEmail(repo: sl()));
   sl.registerLazySingleton(() => CreateUserProfileForGoogleSignIn(repo: sl()));
+  sl.registerLazySingleton(() => SendEmailVerification(repo: sl()));
   sl.registerLazySingleton(() => SignInWithEmail(repo: sl()));
   sl.registerLazySingleton(() => SignInWithGoogle(repo: sl()));
   sl.registerLazySingleton(() => SignOut(repo: sl()));
 
   sl.registerLazySingleton(() => EmailAndPasswordValidators());
+
+  sl.registerLazySingleton(() => IsFirstAppLaunch(repo: sl()));
+  sl.registerLazySingleton(() => SetIsFirstAppLaunchFalse(repo: sl()));
 
   // Repository
   sl.registerLazySingleton<OnboardingRepository>(
@@ -135,6 +154,11 @@ Future<void> init() async {
       auth: sl(),
       networkInfo: sl(),
       userRepo: sl(),
+    ),
+  );
+  sl.registerLazySingleton<MiscRepo>(
+    () => MiscRepoImpl(
+      preferences: sl(),
     ),
   );
 

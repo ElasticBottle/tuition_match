@@ -55,10 +55,13 @@ class TutorProfileModel extends TutorProfile {
         );
 
   factory TutorProfileModel.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty) {
+      return TutorProfileModel();
+    }
     return TutorProfileModel(
         photoUrl: json[PHOTOURL],
         uid: json[UID],
-        tutorNameModel: NameModel.fromJson(json[TUTEE_NAME]),
+        tutorNameModel: NameModel.fromJson(json[TUTOR_NAME]),
         dateAdded: json[DATE_ADDED].toString(),
         dateModified: json[DATE_MODIFIED].toString(),
         gender: Gender.values[json[GENDER]],
@@ -101,7 +104,7 @@ class TutorProfileModel extends TutorProfile {
     return <String, dynamic>{
       PHOTOURL: photoUrl,
       UID: uid,
-      TUTEE_NAME: tutorNameModel.toJson(),
+      TUTOR_NAME: tutorNameModel.toJson(),
       DATE_ADDED: dateAdded,
       DATE_MODIFIED: dateModified,
       GENDER: gender.index,

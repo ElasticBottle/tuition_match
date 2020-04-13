@@ -36,6 +36,7 @@ const String TUTOR_PROFILE = 'tutorProfile';
 const String PHONE_NUMBER = 'phoneNumber';
 
 // Tutor Profile Keys
+const String TUTOR_NAME = 'tutorName';
 const String DATE_MODIFIED = 'dateModified';
 const String QUALIFICATIONS = 'qualifications';
 const String SELLING_POINTS = 'selling_points';

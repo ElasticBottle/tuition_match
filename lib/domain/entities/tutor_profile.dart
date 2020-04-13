@@ -129,7 +129,7 @@ class TutorProfile extends Equatable {
       ];
 
   @override
-  String toString() => '''TuteeAssignmet {
+  String toString() => '''TutorProfile {
     photoUrl : $photoUrl ,
     uid : $uid ,
     tutorName : $tutorName ,
@@ -151,6 +151,6 @@ class TutorProfile extends Equatable {
     numRequest : $numRequest ,
     numLiked : $numLiked ,
     rating : $rating ,
-    isVerifiedTutor: $isVerifiedTutor,
+    isVerifiedTutor: $isVerifiedTutor,}
     ''';
 }

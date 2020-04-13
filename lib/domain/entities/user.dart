@@ -22,7 +22,7 @@ class User extends Equatable {
   final bool isVerifiedAccount;
   final bool isVerifiedTutor;
   final bool isEmailVerified;
-  final List<TuteeAssignment> userAssignments;
+  final Map<String, TuteeAssignment> userAssignments;
   final TutorProfile tutorProfile;
 
   User copyWith(

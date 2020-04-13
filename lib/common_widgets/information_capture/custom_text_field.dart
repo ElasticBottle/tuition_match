@@ -6,7 +6,7 @@ class CustomTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.onSaved,
     this.validator,
-    this.initialText = '',
+    this.initialText,
     this.hintText,
     this.helpText,
     this.labelText,
@@ -19,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
     this.bottomPadding = 30.0,
     this.controller,
+    this.isObscureText = false,
   }) : assert(controller == null || initialText == null);
   final Function(String) onFieldSubmitted;
   final Function(String) onSaved;
@@ -36,6 +37,7 @@ class CustomTextField extends StatelessWidget {
   final int maxLines;
   final double bottomPadding;
   final TextEditingController controller;
+  final bool isObscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class CustomTextField extends StatelessWidget {
         child: TextFormField(
           controller: controller,
           initialValue: initialText,
+          obscureText: isObscureText,
           textInputAction: textInputAction,
           onFieldSubmitted: onFieldSubmitted,
           validator: validator,

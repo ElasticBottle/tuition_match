@@ -11,21 +11,23 @@ class Uninitialized extends AuthServiceState {}
 
 class Authenticated extends AuthServiceState {
   const Authenticated({
-    this.isEmailVerified,
     this.userProfile,
   });
 
-  final bool isEmailVerified;
   final User userProfile;
-
   @override
-  List<Object> get props => [isEmailVerified, userProfile];
+  List<Object> get props => [userProfile];
 
   @override
   String toString() => '''Authenticated { 
-    isEmailVerified: $isEmailVerified 
-    userProfile : $userProfile
+    userProfile : $userProfile,
   }''';
 }
 
 class Unauthenticated extends AuthServiceState {}
+
+class FirstTimeAppLaunch extends AuthServiceState {}
+
+class NewGoogleUser extends AuthServiceState {}
+
+class UnverifiedEmail extends AuthServiceState {}

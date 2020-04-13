@@ -17,23 +17,25 @@ class InitialPageDecider extends StatelessWidget {
     return BlocBuilder<AuthServiceBloc, AuthServiceState>(
       builder: (context, state) {
         if (state is Uninitialized) {
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (state is FirstTimeAppLaunch) {
           return OnboardPage();
-        }
-        if (state is Authenticated) {
-          if (state.userProfile.isEmailVerified && !state.isNewGoogleUser) {
-            return HomePage();
-          } else if (state.isNewGoogleUser) {
-            return FirstTimeGoogleSignInPage();
-          } else {
-            return VerifyEmailPage();
-          }
-        }
-        if (state is Unauthenticated) {
+        } else if (state is Authenticated) {
+          return HomePage();
+        } else if (state is NewGoogleUser) {
+          return FirstTimeGoogleSignInPage();
+        } else if (state is UnverifiedEmail) {
+          return VerifyEmailPage();
+        } else if (state is Unauthenticated) {
           return LoginPage();
         }
-        return Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
+        return Container(
+          child: Center(
+            child: Text('error occured'),
           ),
         );
       },

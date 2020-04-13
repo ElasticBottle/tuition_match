@@ -11,4 +11,6 @@ class AppStarted extends AuthServiceEvent {}
 
 class LoggedIn extends AuthServiceEvent {}
 
+class FinishOnboarding extends AuthServiceEvent {}
+
 class LoggedOut extends AuthServiceEvent {}

@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
+import 'package:cotor/data/models/name_model.dart';
+import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/data/models/tutor_profile_model.dart';
 import 'package:cotor/domain/entities/name.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
@@ -15,7 +18,7 @@ class UserModel extends User {
     bool isVerifiedAccount,
     bool isVerifiedTutor,
     bool isEmailVerified,
-    List<TuteeAssignment> userAssignments,
+    Map<String, TuteeAssignment> userAssignments,
     TutorProfile tutorProfile,
   }) : super(
           uid: uid,
@@ -29,19 +32,28 @@ class UserModel extends User {
           tutorProfile: tutorProfile,
         );
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> toConvert = json[USER_ASSIGNMENTS];
+    final Map<String, TuteeAssignment> userAssignments = {};
+    for (MapEntry<String, Map<String, dynamic>> entry in toConvert.entries) {
+      userAssignments
+          .addAll({entry.key: TuteeAssignmentModel.fromJson(entry.value)});
+    }
     return UserModel(
-      name: json[NAME],
+      name: NameModel.fromJson(json[NAME]),
       uid: json[UID],
       photoUrl: json[PHOTOURL],
       isTutor: json[IS_TUTOR],
       isVerifiedAccount: json[IS_VERIFIED_ACCOUNT],
       isVerifiedTutor: json[IS_VERIFIED_TUTOR],
       isEmailVerified: json[IS_EMAIL_VERIFIED],
-      userAssignments: json[USER_ASSIGNMENTS],
-      tutorProfile: json[TUTOR_PROFILE],
+      userAssignments: userAssignments,
+      tutorProfile: TutorProfileModel.fromJson(json[TUTOR_PROFILE]),
     );
   }
   factory UserModel.fromFirebaseUser(FirebaseUser user) {
+    if (user == null) {
+      return null;
+    }
     return UserModel(
       photoUrl: user.photoUrl,
       uid: user.uid,

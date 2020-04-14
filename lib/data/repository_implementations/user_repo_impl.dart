@@ -12,14 +12,20 @@ import 'package:flutter/foundation.dart';
 
 class UserRepoImpl implements UserRepo {
   UserRepoImpl({
-    @required this.userData,
+    @required this.userDs,
     @required this.networkInfo,
   });
-  final UserRemoteDataSource userData;
+  final UserRemoteDataSource userDs;
   final NetworkInfo networkInfo;
 
   @override
   void dispose() {}
+
+  @override
+  Stream<User> userProfileStream(String uid) => userDs.userProfileStream(uid);
+
+  @override
+  Stream<User> userStream() => userDs.userStream;
 
   @override
   Future<Either<Failure, User>> getCurrentLoggedInUser() async {
@@ -28,7 +34,7 @@ class UserRepoImpl implements UserRepo {
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await userData.getCurrentUser();
+          return Right<Failure, User>(await userDs.getCurrentUser());
         } on NoUserException {
           return Left<Failure, User>(NoUserFailure());
         }
@@ -37,40 +43,44 @@ class UserRepoImpl implements UserRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> createNewUser({
-    String emaail,
-    String username,
+  Future<Either<Failure, void>> createNewUser({
+    String email,
     String firstname,
     String lastname,
-  }) {
-    return IsNetworkOnline<Failure, bool>().call(
+    String phoneNum,
+  }) async {
+    return IsNetworkOnline<Failure, void>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await userData.createNewUserDocument(
-            username: username,
+          return Right<Failure, void>(await userDs.createNewUserDocument(
             firstname: firstname,
             lastname: lastname,
-          );
-        } on ServerException {
-          return Left<Failure, User>(ServerFailure());
+            phoneNum: phoneNum,
+          ));
+        } catch (e) {
+          print('in user repo impl ' + e.toString());
+          print('serverEception');
+          return Left<Failure, void>(ServerFailure());
         }
       },
     );
   }
 
   @override
-  Future<Either<Failure, User>> getUserInfo(String username) {
+  Future<Either<Failure, User>> getUserInfo(String uid) async {
     return IsNetworkOnline<Failure, User>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await userData.getUserInfo(username);
+          final User result = await userDs.getUserInfo(uid);
+          return Right<Failure, User>(result);
         } on ServerException {
           return Left<Failure, User>(ServerFailure());
         } on NoUserException {
+          print('returning no user failure');
           return Left<Failure, User>(NoUserFailure());
         }
       },
@@ -78,13 +88,15 @@ class UserRepoImpl implements UserRepo {
   }
 
   @override
-  Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(String username) {
+  Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(
+      String uid) async {
     return IsNetworkOnline<Failure, PrivateUserInfo>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return await userData.getUserPrivateInfo(username);
+          return Right<Failure, PrivateUserInfo>(
+              await userDs.getUserPrivateInfo(uid));
         } on ServerException {
           return Left<Failure, User>(ServerFailure());
         }

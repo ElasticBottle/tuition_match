@@ -25,6 +25,7 @@ import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignmen
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:cotor/domain/usecases/user/get_user_profile.dart';
+import 'package:cotor/domain/usecases/user/user_profile_stream.dart';
 import 'package:cotor/domain/usecases/user/user_stream.dart';
 import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
@@ -39,6 +40,7 @@ import 'package:cotor/features/onboarding/domain/repositories/onboarding_reposit
 import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc.dart';
+import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -114,6 +116,13 @@ Future<void> init() async {
       signOut: sl(),
     ),
   );
+  sl.registerFactory<UserProfileBloc>(
+    () => UserProfileBloc(
+      getCurrentUser: sl(),
+      userProfileStream: sl(),
+    ),
+  );
+
   // UseCase
   sl.registerLazySingleton(() => GetOnboardingInfo(repository: sl()));
 
@@ -135,6 +144,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => IsFirstAppLaunch(repo: sl()));
   sl.registerLazySingleton(() => SetIsFirstAppLaunchFalse(repo: sl()));
+
+  sl.registerLazySingleton(() => UserProfileStream(repo: sl()));
 
   // Repository
   sl.registerLazySingleton<OnboardingRepository>(

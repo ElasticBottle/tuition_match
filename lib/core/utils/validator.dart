@@ -52,6 +52,10 @@ class EmailSubmitRegexValidator extends RegexValidator {
   EmailSubmitRegexValidator() : super(regexSource: '^\\S+@\\S+\\.\\S+\$');
 }
 
+class PhoneNumValidator extends RegexValidator {
+  PhoneNumValidator() : super(regexSource: r'^[8|9][0-9]{7}$');
+}
+
 class NonEmptyStringValidator extends StringValidator {
   @override
   bool isValid(String value) {
@@ -78,4 +82,5 @@ class EmailAndPasswordValidators {
   final StringValidator passwordSignInSubmitValidator =
       NonEmptyStringValidator();
   final StringValidator nonEmptyStringValidator = NonEmptyStringValidator();
+  final PhoneNumValidator phoneNumValidator = PhoneNumValidator();
 }

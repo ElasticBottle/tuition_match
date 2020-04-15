@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
 import 'package:cotor/domain/usecases/auth_service/create_user_profile_for_google_sign_in.dart';
-import 'package:cotor/features/auth_service/validator.dart';
+import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'first_time_google_sign_in_state.dart';
@@ -19,9 +21,11 @@ class FirstTimeGoogleSignInBloc
   FirstTimeGoogleSignInBloc({
     @required this.validator,
     @required this.createUserProfileForGoogleSignIn,
+    @required this.getCurrentUser,
   });
   EmailAndPasswordValidators validator;
   CreateUserProfileForGoogleSignIn createUserProfileForGoogleSignIn;
+  GetCurrentUser getCurrentUser;
 
   @override
   FirstTimeGoogleSignInState get initialState =>
@@ -102,19 +106,19 @@ class FirstTimeGoogleSignInBloc
     String lastName,
   }) async* {
     yield FirstTimeGoogleSignInState.loading();
-    final Either<Failure, bool> result =
+    final Either<Failure, void> result =
         await createUserProfileForGoogleSignIn(CreateAccountParams(
       phoneNum: phoneNum,
       firstName: firstName,
       lastName: lastName,
     ));
-    yield* result.fold((Failure failure) async* {
-      yield state.copyWith(
-        isFailure: true,
-        loginError: 'something went wrong',
-      );
-    }, (r) async* {
-      yield FirstTimeGoogleSignInState.success();
-    });
+    yield* result.fold(
+      (Failure failure) async* {
+        yield FirstTimeGoogleSignInState.failure();
+      },
+      (r) async* {
+        yield FirstTimeGoogleSignInState.success();
+      },
+    );
   }
 }

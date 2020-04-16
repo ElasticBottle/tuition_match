@@ -96,7 +96,7 @@ class OnboardPageSlideState extends State<OnboardPageSlide> {
                       textColor: BLUE_GRAY,
                       color: ORANGE_ACCENT,
                       onPressed: () => BlocProvider.of<AuthServiceBloc>(context)
-                          .add(AppStarted())),
+                          .add(FinishOnboarding())),
                 ),
               ),
             if (currentIndex + 1 !=
@@ -106,15 +106,20 @@ class OnboardPageSlideState extends State<OnboardPageSlide> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 25.0, 25.0),
                   child: CustomRaisedButton(
-                      key: Key(Keys.finishOnboard),
-                      child: Text('Skip'),
-                      borderRadius: 150.0,
-                      width: 50.0,
-                      height: 50.0,
-                      textColor: BLUE_GRAY,
-                      color: BACKGROUND_COLOR,
-                      onPressed: () => BlocProvider.of<AuthServiceBloc>(context)
-                          .add(AppStarted())),
+                    key: Key(Keys.finishOnboard),
+                    child: Icon(Icons.keyboard_arrow_right),
+                    borderRadius: 150.0,
+                    width: 50.0,
+                    height: 50.0,
+                    textColor: BLUE_GRAY,
+                    color: BACKGROUND_COLOR,
+                    onPressed: () {
+                      currentIndex++;
+                      BlocProvider.of<OnboardingBloc>(context)
+                          .add(GetNextOnboardingInfo(index: currentIndex));
+                      controller.move(currentIndex);
+                    },
+                  ),
                 ),
               ),
           ],

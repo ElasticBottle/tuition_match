@@ -193,47 +193,28 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
 
   @override
   Future<bool> setTutorProfile({TutorProfileModel tutorParams}) async {
-    // try {
-    //   await store.runTransaction((Transaction tx) async {
-    //     final Map<String, dynamic> toAdd = tutorParams.toDocumentSnapshot()[1];
-    //     toAdd.addAll(<String, dynamic>{
-    //       DATE_ADDED: FieldValue.serverTimestamp(),
-    //       DATE_MODIFIED: FieldValue.serverTimestamp(),
-    //       STATUS: 0,
-    //       REQUEST: 0,
-    //       LIKED: 0,
-    //       RATING: 0.0,
-    //     });
-    //     tx.update(store.document(FirestorePath.users(tutorParams.uid)),
-    //         <String, Map<String, dynamic>>{PROFILE: toAdd});
-    //     tx.set(store.document(FirestorePath.tutorProfile(tutorParams.uid)),
-    //         toAdd);
-    // TODO(ElasticBottle): Change toAdd here take a Map<uid, photoURL> under liked key
-    //     tx.set(store.document(FirestorePath.likeProfiles(tutorParams.uid)),
-    //         toAdd);
-    //   });
-    //   return true;
-    // } catch (e) {
-    //   print(e.toString());
-    //   throw ServerException();
-    // }
     final Map<String, dynamic> toAdd = tutorParams.toDocumentSnapshot()[1];
     toAdd.addAll(<String, dynamic>{
       DATE_ADDED: FieldValue.serverTimestamp(),
       DATE_MODIFIED: FieldValue.serverTimestamp(),
-      STATUS: 0,
       NUM_REQUEST: 0,
       NUM_LIKED: 0,
       RATING: 0.0,
     });
     final WriteBatch batch = store.batch();
-    batch.updateData(store.document(FirestorePath.users(tutorParams.uid)),
-        <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd});
+    batch.updateData(
+      store.document(FirestorePath.users(tutorParams.uid)),
+      <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
+    );
     batch.setData(
-        store.document(FirestorePath.tutorProfile(tutorParams.uid)), toAdd);
-    // TODO(ElasticBottle): Change toAdd here take a Map<uid, photoURL> under liked key
+      store.document(FirestorePath.tutorProfile(tutorParams.uid)),
+      toAdd,
+    );
+    toAdd.addAll(<String, Map<String, String>>{LIKED: <String, String>{}});
     batch.setData(
-        store.document(FirestorePath.likeProfiles(tutorParams.uid)), toAdd);
+      store.document(FirestorePath.likeProfiles(tutorParams.uid)),
+      toAdd,
+    );
     try {
       await batch.commit();
       return true;
@@ -279,30 +260,34 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
 
   @override
   Future<bool> updateTutorProfile({TutorProfileModel tutorParams}) async {
-    // TODO(ElasticBottle): update Tutee assignment
-    final DocumentReference userRef =
-        store.document(FirestorePath.users(tutorParams.uid));
+    final DocumentReference tutorProfileRef =
+        store.document(FirestorePath.tutorProfile(tutorParams.uid));
     try {
       await store.runTransaction((Transaction tx) async {
-        final DocumentSnapshot userSnapshot = await tx.get(userRef);
-        final String postId = Uuid().v1();
+        final DocumentSnapshot profileSnapshot = await tx.get(tutorProfileRef);
         final Map<String, dynamic> toAdd = tutorParams.toDocumentSnapshot()[1];
         toAdd.addAll(<String, dynamic>{
-          DATE_ADDED: FieldValue.serverTimestamp(),
-          STATUS: 0,
-          NUM_APPLIED: 0,
-          NUM_LIKED: 0,
+          DATE_MODIFIED: FieldValue.serverTimestamp(),
+          NUM_REQUEST: profileSnapshot.data[NUM_REQUEST],
+          NUM_LIKED: profileSnapshot.data[NUM_LIKED],
+          RATING: profileSnapshot.data[RATING],
         });
-        userSnapshot.data[USER_ASSIGNMENTS]
-            .addAll(<String, Map<String, dynamic>>{postId: toAdd});
+
         tx.update(
-            store.document(FirestorePath.users(tutorParams.uid)),
-            <String, Map<String, dynamic>>{
-              USER_ASSIGNMENTS: userSnapshot.data[USER_ASSIGNMENTS]
-            });
-        tx.set(store.document(FirestorePath.assignment(postId)), toAdd);
-        // TODO(ElasticBottle): Change toAdd here take a Map<uid, photoURL> under liked key
-        tx.set(store.document(FirestorePath.likeAssignment(postId)), toAdd);
+          store.document(FirestorePath.users(tutorParams.uid)),
+          <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
+        );
+        tx.update(
+          store.document(FirestorePath.assignment(tutorParams.uid)),
+          toAdd,
+        );
+        final DocumentSnapshot profileLikeSnapshot = await tx
+            .get(store.document(FirestorePath.likeProfiles(tutorParams.uid)));
+        toAdd.addAll(profileLikeSnapshot.data[LIKED]);
+        tx.set(
+          store.document(FirestorePath.likeProfiles(tutorParams.uid)),
+          toAdd,
+        );
       });
       return true;
     } catch (e) {

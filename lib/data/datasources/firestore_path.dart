@@ -6,7 +6,7 @@ class FirestorePath {
   // static String userAssignment({String postId, String uid}) =>
   //     'users/$uid/posts/$postId/';
 
-  static String likeAssignment(String postId) => 'likes/assignments/$postId';
+  static String likeAssignment(String postId) => 'likesAssignments/$postId';
 
-  static String likeProfiles(String uid) => 'likes/tutors/$uid';
+  static String likeProfiles(String uid) => 'likesProfiles/$uid';
 }

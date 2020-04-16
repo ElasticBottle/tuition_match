@@ -37,12 +37,12 @@ class AssignmentItemTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TuteeCardHeader(
-              heroTag: assignment.username +
+              heroTag: assignment.uid +
                   assignment.subject.toString() +
                   assignment.level.toString() +
                   assignment.dateAdded,
               tuteeName: assignment.tuteeName,
-              username: assignment.username,
+              username: assignment.uid,
               level: assignment.level,
               subject: assignment.subject,
               format: assignment.format,
@@ -55,15 +55,15 @@ class AssignmentItemTile extends StatelessWidget {
               height: 10.0,
             ),
             BottomActionBar(
-              heroTag: assignment.username +
+              heroTag: assignment.uid +
                   assignment.subject.toString() +
                   assignment.level.toString(),
-              numClickAction: assignment.liked,
+              numClickAction: assignment.numLiked,
               mainOnPressed: () {},
               actionOnPressed: () {},
               callToActionText: Strings.apply,
               numClickCallToAction:
-                  assignment.applied.toString() + Strings.applied,
+                  assignment.numApplied.toString() + Strings.applied,
             ),
           ],
         ),
@@ -83,7 +83,7 @@ class AssignmentItemTile extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: InfoDisplay(
-          tag: assignment.username,
+          tag: assignment.uid,
           icons: [
             Icons.location_on,
             Icons.watch,

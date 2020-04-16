@@ -45,12 +45,12 @@ class ViewAssignmentPage extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           TuteeCardHeader(
-                            heroTag: assignment.username +
+                            heroTag: assignment.uid +
                                 assignment.subject.toString() +
                                 assignment.level.toString() +
                                 assignment.dateAdded,
                             tuteeName: assignment.tuteeName,
-                            username: assignment.username,
+                            username: assignment.uid,
                             level: assignment.level,
                             subject: assignment.subject,
                             format: assignment.format,
@@ -80,7 +80,7 @@ class ViewAssignmentPage extends StatelessWidget {
                               assignment.additionalRemarks,
                             ],
                             spacingBetweenFields: 20.0,
-                            tag: assignment.username,
+                            tag: assignment.uid,
                           ),
                         ],
                       ),
@@ -98,15 +98,15 @@ class ViewAssignmentPage extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.all(20.0),
                     child: BottomActionBar(
-                      heroTag: assignment.username +
+                      heroTag: assignment.uid +
                           assignment.subject.toString() +
                           assignment.level.toString(),
-                      numClickAction: assignment.liked,
+                      numClickAction: assignment.numLiked,
                       mainOnPressed: () {},
                       actionOnPressed: () {},
                       callToActionText: Strings.apply,
                       numClickCallToAction:
-                          assignment.applied.toString() + Strings.applied,
+                          assignment.numApplied.toString() + Strings.applied,
                     ),
                   );
                 },

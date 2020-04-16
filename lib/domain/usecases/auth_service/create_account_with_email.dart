@@ -3,15 +3,14 @@ import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:dartz/dartz.dart';
 
-class CreateAccountWithEmail extends UseCase<bool, CreateAccoutnParams> {
+class CreateAccountWithEmail extends UseCase<bool, CreateAccountParams> {
   CreateAccountWithEmail({this.repo});
   AuthServiceRepo repo;
   @override
-  Future<Either<Failure, bool>> call(CreateAccoutnParams params) async {
+  Future<Either<Failure, bool>> call(CreateAccountParams params) async {
     final Either<Failure, bool> success = await repo.createAccountWithEmail(
       email: params.email,
       password: params.password,
-      username: params.username,
       firstName: params.firstName,
       lastName: params.lastName,
     );
@@ -19,24 +18,24 @@ class CreateAccountWithEmail extends UseCase<bool, CreateAccoutnParams> {
   }
 }
 
-class CreateAccoutnParams extends Params {
-  const CreateAccoutnParams({
-    this.username,
+class CreateAccountParams extends Params {
+  const CreateAccountParams({
     this.firstName,
     this.lastName,
     this.email,
     this.password,
+    this.phoneNum,
   });
   final String email;
   final String password;
-  final String username;
   final String firstName;
   final String lastName;
+  final String phoneNum;
 
   @override
-  List<Object> get props => [email, password, username, firstName, lastName];
+  List<Object> get props => [email, password, firstName, lastName, phoneNum];
 
   @override
   String toString() =>
-      'CreateAccoutnParams { email : $email, password: $password , username: $username, firstname: $firstName, lastname: $lastName}';
+      'CreateAccoutnParams { email : $email, password: $password ,  firstname: $firstName, lastname: $lastName, phoneNum: $phoneNum}';
 }

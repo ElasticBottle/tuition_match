@@ -26,7 +26,7 @@ abstract class AuthServiceRepo {
       String email, String password);
   Future<Either<Failure, bool>> isUserEmailVerified();
   Future<Either<Failure, void>> sendEmailVerification();
-  Future<void> sendPasswordResetEmail(String email);
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email);
   Future<Either<Failure, User>> signInWithGoogle();
   // Future<Either<Failure, User>> signInWithFacebook();
   Future<Either<Failure, void>> signOut();

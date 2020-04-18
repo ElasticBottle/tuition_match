@@ -114,7 +114,7 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<void> sendPasswordResetEmail(String email) async {
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
     return IsNetworkOnline<Failure, void>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),

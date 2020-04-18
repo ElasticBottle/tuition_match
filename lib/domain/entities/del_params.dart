@@ -1,4 +1,4 @@
-import 'package:cotor/core/usecases/usecase.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:flutter/material.dart';
 
 class DelParams extends Params {

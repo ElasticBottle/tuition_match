@@ -1,27 +1,53 @@
+import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/domain/entities/name.dart';
+import 'package:equatable/equatable.dart';
 
-import 'map_key_strings.dart';
-
-class NameModel extends Name {
-  const NameModel({
+class NameEntity extends Equatable implements Name {
+  const NameEntity({
     String firstName,
     String lastName,
-  }) : super(
-          firstName: firstName,
-          lastName: lastName,
-        );
+  })  : _firstName = firstName,
+        _lastName = lastName;
 
-  factory NameModel.fromJson(Map<String, dynamic> json) {
-    return NameModel(
+  factory NameEntity.fromJson(Map<String, dynamic> json) {
+    return NameEntity(
       firstName: json[FIRSTNAME],
       lastName: json[LASTNAME],
     );
   }
 
+  factory NameEntity.fromDomainEntity(Name name) {
+    return NameEntity(
+      firstName: name.firstName,
+      lastName: name.lastName,
+    );
+  }
+
+  final String _firstName;
+  final String _lastName;
+
+  @override
+  String get firstName => _firstName;
+  @override
+  String get lastName => _lastName;
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      FIRSTNAME: firstName,
-      LASTNAME: lastName,
+      FIRSTNAME: _firstName,
+      LASTNAME: _lastName,
     };
   }
+
+  Name toDomainEntity() {
+    return NameEntity(
+      firstName: _firstName,
+      lastName: _lastName,
+    );
+  }
+
+  @override
+  String toString() => _firstName + ' ' + _lastName;
+
+  @override
+  List<Object> get props => [_firstName, _lastName];
 }

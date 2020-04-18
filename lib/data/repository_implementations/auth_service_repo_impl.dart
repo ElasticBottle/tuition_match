@@ -2,6 +2,7 @@ import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/data/datasources/auth_service_remote.dart';
+import 'package:cotor/data/models/user_entity.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
@@ -137,8 +138,9 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, User>(
-              await auth.signInWithEmailAndPassword(email, password));
+          final UserEntity user =
+              await auth.signInWithEmailAndPassword(email, password);
+          return Right<Failure, User>(user.toDomainEntity());
         } catch (e) {
           final AuthenticationException exception = e;
           return Left<Failure, User>(
@@ -172,7 +174,8 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, User>(await auth.signInWithGoogle());
+          final UserEntity user = await auth.signInWithGoogle();
+          return Right<Failure, User>(user.toDomainEntity());
         } catch (e) {
           final PlatformException exception = e;
           return Left<Failure, User>(

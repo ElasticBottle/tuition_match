@@ -28,16 +28,11 @@ abstract class AuthServiceRepo {
   Future<Either<Failure, void>> sendEmailVerification();
   Future<void> sendPasswordResetEmail(String email);
   Future<Either<Failure, User>> signInWithGoogle();
-  Future<Either<Failure, User>> signInWithFacebook();
+  // Future<Either<Failure, User>> signInWithFacebook();
   Future<Either<Failure, void>> signOut();
-  Stream<User> get onAuthStateChanged;
 
   Future<Either<Failure, bool>> isUsernameValid(String username);
   Future<Either<Failure, bool>> createAccountWithEmail(
-      {String email,
-      String password,
-      String username,
-      String firstName,
-      String lastName});
+      {String email, String password, String firstName, String lastName});
   void dispose();
 }

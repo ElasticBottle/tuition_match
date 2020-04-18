@@ -1,8 +1,6 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/del_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/entities/tutee_criteria_params.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class TuteeAssignmentRepo {
@@ -13,16 +11,16 @@ abstract class TuteeAssignmentRepo {
 
   // Retrieving Searched List
   Future<Either<Failure, List<TuteeAssignment>>> getByCriterion(
-      CriteriaParams params);
+      TuteeCriteriaParams params);
   Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion();
   Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList();
 
   // Setting new Assignment
-  Future<Either<Failure, TuteeAssignmentModel>> getCachedTuteeAssignmentToSet();
-  Future<Either<Failure, bool>> setTuteeAssignment(TuteeAssignmentModel params);
+  Future<Either<Failure, TuteeAssignment>> getCachedTuteeAssignmentToSet();
+  Future<Either<Failure, bool>> setTuteeAssignment(TuteeAssignment assignment);
   Future<Either<Failure, bool>> updateTuteeAssignment(
-      TuteeAssignmentModel params);
+      TuteeAssignment assignment);
 
   // Deleting Assignment
-  Future<Either<Failure, bool>> delAssignment(DelParams params);
+  Future<Either<Failure, bool>> delAssignment({String uid, String postId});
 }

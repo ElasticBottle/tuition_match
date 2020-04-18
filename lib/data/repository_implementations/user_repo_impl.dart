@@ -5,6 +5,7 @@ import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/data/datasources/user_remote_data_source.dart';
+import 'package:cotor/data/models/user_entity.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
@@ -34,7 +35,8 @@ class UserRepoImpl implements UserRepo {
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, User>(await userDs.getCurrentUser());
+          return Right<Failure, User>(
+              (await userDs.getCurrentUser()).toDomainEntity());
         } on NoUserException {
           return Left<Failure, User>(NoUserFailure());
         }
@@ -61,7 +63,6 @@ class UserRepoImpl implements UserRepo {
           ));
         } catch (e) {
           print('in user repo impl ' + e.toString());
-          print('serverEception');
           return Left<Failure, void>(ServerFailure());
         }
       },
@@ -75,8 +76,8 @@ class UserRepoImpl implements UserRepo {
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          final User result = await userDs.getUserInfo(uid);
-          return Right<Failure, User>(result);
+          final UserEntity result = await userDs.getUserInfo(uid);
+          return Right<Failure, User>(result.toDomainEntity());
         } on ServerException {
           return Left<Failure, User>(ServerFailure());
         } on NoUserException {
@@ -87,6 +88,7 @@ class UserRepoImpl implements UserRepo {
     );
   }
 
+// TODO(ElasticBottle): map retrieved response from datasource to correct object to return
   @override
   Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(
       String uid) async {
@@ -98,7 +100,7 @@ class UserRepoImpl implements UserRepo {
           return Right<Failure, PrivateUserInfo>(
               await userDs.getUserPrivateInfo(uid));
         } on ServerException {
-          return Left<Failure, User>(ServerFailure());
+          return Left<Failure, PrivateUserInfo>(ServerFailure());
         }
       },
     );

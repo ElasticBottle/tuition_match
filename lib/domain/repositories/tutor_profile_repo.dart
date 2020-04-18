@@ -1,7 +1,5 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/del_params.dart';
-import 'package:cotor/data/models/tutor_profile_model.dart';
+import 'package:cotor/domain/entities/tutor_criteria_params.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:dartz/dartz.dart';
 
@@ -19,9 +17,9 @@ abstract class TutorProfileRepo {
 
   // Setting new Assignment
   Future<Either<Failure, TutorProfile>> getCachedTutorProfileToSet();
-  Future<Either<Failure, bool>> setTutorProfile(TutorProfileModel params);
-  Future<Either<Failure, bool>> updateTutorProfile(TutorProfileModel params);
+  Future<Either<Failure, bool>> setTutorProfile(TutorProfile profile);
+  Future<Either<Failure, bool>> updateTutorProfile(TutorProfile profile);
 
   // Deleting Assignment
-  Future<Either<Failure, bool>> delProfile(DelParams params);
+  Future<Either<Failure, bool>> delProfile(String uid);
 }

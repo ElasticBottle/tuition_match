@@ -1,7 +1,8 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 
 class CreateAccountWithEmail extends UseCase<bool, CreateAccountParams> {
   CreateAccountWithEmail({this.repo});
@@ -18,7 +19,7 @@ class CreateAccountWithEmail extends UseCase<bool, CreateAccountParams> {
   }
 }
 
-class CreateAccountParams extends Params {
+class CreateAccountParams extends Equatable {
   const CreateAccountParams({
     this.firstName,
     this.lastName,

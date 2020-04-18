@@ -83,7 +83,7 @@ class TutorCriteriaParamsEntity extends Equatable
   }
 
   @override
-  TutorCriteriaParams toDomainParams() {
+  TutorCriteriaParams toDomainEntity() {
     return TutorCriteriaParamsEntity(
       genders: genders,
       tutorOccupations: tutorOccupations,

@@ -32,7 +32,7 @@ class TuteeCriteriaParamsEntity extends Equatable
       rateMax: double.parse(map[RATEMAX]),
     );
   }
-  factory TuteeCriteriaParamsEntity.fromTuteeCriteriaParams(
+  factory TuteeCriteriaParamsEntity.fromDomainEntity(
       TuteeCriteriaParams params) {
     return TuteeCriteriaParamsEntity(
       levels: params.levels,
@@ -82,7 +82,7 @@ class TuteeCriteriaParamsEntity extends Equatable
   }
 
   @override
-  TuteeCriteriaParams toDomainParams() {
+  TuteeCriteriaParams toDomainEntity() {
     return TuteeCriteriaParamsEntity(
       genders: genders,
       tutorOccupations: tutorOccupations,

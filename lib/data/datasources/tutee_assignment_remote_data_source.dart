@@ -1,22 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
-import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/del_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/data/models/map_key_strings.dart';
+import 'package:cotor/data/models/tutee_assignment_entity.dart';
+import 'package:cotor/domain/entities/tutee_criteria_params.dart';
 
 abstract class TuteeAssignmentRemoteDataSource {
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TuteeAssignmentModel>> getAssignmentByCriterion(
-      CriteriaParams params);
-  Future<List<TuteeAssignmentModel>> getNextCriterionList();
+  Future<List<TuteeAssignmentEntity>> getAssignmentByCriterion(
+      TuteeCriteriaParams params);
+  Future<List<TuteeAssignmentEntity>> getNextCriterionList();
 
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TuteeAssignmentModel>> getAssignmentList();
-  Future<List<TuteeAssignmentModel>> getNextAssignmentList();
+  Future<List<TuteeAssignmentEntity>> getAssignmentList();
+  Future<List<TuteeAssignmentEntity>> getNextAssignmentList();
 }
 
 const int DOCUMENT_RETRIEVAL_LIMIT = 2;
@@ -25,21 +25,25 @@ class TuteeAssignmentRemoteDataSourceImpl
     implements TuteeAssignmentRemoteDataSource {
   // firebase dependency here
   TuteeAssignmentRemoteDataSourceImpl({this.remoteStore});
-  Firestore remoteStore;
+  final Firestore remoteStore;
   DocumentSnapshot mostRecentAssignmentDocument;
   DocumentSnapshot mostRecentCriterionDocument;
   Query mostRecentCriterionQuery;
 
   @override
-  Future<List<TuteeAssignmentModel>> getAssignmentByCriterion(
-      CriteriaParams params) async {
+  Future<List<TuteeAssignmentEntity>> getAssignmentByCriterion(
+      TuteeCriteriaParams params) async {
     final Query query = remoteStore
         .collection('assignments')
-        .where('status', isEqualTo: 0)
-        .where('level', isEqualTo: params.level)
-        .where('subject', isEqualTo: params.subject)
-        .where('rateMin', isGreaterThanOrEqualTo: params.rateMin)
-        .where('rateMax', isLessThanOrEqualTo: params.rateMax)
+        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
+        .where(LEVELS, arrayContainsAny: params.levels)
+        .where(SUBJECTS, arrayContainsAny: params.subjects)
+        .where(GENDER, arrayContainsAny: params.genders)
+        .where(TUTOR_OCCUPATION, arrayContainsAny: params.tutorOccupations)
+        .where(CLASS_FORMATS, arrayContainsAny: params.formats)
+        .where(RATEMIN, isGreaterThanOrEqualTo: params.rateMin)
+        .where(RATEMAX, isLessThanOrEqualTo: params.rateMax)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     mostRecentCriterionQuery = query;
 
@@ -49,7 +53,7 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getNextCriterionList() async {
+  Future<List<TuteeAssignmentEntity>> getNextCriterionList() async {
     final Query query = mostRecentCriterionQuery
         .startAfterDocument(mostRecentCriterionDocument);
 
@@ -59,11 +63,12 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getAssignmentList() async {
+  Future<List<TuteeAssignmentEntity>> getAssignmentList() async {
     final Query query = remoteStore
         .collection('assignments')
-        .where('status', isEqualTo: 0)
-        .orderBy('dateAdded', descending: true)
+        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
+        .orderBy(DATE_ADDED, descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
       mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
@@ -71,34 +76,37 @@ class TuteeAssignmentRemoteDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getNextAssignmentList() async {
+  Future<List<TuteeAssignmentEntity>> getNextAssignmentList() async {
     final Query query = remoteStore
         .collection('assignments')
-        .where('status', isEqualTo: 0)
+        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
-        .orderBy('dateAdded', descending: true)
+        .orderBy(DATE_ADDED, descending: true)
         .startAfterDocument(mostRecentAssignmentDocument);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
       mostRecentAssignmentDocument = snapshot[snapshot.length - 1];
     });
   }
 
-  Future<List<TuteeAssignmentModel>> _attemptQuery(
+  Future<List<TuteeAssignmentEntity>> _attemptQuery(
       Query query, Function toSave) async {
     try {
       final QuerySnapshot snapshot = await query.getDocuments();
       // print(snapshot.documents[0].data);
       if (snapshot.documents.isNotEmpty) {
-        final List<TuteeAssignmentModel> result = snapshot.documents
-            .map((e) => TuteeAssignmentModel.fromDocumentSnapshot(
-                json: e.data, postId: e.documentID))
-            .toList();
+        final List<TuteeAssignmentEntity> result = snapshot.documents.map(
+          (e) {
+            return TuteeAssignmentEntity.fromDocumentSnapshot(
+                json: e.data, postId: e.documentID);
+          },
+        ).toList();
         toSave(snapshot.documents);
         return result;
       }
       return null;
     } catch (e) {
-      print(e.toString());
+      print('tutee assignment remote data source' + e.toString());
       throw ServerException();
     }
   }

@@ -1,11 +1,11 @@
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/data/models/name_model.dart';
+import 'package:cotor/data/models/name_entity.dart';
 import 'package:cotor/domain/entities/name.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:equatable/equatable.dart';
 
 class TutorProfileEntity extends Equatable implements TutorProfile {
-  const TutorProfileEntity({
+  TutorProfileEntity({
     String photoUrl,
     String uid,
     Name tutorNameModel,
@@ -30,7 +30,7 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     int numLiked,
     double rating,
     bool isVerifiedTutor,
-  })  : _tutorNameModel = tutorNameModel,
+  })  : _tutorNameModel = NameEntity.fromDomainEntity(tutorNameModel),
         _photoUrl = photoUrl,
         _uid = uid,
         _dateAdded = dateAdded,
@@ -250,7 +250,7 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     return TutorProfileEntity(
       photoUrl: photoUrl,
       uid: uid,
-      tutorNameModel: tutorName,
+      tutorNameModel: tutorName.toDomainEntity(),
       dateAdded: dateAdded,
       dateModified: dateModified,
       gender: gender,

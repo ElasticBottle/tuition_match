@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/data/models/name_model.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
-import 'package:cotor/data/models/tutor_profile_model.dart';
+import 'package:cotor/data/models/name_entity.dart';
+import 'package:cotor/data/models/tutee_assignment_entity.dart';
+import 'package:cotor/data/models/tutor_profile_entity.dart';
 import 'package:cotor/domain/entities/name.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
@@ -68,7 +68,7 @@ class UserEntity extends Equatable implements User {
 
   factory UserEntity.fromDomainEntity(User user) {
     return UserEntity(
-      name: NameEntity.fromDomainEntity(user.name),
+      name: user.name,
       photoUrl: user.photoUrl,
       uid: user.uid,
       isEmailVerified: user.isEmailVerified,

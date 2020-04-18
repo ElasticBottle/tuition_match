@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
-import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
+import 'package:cotor/data/models/tutee_assignment_entity.dart';
+import 'package:cotor/data/models/tutee_criteria_params_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_ASSIGNMENT_LIST = 'CACHED_ASSIGNMENT_LIST';
-const CACHED_CRITERION = 'CACHED_CRITERION';
+const CACHED_TUTEE_CRITERION = 'CACHED_TUTEE_CRITERION';
 const CACHED_ASSIGNMENT = 'CACHED_ASSIGNMENT';
 
 abstract class TuteeAssignmentLocalDataSource {
@@ -14,27 +14,22 @@ abstract class TuteeAssignmentLocalDataSource {
   /// the user had an internet connection.
   ///
   /// Throws [CacheException] if no cached data is present.
-  Future<List<TuteeAssignmentModel>> getLastAssignmentList();
+  Future<List<TuteeAssignmentEntity>> getLastAssignmentList();
 
   Future<void> cacheAssignmentList(
-    List<TuteeAssignmentModel> assignmnetsToCache,
-  );
+    List<TuteeAssignmentEntity> assignmentsToCache, {
+    bool isNew = true,
+  });
 
-  Future<void> cacheToExistingAssignmentList(
-    List<TuteeAssignmentModel> assignmnetsToCache,
-  );
-
-  Future<void> cacheCriterion(CriteriaParams params);
-
-  /// Gets the cached [CriteriaParams] which was used when the user attempted
+  /// Gets the cached [TuteeCriteriaParamsEntity] which was used when the user attempted
   /// to search for assignments matching a particular set of criterion
   ///
   /// Throws [CacheException] if no cached data is present.
-  Future<CriteriaParams> getCachedParams();
+  Future<TuteeCriteriaParamsEntity> getCachedParams();
+  Future<void> cacheCriterion(TuteeCriteriaParamsEntity params);
 
-  Future<TuteeAssignmentModel> getCachedTuteeAssignmentToSet();
-
-  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentModel params);
+  Future<TuteeAssignmentEntity> getCachedTuteeAssignmentToSet();
+  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentEntity tuteeAssignment);
 }
 
 class TuteeAssignmentLocalDataSourceImpl
@@ -43,55 +38,52 @@ class TuteeAssignmentLocalDataSourceImpl
   SharedPreferences sharedPreferences;
 
   @override
-  Future<void> cacheCriterion(CriteriaParams params) {
+  Future<void> cacheCriterion(TuteeCriteriaParamsEntity params) {
     return sharedPreferences.setString(
-      CACHED_CRITERION,
+      CACHED_TUTEE_CRITERION,
       json.encode(params.toMap()),
     );
   }
 
   @override
-  Future<CriteriaParams> getCachedParams() {
-    final String jsonString = sharedPreferences.getString(CACHED_CRITERION);
+  Future<TuteeCriteriaParamsEntity> getCachedParams() {
+    final String jsonString =
+        sharedPreferences.getString(CACHED_TUTEE_CRITERION);
     if (jsonString != null) {
-      final Map<String, dynamic> criterionList = json.decode(jsonString);
-      final CriteriaParams result = CriteriaParams.fromMap(criterionList);
-      return Future.value(result);
+      final Map<String, dynamic> criterionList =
+          Map<String, dynamic>.from(json.decode(jsonString));
+      return Future.value(TuteeCriteriaParamsEntity.fromMap(criterionList));
     } else {
+      print('tutee_assignment local data source error getCachedParams');
       throw CacheException();
     }
   }
 
   @override
   Future<void> cacheAssignmentList(
-      List<TuteeAssignmentModel> assignmnetsToCache) {
-    final List<Map<String, dynamic>> toEncode = (assignmnetsToCache
-            ?.map((TuteeAssignmentModel e) => e.toJson())
-            .toList()) ??
-        [];
-    return sharedPreferences.setString(
-      CACHED_ASSIGNMENT_LIST,
-      json.encode(toEncode),
-    );
-  }
+    List<TuteeAssignmentEntity> assignmentsToCache, {
+    bool isNew = true,
+  }) async {
+    List<Map<String, dynamic>> toEncode;
+    assignmentsToCache == null
+        ? toEncode = []
+        : toEncode = assignmentsToCache.map((e) => e.toJson());
 
-  @override
-  Future<void> cacheToExistingAssignmentList(
-      List<TuteeAssignmentModel> assignmnetsToCache) async {
-    final List<Map<String, dynamic>> toEncode =
-        assignmnetsToCache.map((TuteeAssignmentModel e) => e.toJson()).toList();
+    if (!isNew) {
+      final String jsonString =
+          sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
 
-    final String jsonString =
-        sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
-    if (jsonString != null) {
-      final List<dynamic> assignmentString =
-          List<dynamic>.from(json.decode(jsonString));
-      assignmentString.addAll(toEncode);
-      return sharedPreferences.setString(
-        CACHED_ASSIGNMENT_LIST,
-        json.encode(assignmentString),
-      );
+      if (jsonString != null) {
+        final List<Map<String, dynamic>> assignmentString =
+            List<Map<String, dynamic>>.from(json.decode(jsonString));
+        assignmentString.addAll(toEncode);
+        return sharedPreferences.setString(
+          CACHED_ASSIGNMENT_LIST,
+          json.encode(assignmentString),
+        );
+      }
     }
+
     return sharedPreferences.setString(
       CACHED_ASSIGNMENT_LIST,
       json.encode(toEncode),
@@ -99,42 +91,44 @@ class TuteeAssignmentLocalDataSourceImpl
   }
 
   @override
-  Future<List<TuteeAssignmentModel>> getLastAssignmentList() {
+  Future<List<TuteeAssignmentEntity>> getLastAssignmentList() {
     final String jsonString =
         sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
     if (jsonString != null) {
-      final List<dynamic> assignmentString =
-          List<dynamic>.from(json.decode(jsonString));
-      final List<TuteeAssignmentModel> result = assignmentString
-          .map((dynamic e) => TuteeAssignmentModel.fromJson(e))
+      final List<Map<String, dynamic>> assignmentString =
+          List<Map<String, dynamic>>.from(json.decode(jsonString));
+      final List<TuteeAssignmentEntity> toReturn = assignmentString
+          .map((e) => TuteeAssignmentEntity.fromJson(e))
           .toList();
-      return Future.value(result);
+      return Future.value(toReturn);
     } else {
+      print('tutee_assignment local data source error getLastAssingemntList');
       throw CacheException();
     }
   }
 
   @override
-  Future<TuteeAssignmentModel> getCachedTuteeAssignmentToSet() {
+  Future<TuteeAssignmentEntity> getCachedTuteeAssignmentToSet() {
     final String jsonString =
         sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
     if (jsonString != null) {
       final Map<String, dynamic> cachedAssignmentString =
           json.decode(jsonString);
-      final TuteeAssignmentModel result =
-          TuteeAssignmentModel.fromJson(cachedAssignmentString);
-      return Future.value(result);
+      return Future.value(
+          TuteeAssignmentEntity.fromJson(cachedAssignmentString));
     } else {
+      print(
+          'tutee_assignment local data source error getCachedTuteeAssignmentToSet');
       throw CacheException();
     }
   }
 
   @override
-  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentModel params) {
-    final Map<String, dynamic> toEncode = params.toJson();
+  Future<void> cacheTuteeAssignmentToSet(
+      TuteeAssignmentEntity tuteeAssignment) {
     return sharedPreferences.setString(
       CACHED_ASSIGNMENT,
-      json.encode(toEncode),
+      json.encode(tuteeAssignment.toJson()),
     );
   }
 }

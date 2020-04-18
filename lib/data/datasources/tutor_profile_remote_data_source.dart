@@ -1,21 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
-import 'package:cotor/data/models/criteria_params.dart';
-import 'package:cotor/data/models/tutor_profile_model.dart';
+import 'package:cotor/data/models/map_key_strings.dart';
+import 'package:cotor/data/models/tutor_criteria_params_entity.dart';
+import 'package:cotor/data/models/tutor_profile_entity.dart';
 
 abstract class TutorProfileRemoteDataSource {
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TutorProfileModel>> getProfileByCriterion(
-      TutorCriteriaParams params);
-  Future<List<TutorProfileModel>> getNextCriterionList();
+  Future<List<TutorProfileEntity>> getProfileByCriterion(
+      TutorCriteriaParamsEntity params);
+  Future<List<TutorProfileEntity>> getNextCriterionList();
 
   ///
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TutorProfileModel>> getProfileList();
-  Future<List<TutorProfileModel>> getNextProfileList();
+  Future<List<TutorProfileEntity>> getProfileList();
+  Future<List<TutorProfileEntity>> getNextProfileList();
 }
 
 const int DOCUMENT_RETRIEVAL_LIMIT = 2;
@@ -29,15 +30,18 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   Query mostRecentCriterionQuery;
 
   @override
-  Future<List<TutorProfileModel>> getProfileByCriterion(
-      TutorCriteriaParams params) async {
+  Future<List<TutorProfileEntity>> getProfileByCriterion(
+      TutorCriteriaParamsEntity params) async {
     final Query query = remoteStore
         .collection('tutors')
-        .where('status', isEqualTo: 0)
-        .where('level', isEqualTo: params.level)
-        .where('subject', isEqualTo: params.subject)
-        .where('rateMin', isGreaterThanOrEqualTo: params.rateMin)
-        .where('rateMax', isLessThanOrEqualTo: params.rateMax)
+        .where(IS_OPEN, isEqualTo: true)
+        .where(LEVELS_TAUGHT, arrayContainsAny: params.levelsTaught)
+        .where(SUBJECTS, arrayContainsAny: params.subjects)
+        .where(CLASS_FORMATS, arrayContainsAny: params.formats)
+        .where(TUTOR_OCCUPATION, whereIn: params.tutorOccupations)
+        .where(GENDER, whereIn: params.genders)
+        .where(RATEMIN, isGreaterThanOrEqualTo: params.rateMin)
+        .where(RATEMAX, isLessThanOrEqualTo: params.rateMax)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     mostRecentCriterionQuery = query;
 
@@ -47,7 +51,7 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   }
 
   @override
-  Future<List<TutorProfileModel>> getNextCriterionList() async {
+  Future<List<TutorProfileEntity>> getNextCriterionList() async {
     final Query query = mostRecentCriterionQuery
         .startAfterDocument(mostRecentCriterionDocument);
 
@@ -57,11 +61,11 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   }
 
   @override
-  Future<List<TutorProfileModel>> getProfileList() async {
+  Future<List<TutorProfileEntity>> getProfileList() async {
     final Query query = remoteStore
-        .collection('tutor')
-        .where('status', isEqualTo: 0)
-        .orderBy('dateModified', descending: true)
+        .collection('tutors')
+        .where(IS_OPEN, isEqualTo: true)
+        .orderBy(DATE_MODIFIED, descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
       mostRecentProfileDocument = snapshot[snapshot.length - 1];
@@ -69,11 +73,11 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   }
 
   @override
-  Future<List<TutorProfileModel>> getNextProfileList() async {
+  Future<List<TutorProfileEntity>> getNextProfileList() async {
     final Query query = remoteStore
-        .collection('assignments')
-        .where('status', isEqualTo: 0)
-        .orderBy('dateModified', descending: true)
+        .collection('tutors')
+        .where(IS_OPEN, isEqualTo: true)
+        .orderBy(DATE_MODIFIED, descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
         .startAfterDocument(mostRecentProfileDocument);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
@@ -81,22 +85,24 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
     });
   }
 
-  Future<List<TutorProfileModel>> _attemptQuery(
+  Future<List<TutorProfileEntity>> _attemptQuery(
       Query query, Function toSave) async {
     try {
       final QuerySnapshot snapshot = await query.getDocuments();
       // print(snapshot.documents[0].data);
       if (snapshot.documents.isNotEmpty) {
-        final List<TutorProfileModel> result = snapshot.documents
-            .map((e) => TutorProfileModel.fromDocumentSnapshot(
-                json: e.data, postId: e.documentID))
-            .toList();
+        final List<TutorProfileEntity> result = snapshot.documents.map(
+          (e) {
+            return TutorProfileEntity.fromDocumentSnapshot(
+                json: e.data, postId: e.documentID);
+          },
+        ).toList();
         toSave(snapshot.documents);
         return result;
       }
       return null;
     } catch (e) {
-      print(e.toString());
+      print('tutor profile remote data source' + e.toString());
       throw ServerException();
     }
   }

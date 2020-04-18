@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/data/datasources/firestore_path.dart';
-import 'package:cotor/data/models/user_model.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/data/models/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthServiceRemote {
-  Future<User> signInWithEmailAndPassword(String email, String password);
+  Future<UserEntity> signInWithEmailAndPassword(String email, String password);
   Future<bool> createAccountWithEmail({
     String email,
     String password,
@@ -17,7 +16,7 @@ abstract class AuthServiceRemote {
   Future<void> sendEmailVerification();
   Future<bool> isLoggedInUserEmailVerified();
   Future<void> sendPasswordResetEmail(String email);
-  Future<User> signInWithGoogle();
+  Future<UserEntity> signInWithGoogle();
   // Future<User> signInWithFacebook();
   Future<void> signOut();
 }
@@ -83,13 +82,14 @@ class FirebaseAuthService implements AuthServiceRemote {
   }
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<UserEntity> signInWithEmailAndPassword(
+      String email, String password) async {
     String errorMessage = '';
-    UserModel user;
+    UserEntity user;
     try {
       final AuthResult result = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-      user = UserModel.fromFirebaseUser(result.user);
+      user = UserEntity.fromFirebaseUser(result.user);
       // user = result.user;
       // name = user.displayName;
       // email = user.email;
@@ -170,7 +170,7 @@ class FirebaseAuthService implements AuthServiceRemote {
   }
 
   @override
-  Future<User> signInWithGoogle() async {
+  Future<UserEntity> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await googleSignIn.signIn();
     if (googleUser == null) {
       throw PlatformException(
@@ -184,7 +184,7 @@ class FirebaseAuthService implements AuthServiceRemote {
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
       ));
-      return UserModel.fromFirebaseUser(authResult.user);
+      return UserEntity.fromFirebaseUser(authResult.user);
     } catch (e) {
       throw PlatformException(
           code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',

@@ -1,5 +1,5 @@
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/data/models/name_model.dart';
+import 'package:cotor/data/models/name_entity.dart';
 import 'package:cotor/domain/entities/name.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:equatable/equatable.dart';
@@ -7,11 +7,11 @@ import 'package:flutter/foundation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
-  const TuteeAssignmentEntity({
+  TuteeAssignmentEntity({
     @required String postId,
     @required String photoUrl,
     @required String uid,
-    @required NameEntity tuteeNameModel,
+    @required Name tuteeNameModel,
     @required List<String> tutorGender,
     @required List<String> levels,
     @required List<String> subjects,
@@ -34,7 +34,7 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
   })  : _postId = postId,
         _photoUrl = photoUrl,
         _uid = uid,
-        _tuteeNameModel = tuteeNameModel,
+        _tuteeNameModel = NameEntity.fromDomainEntity(tuteeNameModel),
         _tutorGender = tutorGender,
         _levels = levels,
         _subjects = subjects,
@@ -239,7 +239,7 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
     return TuteeAssignmentEntity(
       uid: uid,
       postId: postId,
-      tuteeNameModel: tuteeName,
+      tuteeNameModel: tuteeName.toDomainEntity(),
       photoUrl: photoUrl,
       dateAdded: dateAdded,
       tutorGender: tutorGender,

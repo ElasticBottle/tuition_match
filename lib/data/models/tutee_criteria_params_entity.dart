@@ -2,7 +2,6 @@ import 'package:cotor/data/models/criteria_params_entity.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/domain/entities/tutee_criteria_params.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 class TuteeCriteriaParamsEntity extends Equatable
     implements CriteriaParamsEntity<TuteeCriteriaParams>, TuteeCriteriaParams {

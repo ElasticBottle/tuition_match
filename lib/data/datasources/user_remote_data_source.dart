@@ -2,20 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/data/datasources/firestore_path.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/data/models/tutee_assignment_model.dart';
-import 'package:cotor/data/models/tutor_profile_model.dart';
-import 'package:cotor/data/models/user_model.dart';
+import 'package:cotor/data/models/tutee_assignment_entity.dart';
+import 'package:cotor/data/models/tutor_profile_entity.dart';
+import 'package:cotor/data/models/user_entity.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class UserRemoteDataSource {
-  Stream<User> get userStream;
-  Stream<User> userProfileStream(String uid);
+  Stream<UserEntity> get userStream;
+  Stream<UserEntity> userProfileStream(String uid);
 
-  Future<User> getCurrentUser();
-  Future<User> getUserInfo(String uid);
+  Future<UserEntity> getCurrentUser();
+  Future<UserEntity> getUserInfo(String uid);
   Future<PrivateUserInfo> getUserPrivateInfo(String uid);
   Future<void> createNewUserDocument({
     String firstname,
@@ -24,12 +24,12 @@ abstract class UserRemoteDataSource {
   });
 
   Future<bool> delAssignment({String postId, String uid});
-  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParams});
-  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParams});
+  Future<bool> setTuteeAssignment({TuteeAssignmentEntity tuteeParams});
+  Future<bool> updateTuteeAssignment({TuteeAssignmentEntity tuteeParams});
 
   Future<bool> delProfile({String uid});
-  Future<bool> setTutorProfile({TutorProfileModel tutorParams});
-  Future<bool> updateTutorProfile({TutorProfileModel tutorParams});
+  Future<bool> setTutorProfile({TutorProfileEntity tutorProfile});
+  Future<bool> updateTutorProfile({TutorProfileEntity tutorProfile});
 }
 
 class FirestoreUserDataSource implements UserRemoteDataSource {
@@ -38,27 +38,27 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   final FirebaseAuth auth;
 
   @override
-  Stream<User> get userStream {
+  Stream<UserEntity> get userStream {
     return auth.onAuthStateChanged
-        .map((event) => UserModel.fromFirebaseUser(event));
+        .map((event) => UserEntity.fromFirebaseUser(event));
   }
 
   @override
-  Stream<User> userProfileStream(String uid) {
+  Stream<UserEntity> userProfileStream(String uid) {
     return store.document(FirestorePath.users(uid)).snapshots().map(
         (DocumentSnapshot userProfileDoc) =>
-            UserModel.fromDocumentSnapshot(userProfileDoc));
+            UserEntity.fromDocumentSnapshot(userProfileDoc));
   }
 
   @override
-  Future<User> getCurrentUser() async {
+  Future<UserEntity> getCurrentUser() async {
     final FirebaseUser user = await auth.currentUser();
     if (user == null) {
       throw NoUserException();
     }
     user.reload();
     final FirebaseUser newUser = await auth.currentUser();
-    return UserModel.fromFirebaseUser(newUser);
+    return UserEntity.fromFirebaseUser(newUser);
   }
 
   @override
@@ -67,7 +67,7 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     @required String lastname,
     @required String phoneNum,
   }) async {
-    final User user = await getCurrentUser();
+    final UserEntity user = await getCurrentUser();
     final DocumentReference ref = store.document(FirestorePath.users(user.uid));
     try {
       await ref.setData(<String, dynamic>{
@@ -75,7 +75,7 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
           FIRSTNAME: firstname,
           LASTNAME: lastname,
         },
-        PHOTOURL: '',
+        PHOTOURL: user.photoUrl,
         IS_TUTOR: false,
         IS_VERIFIED_TUTOR: false,
         IS_VERIFIED_ACCOUNT: false,
@@ -93,14 +93,14 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
-  Future<User> getUserInfo(String uid) async {
+  Future<UserEntity> getUserInfo(String uid) async {
     final DocumentReference ref = store.document(FirestorePath.users(uid));
     try {
       final DocumentSnapshot result = await ref.get();
       if (result.data == null) {
         throw NoUserException();
       } else {
-        return UserModel.fromDocumentSnapshot(result);
+        return UserEntity.fromDocumentSnapshot(result);
       }
     } catch (e) {
       print(e.toString());
@@ -159,7 +159,7 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
-  Future<bool> setTuteeAssignment({TuteeAssignmentModel tuteeParams}) async {
+  Future<bool> setTuteeAssignment({TuteeAssignmentEntity tuteeParams}) async {
     final DocumentReference userRef =
         store.document(FirestorePath.users(tuteeParams.uid));
     try {
@@ -169,7 +169,6 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
         final Map<String, dynamic> toAdd = tuteeParams.toDocumentSnapshot()[1];
         toAdd.addAll(<String, dynamic>{
           DATE_ADDED: FieldValue.serverTimestamp(),
-          STATUS: 0,
           NUM_APPLIED: 0,
           NUM_LIKED: 0,
         });
@@ -192,8 +191,8 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
-  Future<bool> setTutorProfile({TutorProfileModel tutorParams}) async {
-    final Map<String, dynamic> toAdd = tutorParams.toDocumentSnapshot()[1];
+  Future<bool> setTutorProfile({TutorProfileEntity tutorProfile}) async {
+    final Map<String, dynamic> toAdd = tutorProfile.toDocumentSnapshot()[1];
     toAdd.addAll(<String, dynamic>{
       DATE_ADDED: FieldValue.serverTimestamp(),
       DATE_MODIFIED: FieldValue.serverTimestamp(),
@@ -203,16 +202,16 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     });
     final WriteBatch batch = store.batch();
     batch.updateData(
-      store.document(FirestorePath.users(tutorParams.uid)),
+      store.document(FirestorePath.users(tutorProfile.uid)),
       <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
     );
     batch.setData(
-      store.document(FirestorePath.tutorProfile(tutorParams.uid)),
+      store.document(FirestorePath.tutorProfile(tutorProfile.uid)),
       toAdd,
     );
     toAdd.addAll(<String, Map<String, String>>{LIKED: <String, String>{}});
     batch.setData(
-      store.document(FirestorePath.likeProfiles(tutorParams.uid)),
+      store.document(FirestorePath.likeProfiles(tutorProfile.uid)),
       toAdd,
     );
     try {
@@ -225,7 +224,8 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
-  Future<bool> updateTuteeAssignment({TuteeAssignmentModel tuteeParams}) async {
+  Future<bool> updateTuteeAssignment(
+      {TuteeAssignmentEntity tuteeParams}) async {
     // TODO(ElasticBottle): update Tutee assignment
     final DocumentReference userRef =
         store.document(FirestorePath.users(tuteeParams.uid));
@@ -236,7 +236,6 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
         final Map<String, dynamic> toAdd = tuteeParams.toDocumentSnapshot()[1];
         toAdd.addAll(<String, dynamic>{
           DATE_ADDED: FieldValue.serverTimestamp(),
-          STATUS: 0,
           NUM_APPLIED: 0,
           NUM_LIKED: 0,
         });
@@ -259,13 +258,13 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
-  Future<bool> updateTutorProfile({TutorProfileModel tutorParams}) async {
+  Future<bool> updateTutorProfile({TutorProfileEntity tutorProfile}) async {
     final DocumentReference tutorProfileRef =
-        store.document(FirestorePath.tutorProfile(tutorParams.uid));
+        store.document(FirestorePath.tutorProfile(tutorProfile.uid));
     try {
       await store.runTransaction((Transaction tx) async {
         final DocumentSnapshot profileSnapshot = await tx.get(tutorProfileRef);
-        final Map<String, dynamic> toAdd = tutorParams.toDocumentSnapshot()[1];
+        final Map<String, dynamic> toAdd = tutorProfile.toDocumentSnapshot()[1];
         toAdd.addAll(<String, dynamic>{
           DATE_MODIFIED: FieldValue.serverTimestamp(),
           NUM_REQUEST: profileSnapshot.data[NUM_REQUEST],
@@ -274,18 +273,18 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
         });
 
         tx.update(
-          store.document(FirestorePath.users(tutorParams.uid)),
+          store.document(FirestorePath.users(tutorProfile.uid)),
           <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
         );
         tx.update(
-          store.document(FirestorePath.assignment(tutorParams.uid)),
+          store.document(FirestorePath.assignment(tutorProfile.uid)),
           toAdd,
         );
         final DocumentSnapshot profileLikeSnapshot = await tx
-            .get(store.document(FirestorePath.likeProfiles(tutorParams.uid)));
+            .get(store.document(FirestorePath.likeProfiles(tutorProfile.uid)));
         toAdd.addAll(profileLikeSnapshot.data[LIKED]);
         tx.set(
-          store.document(FirestorePath.likeProfiles(tutorParams.uid)),
+          store.document(FirestorePath.likeProfiles(tutorProfile.uid)),
           toAdd,
         );
       });

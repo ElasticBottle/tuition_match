@@ -73,6 +73,18 @@ class MinLengthStringValidator extends StringValidator {
   }
 }
 
+class IsDoubleValidator extends StringValidator {
+  @override
+  bool isValid(String value) {
+    try {
+      double.parse(value);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
 class EmailAndPasswordValidators {
   final TextInputFormatter emailInputFormatter =
       ValidatorInputFormatter(editingValidator: EmailEditingRegexValidator());
@@ -82,5 +94,6 @@ class EmailAndPasswordValidators {
   final StringValidator passwordSignInSubmitValidator =
       NonEmptyStringValidator();
   final StringValidator nonEmptyStringValidator = NonEmptyStringValidator();
+  final IsDoubleValidator isDoubleValidator = IsDoubleValidator();
   final PhoneNumValidator phoneNumValidator = PhoneNumValidator();
 }

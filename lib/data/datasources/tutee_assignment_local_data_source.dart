@@ -67,7 +67,7 @@ class TuteeAssignmentLocalDataSourceImpl
     List<Map<String, dynamic>> toEncode;
     assignmentsToCache == null
         ? toEncode = []
-        : toEncode = assignmentsToCache.map((e) => e.toJson());
+        : toEncode = assignmentsToCache.map((e) => e.toJson()).toList();
 
     if (!isNew) {
       final String jsonString =

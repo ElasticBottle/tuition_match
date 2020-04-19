@@ -69,7 +69,7 @@ class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
     List<Map<String, dynamic>> toEncode;
     profileToCache == null
         ? toEncode = []
-        : toEncode = profileToCache.map((e) => e.toJson());
+        : toEncode = profileToCache.map((e) => e.toJson()).toList();
 
     if (!isNew) {
       final String jsonString =

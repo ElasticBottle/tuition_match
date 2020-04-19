@@ -10,8 +10,11 @@ class Gender {
 
   static List<String> get genders => const [MALE, FEMALE];
 
-  static Map<String, bool> get asMap => const {
-        MALE: true,
-        FEMALE: true,
-      };
+  static List<int> toIndices(List<String> values) {
+    return values.map((e) => genders.indexOf(e)).toList();
+  }
+
+  static int toIndex(String value) {
+    return genders.indexOf(value);
+  }
 }

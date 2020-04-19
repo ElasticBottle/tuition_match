@@ -66,4 +66,8 @@ class Level {
         UNI,
         OTHER,
       ];
+
+  static List<int> toIndices(List<String> value) {
+    return value.map((e) => Level.all.indexOf(e)).toList();
+  }
 }

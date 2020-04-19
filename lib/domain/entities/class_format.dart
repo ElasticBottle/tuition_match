@@ -9,6 +9,14 @@ class ClassFormat {
         PRIVATE,
         GROUP,
       ];
+
+  static List<int> toIndices(List<String> value) {
+    return value.map((e) => formats.indexOf(e)).toList();
+  }
+
+  static List<String> fromIndices(List<int> classFormatSelection) {
+    return classFormatSelection.map((e) => formats[e]).toList();
+  }
 }
 // enum ClassFormat {
 //   online,

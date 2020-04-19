@@ -9,6 +9,10 @@ class RateTypes {
         WEEKLY,
         MONTHLY,
       ];
+
+  static int toIndex(String rateType) {
+    return types.indexOf(rateType);
+  }
 }
 // enum RateType {
 //   hourly,

@@ -1,8 +1,9 @@
+import 'package:cotor/domain/entities/level.dart';
 import 'package:equatable/equatable.dart';
 
 class Subject extends Equatable {
   const Subject();
-  List<String> get pri {
+  static List<String> get pri {
     final List<String> toReturn = [];
     toReturn.addAll(Science.pri);
     toReturn.addAll(Math.pri);
@@ -11,7 +12,7 @@ class Subject extends Equatable {
     return toReturn;
   }
 
-  List<String> get sec {
+  static List<String> get sec {
     final List<String> toReturn = [];
     toReturn.addAll(Science.sec);
     toReturn.addAll(Math.sec);
@@ -21,7 +22,7 @@ class Subject extends Equatable {
     return toReturn;
   }
 
-  List<String> get jc {
+  static List<String> get jc {
     final List<String> toReturn = [];
     toReturn.addAll(Science.jc);
     toReturn.addAll(Math.jc);
@@ -31,7 +32,7 @@ class Subject extends Equatable {
     return toReturn;
   }
 
-  List<String> get ib {
+  static List<String> get ib {
     final List<String> toReturn = [];
     toReturn.addAll(Science.ib);
     toReturn.addAll(Math.ib);
@@ -41,27 +42,60 @@ class Subject extends Equatable {
     return toReturn;
   }
 
-  List<String> get poly {
+  static List<String> get poly {
     final List<String> toReturn = [];
     toReturn.addAll(Music.instruments);
 
     return toReturn;
   }
 
-  List<String> get uni {
+  static List<String> get uni {
     final List<String> toReturn = [];
     toReturn.addAll(Music.instruments);
 
     return toReturn;
   }
 
-  List<String> get other {
+  static List<String> get other {
     final List<String> toReturn = [];
 
     toReturn.addAll(Languages.languages);
     toReturn.addAll(Music.instruments);
     toReturn.addAll(Sports.all);
     return toReturn;
+  }
+
+  static List<String> getSubjectsToDisplay(List<String> levels) {
+    final List<String> toReturn = [];
+    for (String level in levels) {
+      if (Level.pri.contains(level)) {
+        toReturn.addAll(pri);
+      }
+      if (Level.sec.contains(level)) {
+        toReturn.addAll(sec);
+      }
+      if (Level.jc.contains(level)) {
+        toReturn.addAll(jc);
+      }
+      if (Level.ib.contains(level)) {
+        toReturn.addAll(ib);
+      }
+      if (Level.uni.contains(level)) {
+        toReturn.addAll(uni);
+      }
+      if (Level.poly.contains(level)) {
+        toReturn.addAll(poly);
+      }
+      if (level == Level.OTHER) {
+        toReturn.addAll(other);
+      }
+    }
+    return toReturn;
+  }
+
+  static List<int> toIndices(List<String> value, List<String> levels) {
+    final List<String> subjects = getSubjectsToDisplay(levels);
+    return value.map((e) => subjects.indexOf(e)).toList();
   }
 
   @override

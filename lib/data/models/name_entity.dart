@@ -10,6 +10,9 @@ class NameEntity extends Equatable implements Name {
         _lastName = lastName;
 
   factory NameEntity.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty) {
+      return NameEntity();
+    }
     return NameEntity(
       firstName: json[FIRSTNAME],
       lastName: json[LASTNAME],
@@ -17,6 +20,9 @@ class NameEntity extends Equatable implements Name {
   }
 
   factory NameEntity.fromDomainEntity(Name name) {
+    if (name == null) {
+      return null;
+    }
     return NameEntity(
       firstName: name.firstName,
       lastName: name.lastName,

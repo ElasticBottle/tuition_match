@@ -56,22 +56,25 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
         _isVerifiedAccount = isVerifiedAccount;
 
   factory TuteeAssignmentEntity.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty) {
+      return TuteeAssignmentEntity();
+    }
     return TuteeAssignmentEntity(
       postId: json[POSTID],
       tuteeNameModel: NameEntity.fromJson(json[TUTEE_NAME]),
       photoUrl: json[PHOTOURL],
       uid: json[UID],
-      tutorGender: json[TUTOR_GENDER],
-      levels: json[LEVELS],
-      tutorOccupation: json[TUTOR_OCCUPATION],
-      formats: json[CLASS_FORMATS],
-      subjects: json[SUBJECTS],
+      tutorGender: json[TUTOR_GENDER].cast<String>(),
+      levels: json[LEVELS].cast<String>(),
+      tutorOccupation: json[TUTOR_OCCUPATIONS].cast<String>(),
+      formats: json[CLASS_FORMATS].cast<String>(),
+      subjects: json[SUBJECTS].cast<String>(),
       freq: json[FREQ],
       timing: json[TIMING],
       location: json[LOCATION],
-      proposedRate: double.parse(json[PROPOSED_RATE]),
-      rateMin: double.parse(json[RATEMIN]),
-      rateMax: double.parse(json[RATEMAX]),
+      proposedRate: json[PROPOSED_RATE].toDouble(),
+      rateMin: json[RATEMIN].toDouble(),
+      rateMax: json[RATEMAX].toDouble(),
       rateType: json[RATE_TYPE],
       additionalRemarks: json[ADDITIONAL_REMARKS],
       isOpen: json[IS_OPEN],
@@ -93,11 +96,14 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
   }
 
   factory TuteeAssignmentEntity.fromDomainEntity(TuteeAssignment assignment) {
+    if (assignment == null) {
+      return null;
+    }
     return TuteeAssignmentEntity(
       postId: assignment.postId,
       photoUrl: assignment.photoUrl,
       uid: assignment.uid,
-      tuteeNameModel: NameEntity.fromDomainEntity(assignment.tuteeName),
+      tuteeNameModel: assignment.tuteeName,
       tutorGender: assignment.tutorGender,
       levels: assignment.levels,
       subjects: assignment.subjects,
@@ -194,7 +200,7 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
     return <String, dynamic>{
       POSTID: postId,
       UID: uid,
-      TUTEE_NAME: _tuteeNameModel.toJson(),
+      TUTEE_NAME: _tuteeNameModel?.toJson(),
       PHOTOURL: photoUrl,
       TUTOR_GENDER: tutorGender,
       TUTOR_OCCUPATION: tutorOccupation,
@@ -239,7 +245,7 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
     return TuteeAssignmentEntity(
       uid: uid,
       postId: postId,
-      tuteeNameModel: tuteeName.toDomainEntity(),
+      tuteeNameModel: tuteeName?.toDomainEntity(),
       photoUrl: photoUrl,
       dateAdded: dateAdded,
       tutorGender: tutorGender,

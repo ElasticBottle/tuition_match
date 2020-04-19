@@ -21,15 +21,16 @@ class UserEntity extends Equatable implements User {
     bool isEmailVerified,
     Map<String, TuteeAssignment> userAssignments,
     TutorProfile tutorProfile,
-  })  : _name = NameEntity.fromDomainEntity(name),
+  })  : _name = name == null ? null : NameEntity.fromDomainEntity(name),
         _uid = uid,
         _photoUrl = photoUrl,
         _isTutor = isTutor,
         _isVerifiedAccount = isVerifiedAccount,
         _isVerifiedTutor = isVerifiedTutor,
         _isEmailVerified = isEmailVerified,
-        _userAssignments = userAssignments,
-        _tutorProfile = tutorProfile;
+        _userAssignments = userAssignments?.map((key, value) =>
+            MapEntry(key, TuteeAssignmentEntity.fromDomainEntity(value))),
+        _tutorProfile = TutorProfileEntity.fromDomainEntity(tutorProfile);
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     final Map<String, dynamic> toConvert = json[USER_ASSIGNMENTS];
     final Map<String, TuteeAssignmentEntity> userAssignments = {};
@@ -45,7 +46,6 @@ class UserEntity extends Equatable implements User {
       isTutor: json[IS_TUTOR],
       isVerifiedAccount: json[IS_VERIFIED_ACCOUNT],
       isVerifiedTutor: json[IS_VERIFIED_TUTOR],
-      isEmailVerified: json[IS_EMAIL_VERIFIED],
       userAssignments: userAssignments,
       tutorProfile: TutorProfileEntity.fromJson(json[TUTOR_PROFILE]),
     );
@@ -67,6 +67,9 @@ class UserEntity extends Equatable implements User {
   }
 
   factory UserEntity.fromDomainEntity(User user) {
+    if (user == null) {
+      return null;
+    }
     return UserEntity(
       name: user.name,
       photoUrl: user.photoUrl,
@@ -75,13 +78,8 @@ class UserEntity extends Equatable implements User {
       isTutor: user.isTutor,
       isVerifiedTutor: user.isVerifiedTutor,
       isVerifiedAccount: user.isVerifiedAccount,
-      tutorProfile: TutorProfileEntity.fromDomainEntity(user.tutorProfile),
-      userAssignments: user.userAssignments.map(
-        (key, value) => MapEntry<String, TuteeAssignmentEntity>(
-          key,
-          TuteeAssignmentEntity.fromDomainEntity(value),
-        ),
-      ),
+      tutorProfile: user.tutorProfile,
+      userAssignments: user.userAssignments,
     );
   }
 
@@ -117,7 +115,7 @@ class UserEntity extends Equatable implements User {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       UID: uid,
-      NAME: name.toJson(),
+      NAME: name?.toJson(),
       PHOTOURL: photoUrl,
       IS_TUTOR: isTutor,
       IS_VERIFIED_ACCOUNT: isVerifiedAccount,
@@ -135,11 +133,11 @@ class UserEntity extends Equatable implements User {
         isTutor: isTutor,
         isVerifiedAccount: isVerifiedAccount,
         isVerifiedTutor: isVerifiedTutor,
-        name: name.toDomainEntity(),
+        name: name?.toDomainEntity(),
         photoUrl: photoUrl,
-        tutorProfile: tutorProfile.toDomainEntity(),
+        tutorProfile: tutorProfile?.toDomainEntity(),
         userAssignments: userAssignments
-            .map((key, value) => MapEntry(key, value.toDomainEntity())));
+            ?.map((key, value) => MapEntry(key, value?.toDomainEntity())));
   }
 
   User copyWith(

@@ -60,30 +60,31 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       return TutorProfileEntity();
     }
     return TutorProfileEntity(
-        photoUrl: json[PHOTOURL],
-        uid: json[UID],
-        tutorNameModel: NameEntity.fromJson(json[TUTOR_NAME]),
-        dateAdded: json[DATE_ADDED].toString(),
-        dateModified: json[DATE_MODIFIED].toString(),
-        gender: json[GENDER],
-        tutorOccupation: json[TUTOR_OCCUPATION],
-        levelsTaught: json[LEVELS_TAUGHT],
-        subjects: json[SUBJECTS],
-        proposedRate: double.parse(json[PROPOSED_RATE]),
-        rateMax: double.parse(json[RATEMAX]),
-        rateMin: double.parse(json[RATEMIN]),
-        rateType: json[RATE_TYPE],
-        timing: json[TIMING],
-        formats: json[CLASS_FORMATS],
-        qualifications: json[QUALIFICATIONS],
-        sellingPoints: json[SELLING_POINTS],
-        location: json[LOCATION],
-        isPublic: json[IS_PUBLIC],
-        numClicks: json[NUM_CLICKS],
-        numRequest: json[NUM_REQUEST],
-        numLiked: json[NUM_LIKED],
-        rating: json[RATING],
-        isVerifiedTutor: json[IS_VERIFIED_TUTOR]);
+      photoUrl: json[PHOTOURL],
+      uid: json[UID],
+      tutorNameModel: NameEntity.fromJson(json[TUTOR_NAME]),
+      dateAdded: json[DATE_ADDED].toString(),
+      dateModified: json[DATE_MODIFIED].toString(),
+      gender: json[GENDER],
+      tutorOccupation: json[TUTOR_OCCUPATION],
+      levelsTaught: json[LEVELS_TAUGHT],
+      subjects: json[SUBJECTS],
+      proposedRate: double.parse(json[PROPOSED_RATE]),
+      rateMax: double.parse(json[RATEMAX]),
+      rateMin: double.parse(json[RATEMIN]),
+      rateType: json[RATE_TYPE],
+      timing: json[TIMING],
+      formats: json[CLASS_FORMATS],
+      qualifications: json[QUALIFICATIONS],
+      sellingPoints: json[SELLING_POINTS],
+      location: json[LOCATION],
+      isPublic: json[IS_PUBLIC],
+      numClicks: json[NUM_CLICKS],
+      numRequest: json[NUM_REQUEST],
+      numLiked: json[NUM_LIKED],
+      rating: json[RATING],
+      isVerifiedTutor: json[IS_VERIFIED_TUTOR],
+    );
 
     // timeago.format(json[DATE_ADDED].toDate(), locale: 'en_short'));
   }
@@ -97,11 +98,13 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   }
 
   factory TutorProfileEntity.fromDomainEntity(TutorProfile profile) {
-    final NameEntity name = NameEntity.fromDomainEntity(profile.tutorName);
+    if (profile == null) {
+      return null;
+    }
     return TutorProfileEntity(
       photoUrl: profile.photoUrl,
       uid: profile.uid,
-      tutorNameModel: name,
+      tutorNameModel: profile.tutorName,
       dateAdded: profile.dateAdded,
       dateModified: profile.dateModified,
       gender: profile.gender,
@@ -200,11 +203,16 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   @override
   bool get isVerifiedTutor => _isVerifiedTutor;
 
+  @override
+  bool isEmpty() {
+    return uid == null;
+  }
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       PHOTOURL: photoUrl,
       UID: uid,
-      TUTOR_NAME: _tutorNameModel.toJson(),
+      TUTOR_NAME: _tutorNameModel?.toJson(),
       DATE_ADDED: dateAdded,
       DATE_MODIFIED: dateModified,
       GENDER: gender,
@@ -250,7 +258,7 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     return TutorProfileEntity(
       photoUrl: photoUrl,
       uid: uid,
-      tutorNameModel: tutorName.toDomainEntity(),
+      tutorNameModel: tutorName?.toDomainEntity(),
       dateAdded: dateAdded,
       dateModified: dateModified,
       gender: gender,

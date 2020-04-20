@@ -160,7 +160,6 @@ class TutorProfileModel extends Equatable implements TutorProfile {
   @override
   bool get isVerifiedTutor => _isVerifiedTutor;
 
-  @override
   bool isEmpty() {
     return uid == null;
   }

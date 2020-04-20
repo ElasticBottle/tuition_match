@@ -13,6 +13,10 @@ class RateTypes {
   static int toIndex(String rateType) {
     return types.indexOf(rateType);
   }
+
+  static String fromIndex(int rateTypeSelction) {
+    return types[rateTypeSelction];
+  }
 }
 // enum RateType {
 //   hourly,

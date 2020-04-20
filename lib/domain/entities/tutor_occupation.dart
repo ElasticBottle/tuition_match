@@ -9,6 +9,22 @@ class TutorOccupation {
         FULL_TIME,
         MOE,
       ];
+
+  static int toIndex(String value) {
+    return TutorOccupation.occupations.indexOf(value);
+  }
+
+  static String fromIndex(int tutorOccupation) {
+    return occupations[tutorOccupation];
+  }
+
+  static List<int> toIndices(List<String> value) {
+    return value.map((e) => occupations.indexOf(e)).toList();
+  }
+
+  static List<String> fromIndices(List<int> value) {
+    return value.map((e) => occupations[e]).toList();
+  }
 }
 // enum TutorOccupation {
 //   partTime,

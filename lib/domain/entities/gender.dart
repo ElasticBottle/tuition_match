@@ -17,4 +17,8 @@ class Gender {
   static int toIndex(String value) {
     return genders.indexOf(value);
   }
+
+  static String fromIndex(int genderSelection) {
+    return genders[genderSelection];
+  }
 }

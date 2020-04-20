@@ -98,6 +98,11 @@ class Subject extends Equatable {
     return value.map((e) => subjects.indexOf(e)).toList();
   }
 
+  static List<String> fromIndices(List<int> value, List<String> level) {
+    final List<String> subjects = getSubjectsToDisplay(level);
+    return value.map((e) => subjects[e]).toList();
+  }
+
   @override
   List<Object> get props => [];
 }

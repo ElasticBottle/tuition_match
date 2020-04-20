@@ -1,8 +1,7 @@
 import 'package:cotor/common_widgets/information_display/user_detail_card.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
-import 'package:cotor/domain/entities/enums.dart';
 import 'package:cotor/domain/entities/name.dart';
-import 'package:cotor/domain/entities/subject.dart';
+import 'package:cotor/features/tutee_assignment_list/helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +19,9 @@ class TuteeCardHeader extends StatelessWidget {
   final String heroTag;
   final Name tuteeName;
   final String username;
-  final Level level;
-  final Subject subject;
-  final ClassFormat format;
+  final List<String> level;
+  final List<String> subject;
+  final List<String> format;
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +41,32 @@ class TuteeCardHeader extends StatelessWidget {
             SizedBox(
               width: 10.0,
             ),
-            AssignmentBadge(
-              badgeColor: ColorsAndFonts.levelBadgeColor,
-              badgeText: describeEnum(level),
+            Column(
+              children: <Widget>[
+                for (String lvl in level)
+                  AssignmentBadge(
+                    badgeColor: ColorsAndFonts.levelBadgeColor,
+                    badgeText: Helper.shortenLevel(lvl),
+                  ),
+              ],
             ),
-            AssignmentBadge(
-              badgeColor: ColorsAndFonts.subjectBadgeColor,
-              badgeText: subject.toString(),
+            Column(
+              children: <Widget>[
+                for (String subj in subject)
+                  AssignmentBadge(
+                    badgeColor: ColorsAndFonts.subjectBadgeColor,
+                    badgeText: subj,
+                  ),
+              ],
             ),
-            AssignmentBadge(
-              badgeColor: ColorsAndFonts.classFormatBadgeColor,
-              badgeText: describeEnum(format),
+            Column(
+              children: <Widget>[
+                for (String frmt in format)
+                  AssignmentBadge(
+                    badgeColor: ColorsAndFonts.classFormatBadgeColor,
+                    badgeText: frmt,
+                  ),
+              ],
             )
             // PopupMenuButton<dynamic>(itemBuilder: null),
           ],

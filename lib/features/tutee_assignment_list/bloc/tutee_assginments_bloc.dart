@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
+import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
@@ -30,7 +30,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
   final GetTuteeAssignmentList getAssignmentList;
   final GetNextTuteeAssignmentList getNextAssignments;
   final GetCachedTuteeAssignmentList getCachedAssignments;
-  List<TuteeAssignment> assignments = [];
+  List<TuteeAssignmentModel> assignments = [];
   @override
   AssignmentsState get initialState => Loading();
 
@@ -74,7 +74,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
         yield AssignmentError(message: _mapFailureToFailureMessage(failure));
       },
       (assignmentList) async* {
-        assignments.addAll(assignmentList);
+        assignments.addAll(assignmentList
+            .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
         yield AssignmentLoaded(
             assignments: assignments,
             isCachedList: false,
@@ -95,7 +96,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
       },
       (assignmentList) async* {
         if (assignmentList != null) {
-          assignments.addAll(assignmentList);
+          assignments.addAll(assignmentList
+              .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
           yield currentState.copyWith(assignments: assignments);
         } else {
           yield currentState.copyWith(assignments: assignments, isEnd: true);
@@ -115,7 +117,8 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
             message: _mapFailureToFailureMessage(failure));
       },
       (assignmentList) async* {
-        assignments.addAll(assignmentList);
+        assignments.addAll(assignmentList
+            .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
         yield currentState.copyWith(
             assignments: assignmentList, isCachedList: true);
       },

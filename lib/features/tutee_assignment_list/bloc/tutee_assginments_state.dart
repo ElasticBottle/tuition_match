@@ -1,4 +1,5 @@
 import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -21,13 +22,13 @@ class AssignmentLoaded extends AssignmentsState {
     this.isEnd,
     this.isCachedList,
   });
-  final List<TuteeAssignment> assignments;
+  final List<TuteeAssignmentModel> assignments;
   final bool isFetching;
   final bool isEnd;
   final bool isCachedList;
 
   AssignmentLoaded copyWith({
-    List<TuteeAssignment> assignments,
+    List<TuteeAssignmentModel> assignments,
     bool isFetching,
     bool isEnd,
     bool isCachedList,

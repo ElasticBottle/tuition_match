@@ -3,7 +3,7 @@ import 'package:cotor/common_widgets/bars/bottom_action_bar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:cotor/features/tutee_assignment_list/widgets/tutee_card_header.dart';
 import 'package:cotor/routing/router.gr.dart';
@@ -17,7 +17,7 @@ class AssignmentItemTile extends StatelessWidget {
     this.cardElevation = SpacingsAndHeights.cardElevation,
     this.cardPadding = SpacingsAndHeights.cardPadding,
   });
-  final TuteeAssignment assignment;
+  final TuteeAssignmentModel assignment;
   final Color cardColor;
   final double cardElevation;
   final double cardPadding;
@@ -38,14 +38,14 @@ class AssignmentItemTile extends StatelessWidget {
           children: <Widget>[
             TuteeCardHeader(
               heroTag: assignment.uid +
-                  assignment.subject.toString() +
-                  assignment.level.toString() +
+                  assignment.subjects.toString() +
+                  assignment.levels.toString() +
                   assignment.dateAdded,
               tuteeName: assignment.tuteeName,
               username: assignment.uid,
-              level: assignment.level,
-              subject: assignment.subject,
-              format: assignment.format,
+              level: assignment.levels,
+              subject: assignment.subjects,
+              format: assignment.formats,
             ),
             SizedBox(
               height: 10.0,
@@ -56,8 +56,8 @@ class AssignmentItemTile extends StatelessWidget {
             ),
             BottomActionBar(
               heroTag: assignment.uid +
-                  assignment.subject.toString() +
-                  assignment.level.toString(),
+                  assignment.subjects.toString() +
+                  assignment.levels.toString(),
               numClickAction: assignment.numLiked,
               mainOnPressed: () {},
               actionOnPressed: () {},
@@ -72,13 +72,12 @@ class AssignmentItemTile extends StatelessWidget {
   }
 
   Widget _buildTappableInfoPreview(
-      BuildContext context, TuteeAssignment assignment) {
+      BuildContext context, TuteeAssignmentModel assignment) {
     return InkWell(
       onTap: () {
         BlocProvider.of<ViewAssignmentBloc>(context)
             .add(AssignmentToView(assignment: assignment));
-        Navigator.of(context, rootNavigator: true)
-            .pushNamed(Routes.viewAssignmentpage);
+        Navigator.of(context).pushNamed(Routes.viewAssignmentpage);
       },
       child: SizedBox(
         width: MediaQuery.of(context).size.width,

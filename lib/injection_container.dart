@@ -30,10 +30,11 @@ import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_lis
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:cotor/domain/usecases/user/get_user_profile.dart';
 import 'package:cotor/domain/usecases/user/set_tutor_profile.dart';
+import 'package:cotor/domain/usecases/user/update_tutee_assignment.dart';
 import 'package:cotor/domain/usecases/user/update_tutor_profile.dart';
 import 'package:cotor/domain/usecases/user/user_profile_stream.dart';
 import 'package:cotor/domain/usecases/user/user_stream.dart';
-import 'package:cotor/features/add_tutee_assignment/bloc/add_tutee_assignment_bloc.dart';
+import 'package:cotor/features/add_tutee_assignment/bloc/edit_tutee_assignment_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/first_time_google_sign_in/first_time_google_sign_in_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/login_bloc/login_bloc.dart';
@@ -46,6 +47,7 @@ import 'package:cotor/features/onboarding/domain/repositories/onboarding_reposit
 import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.dart';
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc.dart';
+import 'package:cotor/features/user_profile/bloc/user_profile_page_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
@@ -56,6 +58,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/utils/validator.dart';
+import 'domain/usecases/user/set_tutee_assignment.dart';
 
 final sl = GetIt.instance;
 
@@ -76,8 +79,12 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerFactory<AddTuteeAssignmentBloc>(
-    () => AddTuteeAssignmentBloc(),
+  sl.registerFactory<EditTuteeAssignmentBloc>(
+    () => EditTuteeAssignmentBloc(
+      setTuteeAssignment: sl(),
+      updateTuteeAssignment: sl(),
+      validator: sl(),
+    ),
   );
 
   sl.registerFactory<ViewAssignmentBloc>(
@@ -135,13 +142,16 @@ Future<void> init() async {
   );
 
   // Edit Profile Bloc
-  sl.registerFactory(
+  sl.registerFactory<EditTutorProfileBloc>(
     () => EditTutorProfileBloc(
       setTutorProfile: sl(),
       updateTutorProfile: sl(),
       validator: sl(),
     ),
   );
+
+  // User Profile Bloc
+  sl.registerFactory(() => UserProfilePageBloc());
 
   // UseCase
   sl.registerLazySingleton(() => GetOnboardingInfo(repository: sl()));
@@ -169,6 +179,9 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => SetTutorProfile(repo: sl()));
   sl.registerLazySingleton(() => UpdateTutorProfile(repo: sl()));
+
+  sl.registerLazySingleton(() => SetTuteeAssignment(repo: sl()));
+  sl.registerLazySingleton(() => UpdateTuteeAssignment(repo: sl()));
 
   // Repository
   sl.registerLazySingleton<OnboardingRepository>(

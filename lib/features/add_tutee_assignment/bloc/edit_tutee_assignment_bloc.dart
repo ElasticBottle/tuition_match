@@ -5,12 +5,10 @@ import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/entities/class_format.dart';
 import 'package:cotor/domain/entities/gender.dart';
-import 'package:cotor/domain/entities/level.dart';
 import 'package:cotor/domain/entities/rate_types.dart';
 import 'package:cotor/domain/entities/subject.dart' as subject;
 import 'package:cotor/domain/usecases/user/set_tutee_assignment.dart';
 import 'package:cotor/domain/usecases/user/update_tutee_assignment.dart';
-import 'package:cotor/features/add_tutee_assignment/helper.dart';
 import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/models/user_model.dart';
 import 'package:dartz/dartz.dart';
@@ -34,11 +32,12 @@ class EditTuteeAssignmentBloc
   final UpdateTuteeAssignment updateTuteeAssignment;
 
   Map<String, dynamic> tuteeAssignmentInfo = <String, dynamic>{
-    // LEVELS: <dynamic>[],
-    // SUBJECTS: <dynamic>[],
-    // TUTOR_GENDER: <dynamic>[],
-    // TUTOR_OCCUPATION: <dynamic>[],
-    // CLASS_FORMATS: <dynamic>[]
+    TUTOR_GENDER: EditTuteeAssignmentState.initial().genderSelection,
+    CLASS_FORMATS: EditTuteeAssignmentState.initial().classFormatSelection,
+    LEVELS: <dynamic>[],
+    SUBJECTS: <dynamic>[],
+    TUTOR_OCCUPATIONS: <dynamic>[],
+    RATE_TYPE: EditTuteeAssignmentState.initial().rateTypeSelction,
   };
   // Map<String, String> stringValues = <String, String>{};
   UserModel userDetails;
@@ -102,9 +101,9 @@ class EditTuteeAssignmentBloc
     if (isUpdate) {
       yield state.copyWith(
           genderSelection: Gender.toIndices(assignment.tutorGender),
-          levels: Level.toIndices(assignment.levels),
-          subjects:
-              subject.Subject.toIndices(assignment.subjects, assignment.levels),
+          levels: assignment.levels,
+          subjects: assignment.subjects,
+          tutorOccupation: assignment.tutorOccupation,
           rateTypeSelction: RateTypes.toIndex(assignment.rateType),
           classFormatSelection: ClassFormat.toIndices(assignment.formats),
           initialRateMin: assignment.rateMin.toString(),
@@ -167,12 +166,19 @@ class EditTuteeAssignmentBloc
       case FREQ:
         yield state.update(isFreqValid: isValid);
         break;
-      case ADDITIONAL_REMARKS:
-        yield state.update(isAdditionalRemarksValid: isValid);
-        break;
       case LEVELS:
-        state.copyWith(subjectsToDisplay: Helper.getSubjects(state.levels));
-        yield state.update(isSelectedLevelsValid: state.levels.isNotEmpty);
+        final bool valid = state.levels.isNotEmpty;
+        if (valid) {
+          yield state.copyWith(
+            subjectHint: 'Subjects',
+            isSelectedLevelsValid: valid,
+          );
+        } else {
+          yield state.copyWith(
+              isSelectedLevelsValid: valid,
+              subjectsToDisplay: [],
+              subjectHint: 'please select a level first');
+        }
         break;
       case SUBJECTS:
         yield state.update(isSelectedSubjectsValid: state.subjects.isNotEmpty);
@@ -181,12 +187,16 @@ class EditTuteeAssignmentBloc
         yield state.update(
             isClassFormatsValid: state.classFormatSelection.isNotEmpty);
         break;
-      case GENDER:
+      case TUTOR_GENDER:
         yield state.update(isGenderValid: state.genderSelection.isNotEmpty);
         break;
       case TUTOR_OCCUPATIONS:
         yield state.update(
             isTutorOccupationsValid: state.tutorOccupation != null);
+        break;
+      case RATE_TYPE:
+      case ADDITIONAL_REMARKS:
+        yield state.update(isAdditionalRemarksValid: true);
         break;
     }
   }
@@ -194,14 +204,11 @@ class EditTuteeAssignmentBloc
   Stream<EditTuteeAssignmentState> _mapHandleToggleButtonClickToSate(
       String fieldName, dynamic index) async* {
     switch (fieldName) {
-      case GENDER:
+      case TUTOR_GENDER:
         state.genderSelection.contains(index)
             ? state.genderSelection.remove(index)
             : state.genderSelection.add(index);
         yield state.copyWith(genderSelection: state.genderSelection);
-        break;
-      case RATE_TYPE:
-        yield state.copyWith(rateTypeSelction: index);
         break;
       case CLASS_FORMATS:
         state.classFormatSelection.contains(index)
@@ -209,11 +216,17 @@ class EditTuteeAssignmentBloc
             : state.classFormatSelection.add(index);
         yield state.copyWith(classFormatSelection: state.classFormatSelection);
         break;
-      case TUTOR_OCCUPATION:
-        yield state.copyWith(tutorOccupation: index);
-        break;
       case LEVELS:
-        yield state.copyWith(levels: index);
+        yield state.copyWith(
+            subjectsToDisplay:
+                subject.Subject.getSubjectsToDisplay(state.levels),
+            levels: index);
+        break;
+      case RATE_TYPE:
+        yield state.copyWith(rateTypeSelction: index);
+        break;
+      case TUTOR_OCCUPATIONS:
+        yield state.copyWith(tutorOccupation: index);
         break;
       case SUBJECTS:
         yield state.copyWith(subjects: index);
@@ -232,6 +245,25 @@ class EditTuteeAssignmentBloc
           key: ClassFormat.fromIndices(state.classFormatSelection)
         });
         break;
+      case RATE_TYPE:
+        tuteeAssignmentInfo.addAll(<String, dynamic>{
+          key: RateTypes.fromIndex(state.rateTypeSelction)
+        });
+        break;
+      case TUTOR_GENDER:
+        tuteeAssignmentInfo.addAll(
+            <String, dynamic>{key: Gender.fromIndices(state.genderSelection)});
+        break;
+      case RATEMIN:
+      case RATEMAX:
+      case PROPOSED_RATE:
+        if (value.isNotEmpty) {
+          tuteeAssignmentInfo
+              .addAll(<String, dynamic>{key: double.parse(value)});
+        } else {
+          tuteeAssignmentInfo.addAll(<String, dynamic>{key: value});
+        }
+        break;
       default:
         tuteeAssignmentInfo.addAll(<String, dynamic>{key: value});
         break;
@@ -242,6 +274,7 @@ class EditTuteeAssignmentBloc
   Stream<EditTuteeAssignmentState> _mapSubmitFormToState() async* {
     yield state.loading();
     Either<Failure, bool> result;
+    print(tuteeAssignmentInfo);
     yield* _verifyFields(tuteeAssignmentInfo);
     if (!state.isValid()) {
       yield state
@@ -251,9 +284,9 @@ class EditTuteeAssignmentBloc
 
     final TuteeAssignmentModel model = TuteeAssignmentModel(
       uid: userDetails.uid,
-      tutorGender: tuteeAssignmentInfo[GENDER],
+      tutorGender: tuteeAssignmentInfo[TUTOR_GENDER],
       rateType: tuteeAssignmentInfo[RATE_TYPE],
-      tutorOccupation: tuteeAssignmentInfo[TUTOR_OCCUPATION],
+      tutorOccupation: tuteeAssignmentInfo[TUTOR_OCCUPATIONS],
       levels: tuteeAssignmentInfo[LEVELS_TAUGHT],
       subjects: tuteeAssignmentInfo[SUBJECTS],
       formats: tuteeAssignmentInfo[CLASS_FORMATS],
@@ -288,10 +321,12 @@ class EditTuteeAssignmentBloc
   Stream<EditTuteeAssignmentState> _verifyFields(
       Map<String, dynamic> tuteeAssignmentInfo) async* {
     final List<String> keys = [
+      TUTOR_GENDER,
       CLASS_FORMATS,
       LEVELS,
       SUBJECTS,
       TUTOR_OCCUPATIONS,
+      RATE_TYPE,
     ];
     for (MapEntry<String, dynamic> entry in tuteeAssignmentInfo.entries) {
       if (entry.value is String) {

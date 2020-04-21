@@ -10,6 +10,7 @@ import 'package:cotor/domain/entities/class_format.dart';
 import 'package:cotor/domain/entities/gender.dart';
 import 'package:cotor/domain/entities/level.dart';
 import 'package:cotor/domain/entities/rate_types.dart';
+import 'package:cotor/domain/entities/subject.dart';
 import 'package:cotor/domain/entities/tutor_occupation.dart';
 import 'package:cotor/features/add_tutee_assignment/bloc/edit_tutee_assignment_bloc.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class EditAssignmentPage extends StatefulWidget {
 }
 
 class EditAssignmentPageState extends State<EditAssignmentPage> {
-  List<String> selectedItems = <String>[];
+  List<int> selectedItems = <int>[];
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
   EditTuteeAssignmentBloc editProfileBloc;
@@ -54,8 +55,8 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
           currentFocus.unfocus();
         }
       },
-      child: Material(
-        child: CustomScrollView(
+      child: Scaffold(
+        body: CustomScrollView(
           slivers: <Widget>[
             CustomSliverAppbar(
               title: Strings.editAssignment,
@@ -143,6 +144,7 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
 
   Widget _getRadioSelectors(EditTuteeAssignmentState state) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         ToggleButton(
           title: 'Gender',
@@ -154,13 +156,13 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
           labels: Gender.genders,
           icons: [FontAwesomeIcons.mars, FontAwesomeIcons.venus],
           onPressed: (int index) {
-            editProfileBloc
-                .add(HandleToggleButtonClick(fieldName: GENDER, index: index));
             editProfileBloc.add(
-              CheckDropDownNotEmpty(fieldName: GENDER),
+                HandleToggleButtonClick(fieldName: TUTOR_GENDER, index: index));
+            editProfileBloc.add(
+              CheckDropDownNotEmpty(fieldName: TUTOR_GENDER),
             );
-            editProfileBloc
-                .add(SaveField(key: GENDER, value: Gender.genders[index]));
+            editProfileBloc.add(
+                SaveField(key: TUTOR_GENDER, value: Gender.genders[index]));
             setState(() {});
           },
           initialLabelIndex: state.genderSelection,
@@ -185,7 +187,6 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
           },
           initialLabelIndex: state.classFormatSelection,
         ),
-
         MultiFilterSelect(
           placeholder: 'Levels',
           allItems: Level.all
@@ -197,274 +198,65 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
                 ),
               )
               .toList(),
-          initValue: selectedItems,
+          initValue: state.levels,
           selectCallback: (List selectedValue) {
-            print(selectedValue);
+            print(selectedValue.toString());
+            editProfileBloc.add(HandleToggleButtonClick(
+                fieldName: LEVELS, index: selectedValue));
+            editProfileBloc.add(
+              CheckDropDownNotEmpty(fieldName: LEVELS),
+            );
+            editProfileBloc.add(SaveField(key: LEVELS, value: selectedValue));
           },
         ),
-        // SearchableDropdown<dynamic>.multiple(
-        //   items: Level.all
-        //       .map<DropdownMenuItem<String>>(
-        //         (String e) => DropdownMenuItem<String>(
-        //           value: e,
-        //           child: Text(e),
-        //         ),
-        //       )
-        //       .toList(),
-        //   selectedItems: state.levels,
-        //   hint: Padding(
-        //     padding: const EdgeInsets.all(12.0),
-        //     child: Text('Select any'),
-        //   ),
-        //   searchHint: 'Select any',
-        //   validator: (dynamic value) {
-        //     return state.isSelectedLevelsValid
-        //         ? null
-        //         : 'Please select an option';
-        //   },
-        //   onChanged: (List<dynamic> value) {
-        //     print(value);
-        //     editProfileBloc.add(HandleToggleButtonClick(
-        //         fieldName: LEVELS_TAUGHT, index: value));
-        //     editProfileBloc.add(
-        //       CheckDropDownNotEmpty(fieldName: LEVELS_TAUGHT),
-        //     );
-        //     editProfileBloc.add(SaveField(key: LEVELS_TAUGHT, value: value));
-        //     setState(() {});
-        //   },
-        //   displayItem: (dynamic item, dynamic selected) {
-        //     return Row(children: [
-        //       selected
-        //           ? Icon(
-        //               Icons.check,
-        //               color: Colors.green,
-        //             )
-        //           : Icon(
-        //               Icons.check_box_outline_blank,
-        //               color: Colors.grey,
-        //             ),
-        //       SizedBox(width: 7),
-        //       Expanded(
-        //         child: item,
-        //       ),
-        //     ]);
-        //   },
-        //   selectedValueWidgetFn: (dynamic item) {
-        //     return Card(
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(10),
-        //           side: BorderSide(
-        //             color: Colors.brown,
-        //             width: 0.5,
-        //           ),
-        //         ),
-        //         margin: EdgeInsets.all(12),
-        //         child: Padding(
-        //           padding: const EdgeInsets.all(8),
-        //           child: Text(item.toString()),
-        //         ));
-        //   },
-        //   doneButton: (dynamic selectedItemsDone, dynamic doneContext) {
-        //     return RaisedButton(
-        //         onPressed: () {
-        //           Navigator.pop(doneContext);
-        //           setState(() {});
-        //         },
-        //         child: Text('Save'));
-        //   },
-        //   closeButton: null,
-        //   style: TextStyle(fontStyle: FontStyle.italic),
-        //   searchFn: (String keyword, dynamic items) {
-        //     List<int> ret = [];
-        //     if (keyword != null && items != null && keyword.isNotEmpty) {
-        //       keyword.split(' ').forEach((k) {
-        //         int i = 0;
-        //         items.forEach((dynamic item) {
-        //           if (k.isNotEmpty &&
-        //               (item.value[1]
-        //                   .toString()
-        //                   .toLowerCase()
-        //                   .contains(k.toLowerCase()))) {
-        //             ret.add(i);
-        //           }
-        //           i++;
-        //         });
-        //       });
-        //     }
-        //     if (keyword.isEmpty) {
-        //       ret = Iterable<int>.generate(items.length).toList();
-        //     }
-        //     return ret;
-        //   },
-        //   clearIcon: Icon(Icons.clear_all),
-        //   icon: Icon(Icons.arrow_drop_down_circle),
-        //   label: 'Levels Taught',
-        //   underline: Container(
-        //     height: 1.0,
-        //     decoration: BoxDecoration(
-        //         border:
-        //             Border(bottom: BorderSide(color: Colors.teal, width: 3.0))),
-        //   ),
-        //   iconDisabledColor: Colors.brown,
-        //   iconEnabledColor: Colors.indigo,
-        //   isExpanded: true,
-        // ),
-        // TODO(ElasticBottle): fix subject dropdown list
-        // SearchableDropdown<dynamic>.multiple(
-        //   items: state.subjectsToDisplay
-        //       .map(
-        //         (e) => DropdownMenuItem<String>(
-        //           value: e,
-        //           child: Text(e),
-        //         ),
-        //       )
-        //       .toList(),
-        //   selectedItems: state.subjects,
-        //   hint: Padding(
-        //     padding: const EdgeInsets.all(12.0),
-        //     child: Text('Select any'),
-        //   ),
-        //   searchHint: 'Select any',
-        //   validator: (dynamic value) {
-        //     return state.isSelectedSubjectsValid
-        //         ? null
-        //         : 'Please select an option';
-        //   },
-        //   onChanged: (List<String> value) {
-        //     print(value);
-        //     editProfileBloc.add(
-        //         HandleToggleButtonClick(fieldName: SUBJECTS, index: value));
-        //     editProfileBloc.add(
-        //       CheckDropDownNotEmpty(fieldName: SUBJECTS),
-        //     );
-        //     editProfileBloc.add(SaveField(key: SUBJECTS, value: value));
-        //     setState(() {});
-        //   },
-        //   displayItem: (dynamic item, dynamic selected) {
-        //     return Row(children: [
-        //       selected
-        //           ? Icon(
-        //               Icons.check,
-        //               color: Colors.green,
-        //             )
-        //           : Icon(
-        //               Icons.check_box_outline_blank,
-        //               color: Colors.grey,
-        //             ),
-        //       SizedBox(width: 7),
-        //       Expanded(
-        //         child: item,
-        //       ),
-        //     ]);
-        //   },
-        //   selectedValueWidgetFn: (dynamic item) {
-        //     return Card(
-        //         shape: RoundedRectangleBorder(
-        //           borderRadius: BorderRadius.circular(10),
-        //           side: BorderSide(
-        //             color: Colors.brown,
-        //             width: 0.5,
-        //           ),
-        //         ),
-        //         margin: EdgeInsets.all(12),
-        //         child: Padding(
-        //           padding: const EdgeInsets.all(8),
-        //           child: Text(item.toString()),
-        //         ));
-        //   },
-        //   doneButton: (dynamic selectedItemsDone, dynamic doneContext) {
-        //     return RaisedButton(
-        //         onPressed: () {
-        //           Navigator.pop(doneContext);
-        //           setState(() {});
-        //         },
-        //         child: Text('Save'));
-        //   },
-        //   closeButton: null,
-        //   style: TextStyle(fontStyle: FontStyle.italic),
-        //   searchFn: (String keyword, dynamic items) {
-        //     List<int> ret = [];
-        //     if (keyword != null && items != null && keyword.isNotEmpty) {
-        //       keyword.split(' ').forEach((k) {
-        //         int i = 0;
-        //         items.forEach((dynamic item) {
-        //           if (k.isNotEmpty &&
-        //               (item.value[1]
-        //                   .toString()
-        //                   .toLowerCase()
-        //                   .contains(k.toLowerCase()))) {
-        //             ret.add(i);
-        //           }
-        //           i++;
-        //         });
-        //       });
-        //     }
-        //     if (keyword.isEmpty) {
-        //       ret = Iterable<int>.generate(items.length).toList();
-        //     }
-        //     return ret;
-        //   },
-        //   clearIcon: Icon(Icons.clear_all),
-        //   icon: Icon(Icons.arrow_drop_down_circle),
-        //   label: 'Subjects Taught',
-        //   underline: Container(
-        //     height: 1.0,
-        //     decoration: BoxDecoration(
-        //         border:
-        //             Border(bottom: BorderSide(color: Colors.teal, width: 3.0))),
-        //   ),
-        //   iconDisabledColor: Colors.brown,
-        //   iconEnabledColor: Colors.indigo,
-        //   isExpanded: true,
-        // ),
-        // SearchableDropdown<dynamic>.multiple(
-        //   items: TutorOccupation.occupations
-        //       .map<DropdownMenuItem<int>>(
-        //           (String e) => DropdownMenuItem<int>(value: 1, child: Text(e)))
-        //       .toList(),
-        //   selectedItems: state.tutorOccupation,
-        //   hint: 'Select one',
-        //   searchHint: 'Select one',
-        //   validator: (dynamic value) {
-        //     return state.isTutorOccupationsValid
-        //         ? null
-        //         : 'Please select an option';
-        //   },
-        //   onChanged: (dynamic value) {
-        //     print(value.toString());
-        //     editProfileBloc.add(HandleToggleButtonClick(
-        //         fieldName: TUTOR_OCCUPATION, index: value));
-        //     editProfileBloc.add(
-        //       CheckDropDownNotEmpty(fieldName: TUTOR_OCCUPATION),
-        //     );
-        //     editProfileBloc.add(SaveField(key: TUTOR_OCCUPATION, value: value));
-        //   },
-        //   doneButton: Text(''),
-        //   closeButton: 'save',
-        //   displayClearIcon: false,
-        //   label: Text(
-        //     'Occupation',
-        //     style: TextStyle(color: Colors.black),
-        //   ),
-        //   displayItem: (dynamic item, dynamic selected) {
-        //     return Row(children: [
-        //       selected
-        //           ? Icon(
-        //               Icons.radio_button_checked,
-        //               color: Colors.grey,
-        //             )
-        //           : Icon(
-        //               Icons.radio_button_unchecked,
-        //               color: Colors.grey,
-        //             ),
-        //       SizedBox(width: 7),
-        //       Expanded(
-        //         child: item,
-        //       ),
-        //     ]);
-        //   },
-        //   isExpanded: true,
-        // ),
+        SizedBox(height: 15.0),
+        MultiFilterSelect(
+          placeholder: state.subjectHint,
+          allItems: state.subjectsToDisplay
+              .map<Item<String, String, String>>(
+                (e) => Item<String, String, String>.build(
+                  value: e,
+                  display: e,
+                  content: e,
+                ),
+              )
+              .toList(),
+          selectCallback: (List selectedValue) {
+            print(selectedValue.toString());
+            editProfileBloc.add(HandleToggleButtonClick(
+                fieldName: SUBJECTS, index: selectedValue));
+            editProfileBloc.add(
+              CheckDropDownNotEmpty(fieldName: SUBJECTS),
+            );
+            editProfileBloc.add(SaveField(key: SUBJECTS, value: selectedValue));
+          },
+          initValue: state.subjects,
+        ),
+        SizedBox(height: 15.0),
+        MultiFilterSelect(
+          placeholder: 'Tutor Occupation',
+          allItems: TutorOccupation.occupations
+              .map<Item<String, String, String>>(
+                (e) => Item<String, String, String>.build(
+                  value: e,
+                  display: e,
+                  content: e,
+                ),
+              )
+              .toList(),
+          selectCallback: (List selectedValue) {
+            print(selectedValue.toString());
+            editProfileBloc.add(HandleToggleButtonClick(
+                fieldName: TUTOR_OCCUPATIONS, index: selectedValue));
+            editProfileBloc.add(
+              CheckDropDownNotEmpty(fieldName: TUTOR_OCCUPATIONS),
+            );
+            editProfileBloc
+                .add(SaveField(key: TUTOR_OCCUPATIONS, value: selectedValue));
+          },
+          initValue: state.tutorOccupation,
+        ),
+        SizedBox(height: 15.0),
         ToggleButton(
           title: 'Rate Type',
           errorText:
@@ -475,6 +267,7 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
           inactiveTextColor: ColorsAndFonts.primaryColor,
           labels: RateTypes.types,
           onPressed: (int index) {
+            editProfileBloc.add(CheckDropDownNotEmpty(fieldName: RATE_TYPE));
             editProfileBloc.add(
                 HandleToggleButtonClick(fieldName: RATE_TYPE, index: index));
             editProfileBloc.add(SaveField(key: RATE_TYPE, value: index));
@@ -516,10 +309,12 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) => editProfileBloc.add(
                         CheckRatesAreValid(fieldName: RATEMIN, toCheck: value)),
-                    onSaved: (String field) => editProfileBloc.add(SaveField(
-                      value: field,
-                      key: RATEMIN,
-                    )),
+                    onSaved: (String field) => editProfileBloc.add(
+                      SaveField(
+                        value: field,
+                        key: RATEMIN,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -535,10 +330,12 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) => editProfileBloc.add(
                         CheckRatesAreValid(fieldName: RATEMAX, toCheck: value)),
-                    onSaved: (String field) => editProfileBloc.add(SaveField(
-                      value: field,
-                      key: RATEMAX,
-                    )),
+                    onSaved: (String field) => editProfileBloc.add(
+                      SaveField(
+                        value: field,
+                        key: RATEMAX,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -590,12 +387,11 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
                 padding: EdgeInsets.fromLTRB(10.0, 10.0, 0, 0),
                 child: FaIcon(FontAwesomeIcons.certificate),
               ),
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(
-                      fieldName: QUALIFICATIONS, toCheck: value)),
+              onChanged: (String value) => editProfileBloc
+                  .add(CheckTextFieldNotEmpty(fieldName: FREQ, toCheck: value)),
               onSaved: (String field) => editProfileBloc.add(SaveField(
                 value: field,
-                key: QUALIFICATIONS,
+                key: FREQ,
               )),
             ),
             CustomTextField(
@@ -609,12 +405,9 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
                   ? null
                   : Strings.invalidFieldCannotBeEmpty,
               initialText: state.initialAdditionalRemarks,
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(
-                      fieldName: SELLING_POINTS, toCheck: value)),
               onSaved: (String field) => editProfileBloc.add(SaveField(
                 value: field,
-                key: SELLING_POINTS,
+                key: ADDITIONAL_REMARKS,
               )),
             ),
           ],
@@ -625,7 +418,7 @@ class EditAssignmentPageState extends State<EditAssignmentPage> {
 
   Widget _getOpenToApplicationSwitch(EditTuteeAssignmentState state) {
     return SwitchListTile(
-      title: const Text('Accepting Students?'),
+      title: const Text('Accepting Tutor Application?'),
       value: state.isAcceptingTutors,
       onChanged: (bool value) {
         editProfileBloc

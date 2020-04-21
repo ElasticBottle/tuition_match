@@ -3,6 +3,7 @@ part of 'edit_tutee_assignment_bloc.dart';
 class EditTuteeAssignmentState extends Equatable {
   const EditTuteeAssignmentState({
     this.subjectsToDisplay,
+    this.subjectHint,
     this.initialRateMin,
     this.initialRateMax,
     this.initialTiming,
@@ -36,9 +37,10 @@ class EditTuteeAssignmentState extends Equatable {
 
   factory EditTuteeAssignmentState.initial() {
     return EditTuteeAssignmentState(
-      subjectsToDisplay: ['Please select level first'],
-      genderSelection: [0],
-      classFormatSelection: [0],
+      subjectsToDisplay: [],
+      subjectHint: 'Please select a level first',
+      genderSelection: [0, 1],
+      classFormatSelection: [1],
       levels: [],
       tutorOccupation: [],
       rateTypeSelction: 0,
@@ -70,18 +72,19 @@ class EditTuteeAssignmentState extends Equatable {
   }
 
   final List<String> subjectsToDisplay;
+  final String subjectHint;
   final String initialRateMin;
   final String initialRateMax;
   final String initialTiming;
   final String initiallocation;
   final String initialFreq;
   final String initialAdditionalRemarks;
-  final List<int> levels;
-  final List<int> subjects;
+  final List<String> levels;
+  final List<String> subjects;
   final List<int> classFormatSelection;
   final List<int> genderSelection;
   final int rateTypeSelction;
-  final List<int> tutorOccupation;
+  final List<String> tutorOccupation;
   final bool isAcceptingTutors;
   final bool isRateMinValid;
   final bool isRateMaxValid;
@@ -173,18 +176,19 @@ class EditTuteeAssignmentState extends Equatable {
 
   EditTuteeAssignmentState copyWith({
     List<String> subjectsToDisplay,
+    String subjectHint,
     String initialRateMin,
     String initialRateMax,
     String initialTiming,
     String initiallocation,
     String initialFreq,
     String initialAdditionalRemarks,
-    List<int> levels,
-    List<int> subjects,
+    List<String> levels,
+    List<String> subjects,
     List<int> classFormatSelection,
     List<int> genderSelection,
     int rateTypeSelction,
-    List<int> tutorOccupation,
+    List<String> tutorOccupation,
     bool isAcceptingTutors,
     bool isRateMinValid,
     bool isRateMaxValid,
@@ -205,6 +209,7 @@ class EditTuteeAssignmentState extends Equatable {
   }) {
     return EditTuteeAssignmentState(
       subjectsToDisplay: subjectsToDisplay ?? this.subjectsToDisplay,
+      subjectHint: subjectHint ?? this.subjectHint,
       initialRateMin: initialRateMin ?? this.initialRateMin,
       initialRateMax: initialRateMax ?? this.initialRateMax,
       initialTiming: initialTiming ?? this.initialTiming,
@@ -245,6 +250,7 @@ class EditTuteeAssignmentState extends Equatable {
   @override
   List<Object> get props => [
         subjectsToDisplay,
+        subjectHint,
         initialRateMin,
         initialRateMax,
         initialTiming,
@@ -280,6 +286,7 @@ class EditTuteeAssignmentState extends Equatable {
   String toString() {
     return '''EditTuteeAssignmentState(
       subjectsToDisplay: $subjectsToDisplay,
+      subjectHint : $subjectHint,
       initialRateMin: $initialRateMin, 
       initialRateMax: $initialRateMax, 
       initialTiming: $initialTiming, 

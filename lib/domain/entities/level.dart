@@ -74,4 +74,8 @@ class Level {
   static List<String> fromIndices(List<int> levels) {
     return levels.map((e) => Level.all[e]).toList();
   }
+
+  static int toIndex(String e) {
+    return all.indexOf(e);
+  }
 }

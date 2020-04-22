@@ -14,6 +14,10 @@ class Gender {
     return values.map((e) => genders.indexOf(e)).toList();
   }
 
+  static List<String> fromIndices(List<int> value) {
+    return value.map((e) => genders[e]).toList();
+  }
+
   static int toIndex(String value) {
     return genders.indexOf(value);
   }

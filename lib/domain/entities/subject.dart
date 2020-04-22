@@ -66,7 +66,7 @@ class Subject extends Equatable {
   }
 
   static List<String> getSubjectsToDisplay(List<String> levels) {
-    final List<String> toReturn = [];
+    final Set<String> toReturn = {};
     for (String level in levels) {
       if (Level.pri.contains(level)) {
         toReturn.addAll(pri);
@@ -90,7 +90,7 @@ class Subject extends Equatable {
         toReturn.addAll(other);
       }
     }
-    return toReturn;
+    return toReturn.toList();
   }
 
   static List<int> toIndices(List<String> value, List<String> levels) {

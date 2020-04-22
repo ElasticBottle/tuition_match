@@ -10,11 +10,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cotor/initial_page_decider.dart';
 import 'package:cotor/features/view_assignment/pages/view_assignment_page.dart';
 import 'package:cotor/features/auth_service/pages/registration_page.dart';
+import 'package:cotor/features/edit_tutor_profile/pages/edit_tutor_page.dart';
+import 'package:cotor/features/add_tutee_assignment/pages/edit_assignment_page.dart';
 
 abstract class Routes {
   static const initialPage = '/';
   static const viewAssignmentpage = '/view-assignmentpage';
   static const registrationPage = '/registration-page';
+  static const editTutorPage = '/edit-tutor-page';
+  static const editAssignmentPage = '/edit-assignment-page';
 }
 
 class Router extends RouterBase {
@@ -47,6 +51,16 @@ class Router extends RouterBase {
           builder: (_) => RegistrationPage(key: typedArgs.key),
           settings: settings,
         );
+      case Routes.editTutorPage:
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => EditTutorPage(),
+          settings: settings,
+        );
+      case Routes.editAssignmentPage:
+        return MaterialPageRoute<dynamic>(
+          builder: (_) => EditAssignmentPage(),
+          settings: settings,
+        );
       default:
         return unknownRoutePage(settings.name);
     }
@@ -75,4 +89,6 @@ extension RouterNavigationHelperMethods on ExtendedNavigatorState {
   }) =>
       pushNamed(Routes.registrationPage,
           arguments: RegistrationPageArguments(key: key));
+  Future pushEditTutorPage() => pushNamed(Routes.editTutorPage);
+  Future pushEditAssignmentPage() => pushNamed(Routes.editAssignmentPage);
 }

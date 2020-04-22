@@ -41,9 +41,9 @@ dependencies:
   badges: ^1.1.1
   timeago: ^2.0.26
   uuid: ^2.0.4
-  searchable_dropdown: ^1.1.3
   toggle_switch: ^0.1.4
   font_awesome_flutter: ^8.8.1
+  multiple_select: ^0.1.22
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

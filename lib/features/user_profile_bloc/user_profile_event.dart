@@ -16,85 +16,13 @@ class RefreshUserProfile extends UserProfileEvent {
   String toString() => '''RefreshUserProfile { user : $user}''';
 }
 
-class AddUserAssignment extends UserProfileEvent {
-  const AddUserAssignment({
-    this.assignment,
-  });
-  final TuteeAssignment assignment;
+class UpdateProfileSuccess extends UserProfileEvent {
+  const UpdateProfileSuccess(String msg) : _msg = msg;
+
+  final String _msg;
+
+  String get message => _msg;
 
   @override
-  List<Object> get props => [assignment];
-
-  @override
-  String toString() => '''AddUserAssignment {
-    assignment : $assignment, 
-  }''';
-}
-
-class UpdateUserAssignment extends UserProfileEvent {
-  const UpdateUserAssignment({
-    this.assignment,
-    this.assignmentId,
-  });
-  final String assignmentId;
-  final TuteeAssignment assignment;
-
-  @override
-  List<Object> get props => [assignment, assignmentId];
-
-  @override
-  String toString() => '''UpdateUserAssignment {
-    assignmentId : $assignmentId,
-    assignment : $assignment, 
-  }''';
-}
-
-class DelUserAssignment extends UserProfileEvent {
-  const DelUserAssignment({
-    this.assignmentId,
-  });
-  final String assignmentId;
-
-  @override
-  List<Object> get props => [assignmentId];
-
-  @override
-  String toString() => '''DelUserAssignment {
-    assignmentId : $assignmentId,
-  }''';
-}
-
-class AddUserProfile extends UserProfileEvent {
-  const AddUserProfile({
-    this.profile,
-  });
-  final TutorProfile profile;
-
-  @override
-  List<Object> get props => [profile];
-
-  @override
-  String toString() => '''AddUserProfile {
-    profile : $profile, 
-  }''';
-}
-
-class UpdateUserProfile extends UserProfileEvent {
-  const UpdateUserProfile({
-    this.profile,
-  });
-  final TutorProfile profile;
-
-  @override
-  List<Object> get props => [profile];
-
-  @override
-  String toString() => '''UpdateUserProfile {
-    profile : $profile, 
-  }''';
-}
-
-class AddProfilePhoto extends UserProfileEvent {
-  @override
-  String toString() => '''AddProfilePhoto {}''';
+  bool get stringify => true;
 }

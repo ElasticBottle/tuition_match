@@ -7,6 +7,23 @@ abstract class EditTutorProfileEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class InitialiseProfileFields extends EditTutorProfileEvent {
+  const InitialiseProfileFields({
+    this.tutorProfile,
+    this.userDetails,
+  });
+  final TutorProfileModel tutorProfile;
+  final UserModel userDetails;
+
+  @override
+  List<Object> get props => [tutorProfile, userDetails];
+
+  @override
+  String toString() {
+    return 'InitialiseProfileFields(tutorProfile: $tutorProfile, userDetails : $userDetails)';
+  }
+}
+
 class CheckRatesAreValid extends EditTutorProfileEvent {
   const CheckRatesAreValid({
     @required this.fieldName,
@@ -49,6 +66,9 @@ class CheckDropDownNotEmpty extends EditTutorProfileEvent {
   String toString() => 'CheckDropDownNotEmpty(fieldName: $fieldName)';
 }
 
+/// [HandleToggleButtonClick] should be called before [CheckDropDownNotEmpty] or [SaveField].
+/// Updates state fields with the latest toggled value(s)
+/// To be used by nonTextFields.
 class HandleToggleButtonClick extends EditTutorProfileEvent {
   const HandleToggleButtonClick({this.index, this.fieldName});
   final dynamic index;
@@ -76,28 +96,4 @@ class SaveField extends EditTutorProfileEvent {
 
 class SubmitForm extends EditTutorProfileEvent {}
 
-class InitialiseFields extends EditTutorProfileEvent {
-  const InitialiseFields({
-    this.name,
-    this.photoUrl,
-    this.isVerifiedTutor,
-    this.isTutor,
-    this.tutorProfile,
-    this.userId,
-  });
-  final TutorProfile tutorProfile;
-  final String userId;
-  final Name name;
-  final String photoUrl;
-  final bool isVerifiedTutor;
-  final bool isTutor;
-
-  @override
-  List<Object> get props =>
-      [tutorProfile, userId, name, photoUrl, isVerifiedTutor, isTutor];
-
-  @override
-  String toString() {
-    return 'InitialiseFields(tutorProfile: $tutorProfile, userId: $userId, name: $name, photoUrl: $photoUrl, isVerifiedTutor: $isVerifiedTutor, isTutor: $isTutor)';
-  }
-}
+class ResetForm extends EditTutorProfileEvent {}

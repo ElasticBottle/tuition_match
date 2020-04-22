@@ -2,6 +2,8 @@ part of 'edit_tutor_profile_bloc.dart';
 
 class EditTutorProfileState extends Equatable {
   const EditTutorProfileState({
+    this.subjectsToDisplay,
+    this.subjectHint,
     this.initialRateMin,
     this.initialRateMax,
     this.initialTiming,
@@ -31,16 +33,19 @@ class EditTutorProfileState extends Equatable {
     this.isSuccess,
     this.isFailure,
     this.failureMessage,
+    this.successMessage,
   });
 
   factory EditTutorProfileState.initial() {
     return EditTutorProfileState(
+      subjectsToDisplay: [],
+      subjectHint: 'Please select a level first',
       genderSelection: 0,
       classFormatSelection: [],
       levelsTaught: [],
+      subjectsTaught: [],
       tutorOccupation: null,
       rateTypeSelction: 0,
-      subjectsTaught: ['science'],
       initialRateMin: '',
       initialRateMax: '',
       initialTiming: '',
@@ -66,19 +71,20 @@ class EditTutorProfileState extends Equatable {
       failureMessage: null,
     );
   }
-
+  final List<String> subjectsToDisplay;
+  final String subjectHint;
   final String initialRateMin;
   final String initialRateMax;
   final String initialTiming;
   final String initiallocation;
   final String initialQualification;
   final String initialSellingPoint;
-  final List<int> levelsTaught;
+  final List<String> levelsTaught;
   final List<String> subjectsTaught;
   final List<int> classFormatSelection;
   final int genderSelection;
   final int rateTypeSelction;
-  final int tutorOccupation;
+  final String tutorOccupation;
   final bool isAcceptingStudent;
   final bool isRateMinValid;
   final bool isRateMaxValid;
@@ -96,6 +102,7 @@ class EditTutorProfileState extends Equatable {
   final bool isSuccess;
   final bool isFailure;
   final String failureMessage;
+  final String successMessage;
 
   bool isValid() {
     return isRateMinValid &&
@@ -110,6 +117,36 @@ class EditTutorProfileState extends Equatable {
         isGenderValid &&
         isTypeRateValid &&
         isTutorOccupationValid;
+  }
+
+  EditTutorProfileState success(String msg) {
+    return copyWith(
+      isFailure: false,
+      isSubmitting: false,
+      isSuccess: true,
+      failureMessage: null,
+      successMessage: msg,
+    );
+  }
+
+  EditTutorProfileState failure(String msg) {
+    return copyWith(
+      isFailure: true,
+      isSubmitting: false,
+      isSuccess: false,
+      failureMessage: msg,
+      successMessage: null,
+    );
+  }
+
+  EditTutorProfileState loading() {
+    return copyWith(
+      isSubmitting: true,
+      isFailure: false,
+      isSuccess: false,
+      failureMessage: null,
+      successMessage: null,
+    );
   }
 
   EditTutorProfileState update({
@@ -140,25 +177,27 @@ class EditTutorProfileState extends Equatable {
       isTypeRateValid: isTypeRateValid,
       isTutorOccupationValid: isTutorOccupationValid,
       isFailure: false,
-      isSubmitting: false,
       isSuccess: false,
       failureMessage: null,
+      successMessage: null,
     );
   }
 
   EditTutorProfileState copyWith({
+    List<String> subjectsToDisplay,
+    String subjectHint,
     String initialRateMin,
     String initialRateMax,
     String initialTiming,
     String initiallocation,
     String initialQualification,
     String initialSellingPoint,
-    List<int> levelsTaught,
+    List<String> levelsTaught,
     List<String> subjectsTaught,
     List<int> classFormatSelection,
     int genderSelection,
     int rateTypeSelction,
-    int tutorOccupation,
+    String tutorOccupation,
     bool isAcceptingStudent,
     bool isRateMinValid,
     bool isRateMaxValid,
@@ -176,8 +215,11 @@ class EditTutorProfileState extends Equatable {
     bool isSuccess,
     bool isFailure,
     String failureMessage,
+    String successMessage,
   }) {
     return EditTutorProfileState(
+      subjectsToDisplay: subjectsToDisplay ?? this.subjectsToDisplay,
+      subjectHint: subjectHint ?? this.subjectHint,
       initialRateMin: initialRateMin ?? this.initialRateMin,
       initialRateMax: initialRateMax ?? this.initialRateMax,
       initialTiming: initialTiming ?? this.initialTiming,
@@ -210,11 +252,14 @@ class EditTutorProfileState extends Equatable {
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
       failureMessage: failureMessage ?? this.failureMessage,
+      successMessage: successMessage ?? this.successMessage,
     );
   }
 
   @override
   List<Object> get props => [
+        subjectsToDisplay,
+        subjectHint,
         initialRateMin,
         initialRateMax,
         initialTiming,
@@ -244,11 +289,14 @@ class EditTutorProfileState extends Equatable {
         isSuccess,
         isFailure,
         failureMessage,
+        successMessage,
       ];
 
   @override
   String toString() {
     return '''EditTutorProfileState(
+      subjectsToDisplay: $subjectsToDisplay,
+      subjectHint : $subjectHint,
       initialRateMin: $initialRateMin, 
       initialRateMax: $initialRateMax, 
       initialTiming: $initialTiming, 
@@ -276,6 +324,7 @@ class EditTutorProfileState extends Equatable {
       isSubmitting: $isSubmitting, 
       isSuccess: $isSuccess, 
       isFailure: $isFailure, 
-      failureMessage: $failureMessage)''';
+      failureMessage: $failureMessage,
+      successMessage: $successMessage)''';
   }
 }

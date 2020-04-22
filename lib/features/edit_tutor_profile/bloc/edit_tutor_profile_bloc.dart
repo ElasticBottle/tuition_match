@@ -4,12 +4,14 @@ import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/data/models/tutor_profile_model.dart';
-import 'package:cotor/domain/entities/enums.dart';
-import 'package:cotor/domain/entities/name.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
+import 'package:cotor/domain/entities/class_format.dart';
+import 'package:cotor/domain/entities/gender.dart';
+import 'package:cotor/domain/entities/rate_types.dart';
+import 'package:cotor/domain/entities/subject.dart' as subject;
 import 'package:cotor/domain/usecases/user/set_tutor_profile.dart';
 import 'package:cotor/domain/usecases/user/update_tutor_profile.dart';
+import 'package:cotor/features/models/tutor_profile_model.dart';
+import 'package:cotor/features/models/user_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -28,17 +30,8 @@ class EditTutorProfileBloc
   final EmailAndPasswordValidators validator;
   final SetTutorProfile setTutorProfile;
   final UpdateTutorProfile updateTutorProfile;
-  final Map<String, dynamic> tutorProfileInfo = <String, dynamic>{
-    GENDER: 0,
-    RATE_TYPE: 0,
-    STATUS: true,
-    SUBJECTS: ['science']
-  };
-  String userId;
-  String photoUrl;
-  Name tutorName;
-  bool isVerifiedTutor;
-  bool isTutor;
+  final Map<String, dynamic> tutorProfileInfo = <String, dynamic>{};
+  UserModel userDetails;
 
   @override
   EditTutorProfileState get initialState => EditTutorProfileState.initial();
@@ -68,14 +61,10 @@ class EditTutorProfileBloc
   Stream<EditTutorProfileState> mapEventToState(
     EditTutorProfileEvent event,
   ) async* {
-    if (event is InitialiseFields) {
+    if (event is InitialiseProfileFields) {
       yield* _mapInitialiseFieldsToState(
         event.tutorProfile,
-        event.userId,
-        event.name,
-        event.photoUrl,
-        event.isVerifiedTutor,
-        event.isTutor,
+        event.userDetails,
       );
     } else if (event is CheckRatesAreValid) {
       yield* _mapCheckRatesAreValidToState(event.toCheck, event.fieldName);
@@ -89,36 +78,34 @@ class EditTutorProfileBloc
       yield* _mapSaveFieldToState(event.key, value: event.value);
     } else if (event is SubmitForm) {
       yield* _mapSubmitFormToState();
+    } else if (event is ResetForm) {
+      yield* _mapResetFormToState();
     }
   }
 
   Stream<EditTutorProfileState> _mapInitialiseFieldsToState(
-      TutorProfile profile,
-      String userId,
-      Name name,
-      String photoUrl,
-      bool isVerifiedTutor,
-      bool isTutor) async* {
-    this.userId = userId;
-    this.isVerifiedTutor = isVerifiedTutor;
-    this.photoUrl = photoUrl;
-    tutorName = name;
-    this.isTutor = isTutor;
-    if (isTutor) {
+    TutorProfileModel profile,
+    UserModel userDetails,
+  ) async* {
+    this.userDetails = userDetails;
+    if (userDetails.isTutor) {
       yield state.copyWith(
-        genderSelection: profile.gender.index,
-        rateTypeSelction: profile.rateType.index,
-        classFormatSelection:
-            profile.formats.map((ClassFormat e) => e.index).toList(),
+        genderSelection: Gender.toIndex(profile.gender),
+        classFormatSelection: ClassFormat.toIndices(profile.formats),
+        levelsTaught: profile.levelsTaught,
+        subjectsTaught: profile.subjects,
+        subjectsToDisplay:
+            subject.Subject.getSubjectsToDisplay(profile.levelsTaught),
+        subjectHint: 'Subjects',
+        tutorOccupation: profile.tutorOccupation,
+        rateTypeSelction: RateTypes.toIndex(profile.rateType),
         initialRateMin: profile.rateMin.toString(),
         initialRateMax: profile.rateMax.toString(),
         initialTiming: profile.timing,
         initiallocation: profile.location,
         initialQualification: profile.qualifications,
         initialSellingPoint: profile.sellingPoints,
-        //  initialSelectedLevelsTaught:,
-        //  initialSelectedSubjects:,
-        //  initialLessonFormat: profile.formats,
+        isAcceptingStudent: profile.isPublic,
       );
     } else {
       yield state.copyWith();
@@ -173,8 +160,18 @@ class EditTutorProfileBloc
         yield state.update(isSellingPointValid: isValid);
         break;
       case LEVELS_TAUGHT:
-        yield state.update(
-            isSelectedLevelsTaughtValid: state.levelsTaught.isNotEmpty);
+        final bool valid = state.levelsTaught.isNotEmpty;
+        if (valid) {
+          yield state.copyWith(
+            subjectHint: 'Subjects',
+            isSelectedLevelsTaughtValid: valid,
+          );
+        } else {
+          yield state.copyWith(
+              isSelectedLevelsTaughtValid: valid,
+              subjectsToDisplay: [],
+              subjectHint: 'please select a level first');
+        }
         break;
       case SUBJECTS:
         yield state.update(
@@ -188,6 +185,12 @@ class EditTutorProfileBloc
         yield state.update(
             isTutorOccupationValid: state.tutorOccupation != null);
         break;
+      case RATE_TYPE:
+        yield state.update(isTypeRateValid: true);
+        break;
+      case GENDER:
+        yield state.update(isGenderValid: true);
+        break;
     }
   }
 
@@ -197,25 +200,27 @@ class EditTutorProfileBloc
       case GENDER:
         yield state.copyWith(genderSelection: index);
         break;
-      case RATE_TYPE:
-        yield state.copyWith(rateTypeSelction: index);
-        break;
       case CLASS_FORMATS:
         state.classFormatSelection.contains(index)
             ? state.classFormatSelection.remove(index)
             : state.classFormatSelection.add(index);
         yield state.copyWith(classFormatSelection: state.classFormatSelection);
         break;
+      case RATE_TYPE:
+        yield state.copyWith(rateTypeSelction: index);
+        break;
       case TUTOR_OCCUPATION:
         yield state.copyWith(tutorOccupation: index);
-        break;
-      case LEVELS_TAUGHT:
-        yield state.copyWith(levelsTaught: index);
         break;
       case SUBJECTS:
         yield state.copyWith(subjectsTaught: index);
         break;
-      case STATUS:
+      case LEVELS_TAUGHT:
+        yield state.copyWith(
+            subjectsToDisplay: subject.Subject.getSubjectsToDisplay(index),
+            levelsTaught: index);
+        break;
+      case IS_PUBLIC:
         yield state.copyWith(isAcceptingStudent: index);
         break;
     }
@@ -225,8 +230,40 @@ class EditTutorProfileBloc
       {dynamic value}) async* {
     switch (key) {
       case CLASS_FORMATS:
+        tutorProfileInfo.addAll(<String, dynamic>{
+          key: ClassFormat.fromIndices(state.classFormatSelection)
+        });
+        break;
+      case RATE_TYPE:
+        tutorProfileInfo.addAll(<String, dynamic>{
+          key: RateTypes.fromIndex(state.rateTypeSelction)
+        });
+        break;
+      case GENDER:
+        tutorProfileInfo.addAll(
+            <String, dynamic>{key: Gender.fromIndex(state.genderSelection)});
+        break;
+      case RATEMIN:
+      case RATEMAX:
+      case PROPOSED_RATE:
+        if (value.isNotEmpty) {
+          tutorProfileInfo.addAll(<String, dynamic>{key: double.parse(value)});
+        } else {
+          tutorProfileInfo.addAll(<String, dynamic>{key: value});
+        }
+        break;
+      case LEVELS_TAUGHT:
+        tutorProfileInfo.addAll(<String, dynamic>{key: state.levelsTaught});
+        break;
+      case SUBJECTS:
+        tutorProfileInfo.addAll(<String, dynamic>{key: state.subjectsTaught});
+        break;
+      case TUTOR_OCCUPATION:
+        tutorProfileInfo.addAll(<String, dynamic>{key: state.tutorOccupation});
+        break;
+      case IS_PUBLIC:
         tutorProfileInfo
-            .addAll(<String, dynamic>{key: state.classFormatSelection});
+            .addAll(<String, dynamic>{key: state.isAcceptingStudent});
         break;
       default:
         tutorProfileInfo.addAll(<String, dynamic>{key: value});
@@ -236,60 +273,61 @@ class EditTutorProfileBloc
   }
 
   Stream<EditTutorProfileState> _mapSubmitFormToState() async* {
-    yield state.copyWith(isSubmitting: true);
+    yield state.loading();
+    yield* _saveNonTextFields();
     Either<Failure, bool> result;
     yield* _verifyFields(tutorProfileInfo);
     if (!state.isValid()) {
-      yield state.copyWith(
-          isSubmitting: false,
-          isFailure: true,
-          failureMessage:
-              'Please make sure all fields are properly filled in!');
+      yield state
+          .failure('Please make sure all fields are properly filled in!');
       return;
-    } else if (isTutor) {
-      result = await updateTutorProfile(TutorProfileModel());
+    }
+    final TutorProfileModel model = TutorProfileModel(
+      uid: userDetails.uid,
+      gender: tutorProfileInfo[GENDER],
+      rateType: tutorProfileInfo[RATE_TYPE],
+      tutorOccupation: tutorProfileInfo[TUTOR_OCCUPATION],
+      levelsTaught: tutorProfileInfo[LEVELS_TAUGHT],
+      subjects: tutorProfileInfo[SUBJECTS],
+      formats: tutorProfileInfo[CLASS_FORMATS],
+      rateMax: tutorProfileInfo[RATEMAX],
+      rateMin: tutorProfileInfo[RATEMIN],
+      timing: tutorProfileInfo[TIMING],
+      location: tutorProfileInfo[LOCATION],
+      qualifications: tutorProfileInfo[QUALIFICATIONS],
+      sellingPoints: tutorProfileInfo[SELLING_POINTS],
+      isPublic: tutorProfileInfo[IS_PUBLIC],
+      tutorNameModel: userDetails.name,
+      photoUrl: userDetails.photoUrl,
+      isVerifiedTutor: userDetails.isVerifiedTutor,
+    );
+    print(model);
+    if (userDetails.isTutor) {
+      result = await updateTutorProfile(model.toDomainEntity());
     } else {
-      final TutorProfileModel model =
-          TutorProfileModel.fromJson(<String, dynamic>{
-        UID: userId,
-        GENDER: tutorProfileInfo[GENDER],
-        RATE_TYPE: tutorProfileInfo[RATE_TYPE],
-        TUTOR_OCCUPATION: tutorProfileInfo[TUTOR_OCCUPATION],
-        LEVELS_TAUGHT: tutorProfileInfo[LEVELS_TAUGHT],
-        SUBJECTS: tutorProfileInfo[SUBJECTS],
-        CLASS_FORMATS: tutorProfileInfo[CLASS_FORMATS],
-        RATEMAX: tutorProfileInfo[RATEMAX],
-        RATEMIN: tutorProfileInfo[RATEMIN],
-        TIMING: tutorProfileInfo[TIMING],
-        LOCATION: tutorProfileInfo[LOCATION],
-        QUALIFICATIONS: tutorProfileInfo[QUALIFICATIONS],
-        SELLING_POINTS: tutorProfileInfo[SELLING_POINTS],
-        STATUS: tutorProfileInfo[STATUS] ? 0 : 1,
-        TUTOR_NAME: <String, String>{
-          FIRSTNAME: tutorName.firstName,
-          LASTNAME: tutorName.lastName
-        },
-        PHOTOURL: photoUrl,
-        IS_VERIFIED_TUTOR: isVerifiedTutor,
-      });
-      print(model);
-      result = await setTutorProfile(model);
+      result = await setTutorProfile(model.toDomainEntity());
     }
     yield* result.fold(
       (l) async* {
-        yield state.copyWith(
-          isSubmitting: false,
-          isFailure: true,
-          failureMessage: 'Soemthing went wrong',
-        );
+        if (l is ServerFailure) {
+          yield state.failure(
+            'We had problems updating our server',
+          );
+        } else if (l is NetworkFailure) {
+          yield state.failure(
+            'No Internet! Check connection and Try again',
+          );
+        }
       },
-      (r) async* {},
+      (r) async* {
+        yield state.success('Success!');
+      },
     );
   }
 
   Stream<EditTutorProfileState> _verifyFields(
       Map<String, dynamic> tutorProfileInfo) async* {
-    final List<String> keys = [
+    final List<String> nonTextFieldToVerify = [
       CLASS_FORMATS,
       LEVELS_TAUGHT,
       SUBJECTS,
@@ -300,8 +338,27 @@ class EditTutorProfileBloc
         yield* _mapCheckTextFieldNotEmptyToState(entry.value, entry.key);
       }
     }
-    for (String key in keys) {
+    for (String key in nonTextFieldToVerify) {
       yield* _mapCheckDropDownNotEmptyToState(key);
     }
+  }
+
+  Stream<EditTutorProfileState> _saveNonTextFields() async* {
+    final List<String> keys = [
+      GENDER,
+      CLASS_FORMATS,
+      LEVELS_TAUGHT,
+      SUBJECTS,
+      TUTOR_OCCUPATION,
+      RATE_TYPE,
+      IS_PUBLIC,
+    ];
+    for (String key in keys) {
+      yield* _mapSaveFieldToState(key);
+    }
+  }
+
+  Stream<EditTutorProfileState> _mapResetFormToState() async* {
+    yield EditTutorProfileState.initial();
   }
 }

@@ -67,14 +67,14 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       dateModified: json[DATE_MODIFIED].toString(),
       gender: json[GENDER],
       tutorOccupation: json[TUTOR_OCCUPATION],
-      levelsTaught: json[LEVELS_TAUGHT],
-      subjects: json[SUBJECTS],
-      proposedRate: double.parse(json[PROPOSED_RATE]),
-      rateMax: double.parse(json[RATEMAX]),
-      rateMin: double.parse(json[RATEMIN]),
+      levelsTaught: json[LEVELS_TAUGHT].cast<String>(),
+      subjects: json[SUBJECTS].cast<String>(),
+      proposedRate: json[PROPOSED_RATE],
+      rateMax: json[RATEMAX],
+      rateMin: json[RATEMIN],
       rateType: json[RATE_TYPE],
       timing: json[TIMING],
-      formats: json[CLASS_FORMATS],
+      formats: json[CLASS_FORMATS].cast<String>(),
       qualifications: json[QUALIFICATIONS],
       sellingPoints: json[SELLING_POINTS],
       location: json[LOCATION],
@@ -203,7 +203,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   @override
   bool get isVerifiedTutor => _isVerifiedTutor;
 
-  @override
   bool isEmpty() {
     return uid == null;
   }
@@ -217,14 +216,14 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       DATE_MODIFIED: dateModified,
       GENDER: gender,
       TUTOR_OCCUPATION: tutorOccupation,
-      LEVELS_TAUGHT: levelsTaught,
-      SUBJECTS: subjects,
+      LEVELS_TAUGHT: levelsTaught.cast<dynamic>(),
+      SUBJECTS: subjects.cast<dynamic>(),
       PROPOSED_RATE: proposedRate,
       RATEMIN: rateMin,
       RATEMAX: rateMax,
       RATE_TYPE: rateType,
       TIMING: timing,
-      CLASS_FORMATS: formats,
+      CLASS_FORMATS: formats.cast<dynamic>(),
       QUALIFICATIONS: qualifications,
       SELLING_POINTS: sellingPoints,
       LOCATION: location,

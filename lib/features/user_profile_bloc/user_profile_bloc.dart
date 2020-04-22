@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:cotor/domain/usecases/user/user_profile_stream.dart';
+import 'package:cotor/features/models/user_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +24,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   StreamSubscription userProfilesubscription;
 
   @override
-  UserProfileState get initialState => UserProfileState.empty();
+  UserProfileState get initialState => UserProfileStateImpl.empty();
 
   @override
   Stream<UserProfileState> mapEventToState(
@@ -33,14 +32,10 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   ) async* {
     if (event is UserEnterHompage) {
       yield* _mapUserEnterHomepageToState();
-    } else if (event is AddUserAssignment) {
-    } else if (event is DelUserAssignment) {
-    } else if (event is UpdateUserAssignment) {
-    } else if (event is AddUserProfile) {
-    } else if (event is UpdateUserProfile) {
-    } else if (event is AddProfilePhoto) {
     } else if (event is RefreshUserProfile) {
       yield* _mapRefreshUserProfileToState(event.user);
+    } else if (event is UpdateProfileSuccess) {
+      yield* _mapUpdateProfileSuccessToState(event.message);
     }
   }
 
@@ -65,12 +60,20 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   }
 
   Stream<UserProfileState> _mapRefreshUserProfileToState(User user) async* {
-    yield UserProfileState(userProfile: user);
+    yield state.copyWith(userProfile: UserModel.fromDomainEntity(user));
   }
 
   @override
   Future<void> close() {
     userProfilesubscription?.cancel();
     return super.close();
+  }
+
+  Stream<UserProfileState> _mapUpdateProfileSuccessToState(
+      String message) async* {
+    yield state.copyWith(
+        updateProfileSuccess: true, updateProfileSuccessMsg: message);
+    yield state.copyWith(
+        updateProfileSuccess: false, updateProfileSuccessMsg: message);
   }
 }

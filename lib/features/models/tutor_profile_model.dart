@@ -136,9 +136,9 @@ class TutorProfileModel extends Equatable implements TutorProfile {
   @override
   double get rateMax => _rateMax;
   @override
-  String get rateType => _timing;
+  String get rateType => _rateType;
   @override
-  String get timing => _rateType;
+  String get timing => _timing;
   @override
   List<String> get formats => _formats;
   @override

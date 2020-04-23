@@ -18,15 +18,15 @@ class AssignmentListPage extends StatefulWidget {
 class _AssignmentListPageState extends State<AssignmentListPage>
     with AutomaticKeepAliveClientMixin<AssignmentListPage> {
   final ScrollController _scrollController = ScrollController();
+  AssignmentsBloc assignmentsBloc;
 
   void _scrollListener() {
     if (_scrollController.offset >=
             _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
-      final AssignmentsState currentState =
-          BlocProvider.of<AssignmentsBloc>(context).state;
+      final AssignmentsState currentState = assignmentsBloc.state;
       if (currentState is AssignmentLoaded && !currentState.isEnd) {
-        BlocProvider.of<AssignmentsBloc>(context).add(GetNextAssignmentList());
+        assignmentsBloc.add(GetNextAssignmentList());
       }
     }
   }
@@ -34,7 +34,7 @@ class _AssignmentListPageState extends State<AssignmentListPage>
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<AssignmentsBloc>(context).add(GetAssignmentList());
+    assignmentsBloc = BlocProvider.of<AssignmentsBloc>(context);
     _scrollController.addListener(_scrollListener);
   }
 
@@ -44,7 +44,7 @@ class _AssignmentListPageState extends State<AssignmentListPage>
     return RefreshIndicator(
       onRefresh: () async {
         print('refresh assignment list');
-        BlocProvider.of<AssignmentsBloc>(context).add(GetAssignmentList());
+        assignmentsBloc.add(GetAssignmentList());
       },
       displacement: SpacingsAndHeights.refreshDisplacement,
       child: CustomScrollView(
@@ -55,8 +55,8 @@ class _AssignmentListPageState extends State<AssignmentListPage>
           CustomSliverAppbar(
             title: Strings.assignmentTitle,
           ),
-          BlocListener<AssignmentsBloc, AssignmentsState>(
-            bloc: BlocProvider.of<AssignmentsBloc>(context),
+          BlocConsumer<AssignmentsBloc, AssignmentsState>(
+            bloc: assignmentsBloc,
             listener: (context, state) {
               if (state is CachedAssignmentError) {
                 // TODO(ElasticBottle): remove when error page is done up for this state
@@ -67,8 +67,7 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                     label: 'Refresh',
                     textColor: ColorsAndFonts.secondaryColor,
                     onPressed: () {
-                      BlocProvider.of<AssignmentsBloc>(context)
-                          .add(GetAssignmentList());
+                      assignmentsBloc.add(GetAssignmentList());
                     },
                   ),
                 );
@@ -96,39 +95,33 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                 );
               }
             },
-            child: BlocBuilder<AssignmentsBloc, AssignmentsState>(
-                bloc: BlocProvider.of<AssignmentsBloc>(context),
-                builder: (BuildContext context, AssignmentsState state) {
-                  if (state is Loading) {
-                    return LoadingWidget();
-                  } else if (state is AssignmentLoaded) {
-                    final LoadState currentLoadState = state.isFetching
-                        ? LoadState.loading
-                        : state.isEnd ? LoadState.allLoaded : LoadState.normal;
-                    return PaginatedSliverList<TuteeAssignment>(
-                      assignments: state.assignments,
-                      loadState: currentLoadState,
-                      builder:
-                          (BuildContext context, TuteeAssignment assignment) {
-                        return AssignmentItemTile(
-                          assignment: assignment,
-                        );
-                      },
+            builder: (BuildContext context, AssignmentsState state) {
+              if (state is Loading) {
+                return LoadingWidget();
+              } else if (state is AssignmentLoaded) {
+                final LoadState currentLoadState = _getCurrentLoadState(state);
+                return PaginatedSliverList<TuteeAssignment>(
+                  assignments: state.assignments,
+                  loadState: currentLoadState,
+                  builder: (BuildContext context, TuteeAssignment assignment) {
+                    return AssignmentItemTile(
+                      assignment: assignment,
                     );
-                  } else if (state is AssignmentError) {
-                    BlocProvider.of<AssignmentsBloc>(context)
-                        .add(GetCachedAssignmentList());
-                    return LoadingWidget();
-                  } else if (state is CachedAssignmentError) {
-                    // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
-                  }
-                  // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any
-                  return SliverToBoxAdapter(
-                    child: Container(
-                      color: Colors.red,
-                    ),
-                  );
-                }),
+                  },
+                );
+              } else if (state is AssignmentError) {
+                assignmentsBloc.add(GetCachedAssignmentList());
+                return LoadingWidget();
+              } else if (state is CachedAssignmentError) {
+                // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
+              }
+              // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any
+              return SliverToBoxAdapter(
+                child: Container(
+                  color: Colors.red,
+                ),
+              );
+            },
           )
         ],
       ),
@@ -156,6 +149,16 @@ class _AssignmentListPageState extends State<AssignmentListPage>
       duration: Duration(seconds: duration),
     );
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  LoadState _getCurrentLoadState(AssignmentLoaded state) {
+    if (state.isFetching) {
+      return LoadState.loading;
+    } else if (state.isEnd) {
+      return LoadState.allLoaded;
+    } else {
+      return LoadState.normal;
+    }
   }
 
   @override

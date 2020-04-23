@@ -27,6 +27,8 @@ import 'package:cotor/domain/usecases/set_is_first_app_launch_false.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
+import 'package:cotor/domain/usecases/user/cache_tutor_profile.dart';
+import 'package:cotor/domain/usecases/user/get_cache_tutor_profile.dart';
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:cotor/domain/usecases/user/get_user_profile.dart';
 import 'package:cotor/domain/usecases/user/set_tutor_profile.dart';
@@ -146,6 +148,8 @@ Future<void> init() async {
     () => EditTutorProfileBloc(
       setTutorProfile: sl(),
       updateTutorProfile: sl(),
+      cacheTutorProfile: sl(),
+      getCacheTutorProfile: sl(),
       validator: sl(),
     ),
   );
@@ -182,6 +186,8 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => SetTuteeAssignment(repo: sl()));
   sl.registerLazySingleton(() => UpdateTuteeAssignment(repo: sl()));
+  sl.registerLazySingleton(() => GetCacheTutorProfile(tutorProfileRepo: sl()));
+  sl.registerLazySingleton(() => CacheTutorProfile(tutorProfileRepo: sl()));
 
   // Repository
   sl.registerLazySingleton<OnboardingRepository>(

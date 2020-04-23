@@ -36,6 +36,8 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
       yield* _mapRefreshUserProfileToState(event.user);
     } else if (event is UpdateProfileSuccess) {
       yield* _mapUpdateProfileSuccessToState(event.message);
+    } else if (event is CachedProfileToSet) {
+      yield* _mapCachedProfileToSet(event.isCache);
     }
   }
 
@@ -63,17 +65,21 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     yield state.copyWith(userProfile: UserModel.fromDomainEntity(user));
   }
 
-  @override
-  Future<void> close() {
-    userProfilesubscription?.cancel();
-    return super.close();
-  }
-
   Stream<UserProfileState> _mapUpdateProfileSuccessToState(
       String message) async* {
     yield state.copyWith(
         updateProfileSuccess: true, updateProfileSuccessMsg: message);
     yield state.copyWith(
         updateProfileSuccess: false, updateProfileSuccessMsg: message);
+  }
+
+  Stream<UserProfileState> _mapCachedProfileToSet(bool isCache) async* {
+    yield state.copyWith(hasCachedProfile: isCache);
+  }
+
+  @override
+  Future<void> close() {
+    userProfilesubscription?.cancel();
+    return super.close();
   }
 }

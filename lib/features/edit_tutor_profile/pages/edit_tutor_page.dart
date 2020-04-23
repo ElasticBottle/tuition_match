@@ -4,6 +4,7 @@ import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/buttons/toggle_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
+import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/common_widgets/platform_alert_dialog.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
@@ -48,6 +49,25 @@ class EditTutorPageState extends State<EditTutorPage> {
     super.initState();
   }
 
+  Future<bool> _confirmExit() async {
+    final bool toSave = await PlatformAlertDialog(
+      title: 'Leaving',
+      content: 'What would you like to do with your edits?',
+      defaultActionText: 'Save',
+      cancelActionText: 'Discard',
+    ).show(context);
+    if (toSave != null) {
+      userProfileBloc.add(CachedProfileToSet(false));
+      if (toSave) {
+        userProfileBloc.add(CachedProfileToSet(true));
+        editProfileBloc.add(CacheForm());
+      }
+      editProfileBloc.add(ResetForm());
+      Navigator.of(context).pop();
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -59,69 +79,46 @@ class EditTutorPageState extends State<EditTutorPage> {
         }
       },
       child: Scaffold(
-        body: CustomScrollView(
-          slivers: <Widget>[
-            CustomSliverAppbar(
-              title: Strings.editTutorProfile,
-              isTitleCenter: true,
-              showActions: false,
-              leading: IconButton(
-                icon: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: Icon(
-                    Icons.exit_to_app,
-                    color: ColorsAndFonts.primaryColor,
+        body: WillPopScope(
+          onWillPop: _confirmExit,
+          child: CustomScrollView(
+            slivers: <Widget>[
+              CustomSliverAppbar(
+                title: Strings.editTutorProfile,
+                isTitleCenter: true,
+                showActions: false,
+                leading: IconButton(
+                  icon: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(math.pi),
+                    child: Icon(
+                      Icons.exit_to_app,
+                      color: ColorsAndFonts.primaryColor,
+                    ),
                   ),
+                  onPressed: _confirmExit,
                 ),
-                onPressed: () async {
-                  final bool toSave = await PlatformAlertDialog(
-                    title: 'Leaving',
-                    content: 'What would you like to do with your edits?',
-                    defaultActionText: 'Save',
-                    cancelActionText: 'Discard',
-                  ).show(context);
-                  if (toSave != null) {
-                    if (toSave) {
-                      // TODO(ElasticBottle): Cache profile
-                    }
+              ),
+              BlocConsumer<EditTutorProfileBloc, EditTutorProfileState>(
+                listener: (context, state) {
+                  if (state.isFailure) {
+                    Scaffold.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        CustomSnackBar(
+                          message: state.failureMessage,
+                          isError: true,
+                          delay: 3,
+                        ).show(context),
+                      );
+                    userProfileBloc.add(CachedProfileToSet(true));
+                  } else if (state.isSuccess) {
                     editProfileBloc.add(ResetForm());
+                    userProfileBloc.add(UpdateProfileSuccess('Success'));
+                    userProfileBloc.add(CachedProfileToSet(false));
                     Navigator.of(context).pop();
                   }
                 },
-              ),
-            ),
-            BlocListener<EditTutorProfileBloc, EditTutorProfileState>(
-              listener: (context, state) {
-                if (state.isFailure) {
-                  Scaffold.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Icon(Icons.error),
-                            SizedBox(width: 20.0),
-                            Expanded(child: Text(state.failureMessage))
-                          ],
-                        ),
-                        action: SnackBarAction(
-                          label: Strings.dismiss,
-                          onPressed: () {
-                            Scaffold.of(context).hideCurrentSnackBar();
-                          },
-                        ),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                } else if (state.isSuccess) {
-                  editProfileBloc.add(ResetForm());
-                  userProfileBloc.add(UpdateProfileSuccess('Success'));
-                  Navigator.of(context).pop();
-                }
-              },
-              child: BlocBuilder<EditTutorProfileBloc, EditTutorProfileState>(
                 builder: (context, state) {
                   return SliverToBoxAdapter(
                     child: Padding(
@@ -130,7 +127,7 @@ class EditTutorPageState extends State<EditTutorPage> {
                               SpacingsAndHeights.addAssignmentPageSidePadding),
                       child: Column(
                         children: <Widget>[
-                          _getRadioSelectors(state),
+                          _getNonTextFields(state),
                           _getTextFormFields(state),
                           _getOpenToApplicationSwitch(state),
                           Container(
@@ -159,14 +156,14 @@ class EditTutorPageState extends State<EditTutorPage> {
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _getRadioSelectors(EditTutorProfileState state) {
+  Widget _getNonTextFields(EditTutorProfileState state) {
     return Column(
       children: <Widget>[
         ToggleButton(
@@ -181,9 +178,6 @@ class EditTutorPageState extends State<EditTutorPage> {
           onPressed: (int index) {
             editProfileBloc.add(
               HandleToggleButtonClick(fieldName: GENDER, index: index),
-            );
-            editProfileBloc.add(
-              SaveField(key: GENDER, value: index),
             );
           },
           initialLabelIndex: [state.genderSelection],
@@ -200,10 +194,6 @@ class EditTutorPageState extends State<EditTutorPage> {
           onPressed: (int index) {
             editProfileBloc.add(HandleToggleButtonClick(
                 fieldName: CLASS_FORMATS, index: index));
-            editProfileBloc.add(
-              CheckDropDownNotEmpty(fieldName: CLASS_FORMATS),
-            );
-            editProfileBloc.add(SaveField(key: CLASS_FORMATS));
             setState(() {});
           },
           initialLabelIndex: state.classFormatSelection,
@@ -222,13 +212,9 @@ class EditTutorPageState extends State<EditTutorPage> {
           initValue: state.levelsTaught,
           selectCallback: (List selectedValue) {
             print(selectedValue.toString());
+            setState(() {});
             editProfileBloc.add(HandleToggleButtonClick(
                 fieldName: LEVELS_TAUGHT, index: selectedValue));
-            editProfileBloc.add(
-              CheckDropDownNotEmpty(fieldName: LEVELS_TAUGHT),
-            );
-            editProfileBloc
-                .add(SaveField(key: LEVELS_TAUGHT, value: selectedValue));
           },
         ),
         SizedBox(height: 15.0),
@@ -243,16 +229,12 @@ class EditTutorPageState extends State<EditTutorPage> {
                 ),
               )
               .toList(),
+          initValue: state.subjectsTaught,
           selectCallback: (List selectedValue) {
             print(selectedValue.toString());
             editProfileBloc.add(HandleToggleButtonClick(
                 fieldName: SUBJECTS, index: selectedValue));
-            editProfileBloc.add(
-              CheckDropDownNotEmpty(fieldName: SUBJECTS),
-            );
-            editProfileBloc.add(SaveField(key: SUBJECTS, value: selectedValue));
           },
-          initValue: state.subjectsTaught,
         ),
         SizedBox(height: 15.0),
         MultiFilterSelect(
@@ -271,11 +253,6 @@ class EditTutorPageState extends State<EditTutorPage> {
             selectedValue.removeWhere((dynamic element) => element == null);
             editProfileBloc.add(HandleToggleButtonClick(
                 fieldName: TUTOR_OCCUPATION, index: selectedValue[0]));
-            editProfileBloc.add(
-              CheckDropDownNotEmpty(fieldName: TUTOR_OCCUPATION),
-            );
-            editProfileBloc
-                .add(SaveField(key: TUTOR_OCCUPATION, value: selectedValue[0]));
           },
           initValue: <String>[state.tutorOccupation],
         ),
@@ -292,7 +269,6 @@ class EditTutorPageState extends State<EditTutorPage> {
           onPressed: (int index) {
             editProfileBloc.add(
                 HandleToggleButtonClick(fieldName: RATE_TYPE, index: index));
-            editProfileBloc.add(SaveField(key: RATE_TYPE, value: index));
           },
           initialLabelIndex: [state.rateTypeSelction],
         ),
@@ -329,12 +305,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                     onFieldSubmitted: _handleSubmitted,
                     errorText: state.isRateMinValid ? null : Strings.rateError,
                     prefixIcon: Icon(Icons.attach_money),
-                    onChanged: (String value) => editProfileBloc.add(
-                        CheckRatesAreValid(fieldName: RATEMIN, toCheck: value)),
-                    onSaved: (String field) => editProfileBloc.add(SaveField(
-                      value: field,
-                      key: RATEMIN,
-                    )),
+                    onChanged: (String value) {
+                      editProfileBloc
+                          .add(HandleRates(fieldName: RATEMIN, value: value));
+                    },
                   ),
                 ),
                 SizedBox(
@@ -348,12 +322,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                     onFieldSubmitted: _handleSubmitted,
                     errorText: state.isRateMaxValid ? null : Strings.rateError,
                     prefixIcon: Icon(Icons.attach_money),
-                    onChanged: (String value) => editProfileBloc.add(
-                        CheckRatesAreValid(fieldName: RATEMAX, toCheck: value)),
-                    onSaved: (String field) => editProfileBloc.add(SaveField(
-                      value: field,
-                      key: RATEMAX,
-                    )),
+                    onChanged: (String value) {
+                      editProfileBloc
+                          .add(HandleRates(fieldName: RATEMAX, value: value));
+                    },
                   ),
                 ),
               ],
@@ -369,12 +341,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                   ? null
                   : Strings.invalidFieldCannotBeEmpty,
               prefixIcon: Icon(Icons.watch),
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(fieldName: TIMING, toCheck: value)),
-              onSaved: (String field) => editProfileBloc.add(SaveField(
-                value: field,
-                key: TIMING,
-              )),
+              onChanged: (String value) {
+                editProfileBloc
+                    .add(HandleTextField(fieldName: TIMING, value: value));
+              },
             ),
             CustomTextField(
               labelText: Strings.location,
@@ -386,12 +356,10 @@ class EditTutorPageState extends State<EditTutorPage> {
               errorText: state.isLocationValid
                   ? null
                   : Strings.invalidFieldCannotBeEmpty,
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(fieldName: LOCATION, toCheck: value)),
-              onSaved: (String field) => editProfileBloc.add(SaveField(
-                value: field,
-                key: LOCATION,
-              )),
+              onChanged: (String value) {
+                editProfileBloc
+                    .add(HandleTextField(fieldName: LOCATION, value: value));
+              },
             ),
             CustomTextField(
               labelText: Strings.qualifications,
@@ -406,13 +374,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                 padding: EdgeInsets.fromLTRB(10.0, 10.0, 0, 0),
                 child: FaIcon(FontAwesomeIcons.certificate),
               ),
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(
-                      fieldName: QUALIFICATIONS, toCheck: value)),
-              onSaved: (String field) => editProfileBloc.add(SaveField(
-                value: field,
-                key: QUALIFICATIONS,
-              )),
+              onChanged: (String value) {
+                editProfileBloc.add(
+                    HandleTextField(fieldName: QUALIFICATIONS, value: value));
+              },
             ),
             CustomTextField(
               labelText: Strings.sellingPoints,
@@ -425,13 +390,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                   ? null
                   : Strings.invalidFieldCannotBeEmpty,
               initialText: state.initialSellingPoint,
-              onChanged: (String value) => editProfileBloc.add(
-                  CheckTextFieldNotEmpty(
-                      fieldName: SELLING_POINTS, toCheck: value)),
-              onSaved: (String field) => editProfileBloc.add(SaveField(
-                value: field,
-                key: SELLING_POINTS,
-              )),
+              onChanged: (String value) {
+                editProfileBloc.add(
+                    HandleTextField(fieldName: SELLING_POINTS, value: value));
+              },
             ),
           ],
         ),
@@ -446,7 +408,6 @@ class EditTutorPageState extends State<EditTutorPage> {
       onChanged: (bool value) {
         editProfileBloc
             .add(HandleToggleButtonClick(fieldName: IS_PUBLIC, index: value));
-        editProfileBloc.add(SaveField(key: IS_PUBLIC, value: value));
         setState(() {});
       },
       secondary: const Icon(FontAwesomeIcons.universalAccess),
@@ -455,9 +416,6 @@ class EditTutorPageState extends State<EditTutorPage> {
 
   void _formSubmit() {
     // editProfileBloc.add(CheckDropDownNotEmpty(fieldName: TUTOR_OCCUPATION));
-    final FormState state = _formKey.currentState;
-    state.setState(() {});
-    state.save();
     editProfileBloc.add(SubmitForm());
   }
 

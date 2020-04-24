@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import 'package:cotor/common_widgets/information_display/app_badge.dart';
 import 'package:cotor/common_widgets/information_display/info_display.dart';
 import 'package:cotor/common_widgets/bars/bottom_action_bar.dart';
 import 'package:cotor/common_widgets/information_display/user_detail_card.dart';
@@ -40,8 +41,10 @@ class TutorProfileTile extends StatelessWidget {
             UserDetailCard(
               photoUrl: profile.photoUrl,
               name: profile.tutorName,
-              badge: Badge(
-                child: Text(profile.tutorOccupation),
+              badge: AppBadge(
+                badgeColor: Colors.white,
+                badgeText: profile.tutorOccupation,
+                textStyle: Theme.of(context).textTheme.subtitle2,
               ),
               heroTagForPhoto: profile.uid,
               radius: 18.0,
@@ -57,7 +60,7 @@ class TutorProfileTile extends StatelessWidget {
               numClickAction: profile.numLiked,
               mainOnPressed: () {},
               actionOnPressed: () {},
-              callToActionText: Strings.apply,
+              callToActionText: Strings.request,
               numClickCallToAction:
                   profile.numRequest.toString() + Strings.applied,
             ),
@@ -90,36 +93,58 @@ class TutorProfileTile extends StatelessWidget {
             ),
           ],
           descriptions: [
-            Wrap(
-              children: [
-                ...makeBadges(profile.subjects),
-              ],
+            wrapper(
+              makeBadges(
+                profile.subjects,
+                ColorsAndFonts.subjectBadgeColor,
+                context,
+              ),
             ),
-            Wrap(
-              children: [
-                ...makeBadges(profile.levelsTaught),
-              ],
+            wrapper(
+              makeBadges(
+                profile.levelsTaught,
+                ColorsAndFonts.levelBadgeColor,
+                context,
+              ),
             ),
-            Wrap(
-              children: [
-                ...makeBadges(profile.formats),
-              ],
+            wrapper(
+              makeBadges(
+                profile.formats,
+                ColorsAndFonts.classFormatBadgeColor,
+                context,
+              ),
             )
           ],
-          spacingBetweenFields: 10,
+          spacingBetweenFields: 15,
         ),
       ),
     );
   }
 
-  List<Widget> makeBadges(List<String> items) {
+  Widget wrapper(List<Widget> widgets) {
+    return Wrap(
+      runAlignment: WrapAlignment.start,
+      alignment: WrapAlignment.start,
+      spacing: 10.0,
+      runSpacing: 10.0,
+      children: [
+        ...widgets,
+      ],
+    );
+  }
+
+  List<Widget> makeBadges(
+    List<String> items,
+    Color badgeColor,
+    BuildContext context,
+  ) {
     final List<Widget> badges = [];
     for (String item in items) {
       badges.add(
-        Badge(
-          child: Text(
-            item,
-          ),
+        AppBadge(
+          badgeColor: badgeColor,
+          badgeText: item,
+          textStyle: Theme.of(context).textTheme.subtitle2,
         ),
       );
     }

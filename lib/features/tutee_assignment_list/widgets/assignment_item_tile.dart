@@ -82,18 +82,21 @@ class AssignmentItemTile extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: InfoDisplay(
-          tag: assignment.uid,
           icons: [
-            Icons.location_on,
-            Icons.watch,
-            Icons.av_timer,
-            Icons.attach_money
+            Icon(Icons.location_on),
+            Icon(Icons.watch),
+            Icon(Icons.av_timer),
+            Icon(Icons.attach_money),
           ],
           descriptions: [
-            assignment.location,
-            assignment.timing,
-            assignment.freq,
-            assignment.rateMin.toString() + '- ' + assignment.rateMax.toString()
+            Text(assignment.location),
+            Text(assignment.timing),
+            Text(assignment.freq),
+            Text(
+              assignment.rateMin.toString() +
+                  '- ' +
+                  assignment.rateMax.toString(),
+            ),
           ],
           spacingBetweenFields:
               SpacingsAndHeights.assignmentItemTileInfoSpacing,

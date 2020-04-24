@@ -1,4 +1,5 @@
 import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
+import 'package:cotor/common_widgets/information_display/sliver_loading_widget.dart';
 import 'package:cotor/common_widgets/paginated_sliver_list.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
@@ -97,11 +98,11 @@ class _AssignmentListPageState extends State<AssignmentListPage>
             },
             builder: (BuildContext context, AssignmentsState state) {
               if (state is Loading) {
-                return LoadingWidget();
+                return SliverLoadingWidget();
               } else if (state is AssignmentLoaded) {
                 final LoadState currentLoadState = _getCurrentLoadState(state);
                 return PaginatedSliverList<TuteeAssignment>(
-                  assignments: state.assignments,
+                  displayItems: state.assignments,
                   loadState: currentLoadState,
                   builder: (BuildContext context, TuteeAssignment assignment) {
                     return AssignmentItemTile(
@@ -111,7 +112,7 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                 );
               } else if (state is AssignmentError) {
                 assignmentsBloc.add(GetCachedAssignmentList());
-                return LoadingWidget();
+                return SliverLoadingWidget();
               } else if (state is CachedAssignmentError) {
                 // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
               }
@@ -163,22 +164,4 @@ class _AssignmentListPageState extends State<AssignmentListPage>
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Container(
-        height: MediaQuery.of(context).size.height / 3,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
-  }
 }

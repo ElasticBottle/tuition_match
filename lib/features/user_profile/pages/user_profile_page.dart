@@ -1,6 +1,7 @@
 import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/information_display/avatar.dart';
+import 'package:cotor/common_widgets/information_display/cache_badge.dart';
 import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
@@ -10,7 +11,6 @@ import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/models/tutor_profile_model.dart';
 import 'package:cotor/features/models/user_model.dart';
 import 'package:cotor/features/tutee_assignment_list/widgets/assignment_item_tile.dart';
-import 'package:cotor/features/user_profile/widgets/cache_badge.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/routing/router.gr.dart';
 import 'package:flutter/material.dart';
@@ -64,8 +64,6 @@ class UserProfilePage extends StatelessWidget {
                   if (state.userProfile.isTutor)
                     TutorDetails(
                       tutorProfileModel: state.userProfile.tutorProfile,
-                      isEditable: true,
-                      editTutorProfileBloc: editTutorProfileBloc,
                       userDetails: state.userProfile,
                       hasCacheProfile: state.hasCachedProfile,
                     ),
@@ -137,15 +135,11 @@ class UserProfilePage extends StatelessWidget {
 class TutorDetails extends StatelessWidget {
   const TutorDetails({
     @required this.tutorProfileModel,
-    this.editTutorProfileBloc,
     this.userDetails,
-    this.isEditable = false,
     this.hasCacheProfile = false,
   });
   final TutorProfileModel tutorProfileModel;
-  final bool isEditable;
   final bool hasCacheProfile;
-  final EditTutorProfileBloc editTutorProfileBloc;
   final UserModel userDetails;
 
   @override
@@ -156,7 +150,7 @@ class TutorDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(Strings.bio),
-            if (isEditable)
+            if (tutorProfileModel.uid == userDetails.uid)
               CacheBadge(
                 hasCacheProfile: hasCacheProfile,
                 child: IconButton(
@@ -165,7 +159,7 @@ class TutorDetails extends StatelessWidget {
                     color: ColorsAndFonts.userProfilePageEditProfileIconColour,
                   ),
                   onPressed: () {
-                    editTutorProfileBloc.add(
+                    BlocProvider.of<EditTutorProfileBloc>(context).add(
                       InitialiseProfileFields(
                         tutorProfile: tutorProfileModel,
                         userDetails: userDetails,

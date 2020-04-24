@@ -29,6 +29,7 @@ class InfoLine extends StatelessWidget {
     return Material(
       color: infoBgColor,
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: mainAxisAlignment,
         crossAxisAlignment: crossAxisAlignment,
         children: <Widget>[
@@ -36,7 +37,7 @@ class InfoLine extends StatelessWidget {
           SizedBox(width: spacingLeadingAndTitle),
           title,
           SizedBox(width: spacingTitleAndInfo),
-          info,
+          Expanded(child: info),
         ],
       ),
     );

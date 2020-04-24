@@ -13,10 +13,8 @@ class InfoDisplay extends StatelessWidget {
     this.spacingTitleAndInfo = 10.0,
     this.spacingLeadingAndTitle = 5.0,
     this.spacingBetweenFields = 5.0,
-    this.overallCrossAxisAlignment = CrossAxisAlignment.start,
-    this.overallMainAxisAlignment = MainAxisAlignment.center,
-    this.indivRowCrossAxisAlignment = CrossAxisAlignment.center,
-    this.indivRowMainAxisAlignment = MainAxisAlignment.start,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.mainAxisAlignment = MainAxisAlignment.start,
   })  : assert(icons.length == descriptions.length),
         super(key: key);
   final List<Widget> icons;
@@ -27,10 +25,8 @@ class InfoDisplay extends StatelessWidget {
   final double spacingLeadingAndTitle;
   final double spacingTitleAndInfo;
   final double spacingBetweenFields;
-  final MainAxisAlignment overallMainAxisAlignment;
-  final CrossAxisAlignment overallCrossAxisAlignment;
-  final MainAxisAlignment indivRowMainAxisAlignment;
-  final CrossAxisAlignment indivRowCrossAxisAlignment;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = [];
@@ -43,8 +39,8 @@ class InfoDisplay extends StatelessWidget {
           infoBgColor: infoBgColor,
           spacingLeadingAndTitle: spacingLeadingAndTitle,
           spacingTitleAndInfo: spacingTitleAndInfo,
-          mainAxisAlignment: indivRowMainAxisAlignment,
-          crossAxisAlignment: indivRowCrossAxisAlignment,
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
         ),
       );
       children.add(SizedBox(height: spacingBetweenFields));
@@ -52,8 +48,6 @@ class InfoDisplay extends StatelessWidget {
     return Container(
       color: spacingBgColor,
       child: Column(
-        mainAxisAlignment: overallMainAxisAlignment,
-        crossAxisAlignment: overallCrossAxisAlignment,
         children: <Widget>[
           ...children,
         ],

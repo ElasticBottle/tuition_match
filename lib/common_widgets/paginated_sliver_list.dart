@@ -11,13 +11,13 @@ enum LoadState {
 class PaginatedSliverList<T> extends StatelessWidget {
   const PaginatedSliverList({
     Key key,
-    @required this.assignments,
+    @required this.displayItems,
     @required this.builder,
     this.loadState = LoadState.normal,
-  })  : assert(assignments != null),
+  })  : assert(displayItems != null),
         super(key: key);
 
-  final List<T> assignments;
+  final List<T> displayItems;
   final Function(BuildContext context, T details) builder;
   final LoadState loadState;
   @override
@@ -26,7 +26,7 @@ class PaginatedSliverList<T> extends StatelessWidget {
       ///Lazy building of list
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          if (index == assignments.length) {
+          if (index == displayItems.length) {
             switch (loadState) {
               case LoadState.normal:
                 return EndTile();
@@ -39,9 +39,9 @@ class PaginatedSliverList<T> extends StatelessWidget {
                 break;
             }
           }
-          return builder(context, assignments[index]);
+          return builder(context, displayItems[index]);
         },
-        childCount: assignments.length + 1,
+        childCount: displayItems.length + 1,
       ),
     );
   }

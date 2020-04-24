@@ -1,32 +1,42 @@
-import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:flutter/material.dart';
 
 class InfoLine extends StatelessWidget {
+  /// Creates an Info Line similar to ListTile but stripped
+  ///
+  /// If no title is present, the spacing between the leading and info is the sum
+  /// of [spacingIconAndtitle] and [spacingTitleAndInfo]
   const InfoLine({
-    this.icon,
-    this.infoText,
-    this.spacingBetweenIconAndText = 5.0,
-  });
-  final IconData icon;
-  final String infoText;
-  final double spacingBetweenIconAndText;
+    Key key,
+    this.leading,
+    this.title,
+    this.info,
+    this.infoBgColor = Colors.white,
+    this.spacingLeadingAndTitle = 5.0,
+    this.spacingTitleAndInfo = 10.0,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+  }) : super(key: key);
+  final Widget leading;
+  final Widget title;
+  final Widget info;
+  final Color infoBgColor;
+  final double spacingLeadingAndTitle;
+  final double spacingTitleAndInfo;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ColorsAndFonts.backgroundColor,
+      color: infoBgColor,
       child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: crossAxisAlignment,
         children: <Widget>[
-          Icon(
-            icon,
-          ),
-          SizedBox(width: spacingBetweenIconAndText),
-          Text(
-            infoText,
-            style: TextStyle(
-                color: ColorsAndFonts.primaryColor,
-                fontFamily: ColorsAndFonts.primaryFont,
-                fontSize: ColorsAndFonts.addAssignmentSelectionFontSize),
-          ),
+          leading,
+          SizedBox(width: spacingLeadingAndTitle),
+          title,
+          SizedBox(width: spacingTitleAndInfo),
+          info,
         ],
       ),
     );

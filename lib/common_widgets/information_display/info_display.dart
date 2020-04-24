@@ -4,33 +4,60 @@ import 'info_line.dart';
 
 class InfoDisplay extends StatelessWidget {
   const InfoDisplay({
+    Key key,
     @required this.icons,
     @required this.descriptions,
-    this.spacingBetweenFields = 10.0,
-    this.tag,
-  }) : assert(icons.length == descriptions.length);
-  final List<IconData> icons;
-  final List<String> descriptions;
+    this.title,
+    this.infoBgColor = Colors.white,
+    this.spacingBgColor = Colors.white70,
+    this.spacingTitleAndInfo = 10.0,
+    this.spacingLeadingAndTitle = 5.0,
+    this.spacingBetweenFields = 5.0,
+    this.overallCrossAxisAlignment = CrossAxisAlignment.start,
+    this.overallMainAxisAlignment = MainAxisAlignment.center,
+    this.indivRowCrossAxisAlignment = CrossAxisAlignment.center,
+    this.indivRowMainAxisAlignment = MainAxisAlignment.start,
+  })  : assert(icons.length == descriptions.length),
+        super(key: key);
+  final List<Widget> icons;
+  final List<Widget> descriptions;
+  final List<Widget> title;
+  final Color infoBgColor;
+  final Color spacingBgColor;
+  final double spacingLeadingAndTitle;
+  final double spacingTitleAndInfo;
   final double spacingBetweenFields;
-  final String tag;
-
+  final MainAxisAlignment overallMainAxisAlignment;
+  final CrossAxisAlignment overallCrossAxisAlignment;
+  final MainAxisAlignment indivRowMainAxisAlignment;
+  final CrossAxisAlignment indivRowCrossAxisAlignment;
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = [];
     for (int index = 0; index < icons.length; index++) {
       children.add(
-        Hero(
-          tag: '$tag' '$index',
-          child:
-              InfoLine(icon: icons[index], infoText: descriptions[index] ?? ''),
+        InfoLine(
+          leading: icons[index],
+          title: title == null ? SizedBox() : title[index],
+          info: descriptions[index] ?? Text(''),
+          infoBgColor: infoBgColor,
+          spacingLeadingAndTitle: spacingLeadingAndTitle,
+          spacingTitleAndInfo: spacingTitleAndInfo,
+          mainAxisAlignment: indivRowMainAxisAlignment,
+          crossAxisAlignment: indivRowCrossAxisAlignment,
         ),
       );
       children.add(SizedBox(height: spacingBetweenFields));
     }
-    return Column(
-      children: <Widget>[
-        ...children,
-      ],
+    return Container(
+      color: spacingBgColor,
+      child: Column(
+        mainAxisAlignment: overallMainAxisAlignment,
+        crossAxisAlignment: overallCrossAxisAlignment,
+        children: <Widget>[
+          ...children,
+        ],
+      ),
     );
   }
 }

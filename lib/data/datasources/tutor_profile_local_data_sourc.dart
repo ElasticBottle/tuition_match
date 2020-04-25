@@ -107,13 +107,13 @@ class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
 
   @override
   Future<TutorProfileEntity> getCachedTutorProfileToSet() {
-    final String jsonString = sharedPreferences.getString(CACHED_PROFILE_LIST);
+    final String jsonString = sharedPreferences.getString(CACHED_PROFILE);
     if (jsonString != null) {
       final Map<String, dynamic> cachedAssignmentString =
           Map<String, dynamic>.from(json.decode(jsonString));
       return Future.value(TutorProfileEntity.fromJson(cachedAssignmentString));
     } else {
-      print('tutor profile lcoal data source getcachedTutorProfileToSet');
+      print('tutor profile local data source getcachedTutorProfileToSet');
       throw CacheException();
     }
   }

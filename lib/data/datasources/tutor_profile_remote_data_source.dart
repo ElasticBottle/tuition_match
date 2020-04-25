@@ -34,7 +34,7 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
       TutorCriteriaParamsEntity params) async {
     final Query query = remoteStore
         .collection('tutors')
-        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
         .where(LEVELS_TAUGHT, arrayContainsAny: params.levelsTaught)
         .where(SUBJECTS, arrayContainsAny: params.subjects)
         .where(CLASS_FORMATS, arrayContainsAny: params.formats)
@@ -64,7 +64,7 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   Future<List<TutorProfileEntity>> getProfileList() async {
     final Query query = remoteStore
         .collection('tutors')
-        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
         .orderBy(DATE_MODIFIED, descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT);
     return _attemptQuery(query, (List<DocumentSnapshot> snapshot) {
@@ -76,7 +76,7 @@ class TutorProfileRemoteDataSourceImpl implements TutorProfileRemoteDataSource {
   Future<List<TutorProfileEntity>> getNextProfileList() async {
     final Query query = remoteStore
         .collection('tutors')
-        .where(IS_OPEN, isEqualTo: true)
+        .where(IS_PUBLIC, isEqualTo: true)
         .orderBy(DATE_MODIFIED, descending: true)
         .limit(DOCUMENT_RETRIEVAL_LIMIT)
         .startAfterDocument(mostRecentProfileDocument);

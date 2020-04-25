@@ -105,7 +105,8 @@ class TuteeAssignmentRemoteDataSourceImpl
         return result;
       }
       return null;
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(stacktrace);
       print('tutee assignment remote data source' + e.toString());
       throw ServerException();
     }

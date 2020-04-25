@@ -87,7 +87,7 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
       // });
       return;
     } catch (e) {
-      print(e.toString());
+      print('user remote data source CreateNewUserDocument' + e.toString());
       throw ServerException();
     }
   }
@@ -99,11 +99,11 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
       final DocumentSnapshot result = await ref.get();
       if (result.data == null) {
         throw NoUserException();
-      } else {
-        return UserEntity.fromDocumentSnapshot(result);
       }
-    } catch (e) {
-      print(e.toString());
+      return UserEntity.fromDocumentSnapshot(result);
+    } catch (e, stacktrace) {
+      print(stacktrace);
+      print('user remote data source getUserInfo ' + e.toString());
       if (e is NoUserException) {
         throw NoUserException();
       }
@@ -194,16 +194,21 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   Future<bool> setTutorProfile({TutorProfileEntity tutorProfile}) async {
     final Map<String, dynamic> toAdd = tutorProfile.toDocumentSnapshot()[1];
     toAdd.addAll(<String, dynamic>{
+      UID: tutorProfile.uid,
       DATE_ADDED: FieldValue.serverTimestamp(),
       DATE_MODIFIED: FieldValue.serverTimestamp(),
       NUM_REQUEST: 0,
       NUM_LIKED: 0,
+      NUM_CLICKS: 0,
       RATING: 0.0,
     });
     final WriteBatch batch = store.batch();
     batch.updateData(
       store.document(FirestorePath.users(tutorProfile.uid)),
-      <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
+      <String, dynamic>{
+        TUTOR_PROFILE: toAdd,
+        IS_TUTOR: true,
+      },
     );
     batch.setData(
       store.document(FirestorePath.tutorProfile(tutorProfile.uid)),
@@ -217,7 +222,8 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     try {
       await batch.commit();
       return true;
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(stacktrace);
       print(e.toString());
       throw ServerException();
     }
@@ -262,34 +268,44 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     final DocumentReference tutorProfileRef =
         store.document(FirestorePath.tutorProfile(tutorProfile.uid));
     try {
-      await store.runTransaction((Transaction tx) async {
-        final DocumentSnapshot profileSnapshot = await tx.get(tutorProfileRef);
-        final Map<String, dynamic> toAdd = tutorProfile.toDocumentSnapshot()[1];
-        toAdd.addAll(<String, dynamic>{
-          DATE_MODIFIED: FieldValue.serverTimestamp(),
-          NUM_REQUEST: profileSnapshot.data[NUM_REQUEST],
-          NUM_LIKED: profileSnapshot.data[NUM_LIKED],
-          RATING: profileSnapshot.data[RATING],
-        });
+      await store.runTransaction(
+        (Transaction tx) async {
+          final DocumentSnapshot profileSnapshot =
+              await tx.get(tutorProfileRef);
+          final DocumentSnapshot profileLikeSnapshot = await tx.get(
+              store.document(FirestorePath.likeProfiles(tutorProfile.uid)));
+          final Map<String, dynamic> toAdd =
+              tutorProfile.toDocumentSnapshot()[1];
+          // print(profileSnapshot.data[NUM_REQUEST]);
+          toAdd.addAll(<String, dynamic>{
+            UID: tutorProfile.uid,
+            DATE_ADDED: profileSnapshot.data[DATE_ADDED],
+            DATE_MODIFIED: FieldValue.serverTimestamp(),
+            NUM_REQUEST: profileSnapshot.data[NUM_REQUEST],
+            NUM_LIKED: profileSnapshot.data[NUM_LIKED],
+            NUM_CLICKS: profileSnapshot.data[NUM_CLICKS],
+            RATING: profileSnapshot.data[RATING],
+          });
 
-        tx.update(
-          store.document(FirestorePath.users(tutorProfile.uid)),
-          <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
-        );
-        tx.update(
-          store.document(FirestorePath.assignment(tutorProfile.uid)),
-          toAdd,
-        );
-        final DocumentSnapshot profileLikeSnapshot = await tx
-            .get(store.document(FirestorePath.likeProfiles(tutorProfile.uid)));
-        toAdd.addAll(profileLikeSnapshot.data[LIKED]);
-        tx.set(
-          store.document(FirestorePath.likeProfiles(tutorProfile.uid)),
-          toAdd,
-        );
-      });
+          tx.update(
+            store.document(FirestorePath.users(tutorProfile.uid)),
+            <String, Map<String, dynamic>>{TUTOR_PROFILE: toAdd},
+          );
+          tx.update(
+            tutorProfileRef,
+            toAdd,
+          );
+
+          toAdd.addAll(profileLikeSnapshot.data[LIKED]);
+          tx.update(
+            store.document(FirestorePath.likeProfiles(tutorProfile.uid)),
+            toAdd,
+          );
+        },
+      );
       return true;
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(stacktrace);
       print(e.toString());
       throw ServerException();
     }

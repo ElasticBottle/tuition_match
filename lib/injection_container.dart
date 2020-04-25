@@ -27,6 +27,9 @@ import 'package:cotor/domain/usecases/set_is_first_app_launch_false.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
+import 'package:cotor/domain/usecases/tutor_profile/get_cached_tutor_list.dart';
+import 'package:cotor/domain/usecases/tutor_profile/get_next_tutor_list.dart';
+import 'package:cotor/domain/usecases/tutor_profile/get_tutor_list.dart';
 import 'package:cotor/domain/usecases/user/cache_tutor_profile.dart';
 import 'package:cotor/domain/usecases/user/get_cache_tutor_profile.dart';
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
@@ -52,6 +55,8 @@ import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assginments_bloc
 import 'package:cotor/features/user_profile/bloc/user_profile_page_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
+import 'package:cotor/features/tutor_profile_list/bloc/tutor_profile_list_bloc.dart';
+import 'package:cotor/features/view_tutor_profile/bloc/view_tutor_profile_bloc.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -154,6 +159,17 @@ Future<void> init() async {
     ),
   );
 
+  // Tutor Profile List bloc
+  sl.registerFactory<TutorProfileListBloc>(
+    () => TutorProfileListBloc(
+      getCachedTutorProfileList: sl(),
+      getNextTutorProfileList: sl(),
+      getTutorProfileList: sl(),
+    ),
+  );
+  // View Tutor List Bloc
+  sl.registerFactory<ViewTutorProfileBloc>(() => ViewTutorProfileBloc());
+
   // User Profile Bloc
   sl.registerFactory(() => UserProfilePageBloc());
 
@@ -163,6 +179,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetTuteeAssignmentList(repo: sl()));
   sl.registerLazySingleton(() => GetNextTuteeAssignmentList(repo: sl()));
   sl.registerLazySingleton(() => GetCachedTuteeAssignmentList(repo: sl()));
+
+  sl.registerLazySingleton(() => GetTutorList(repo: sl()));
+  sl.registerLazySingleton(() => GetNextTutorList(repo: sl()));
+  sl.registerLazySingleton(() => GetCachedTutorList(repo: sl()));
 
   sl.registerLazySingleton(() => UserStream(repo: sl()));
   sl.registerLazySingleton(() => GetCurrentUser(repo: sl()));

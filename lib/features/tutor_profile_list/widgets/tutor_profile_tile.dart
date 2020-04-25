@@ -1,12 +1,14 @@
-import 'package:badges/badges.dart';
 import 'package:cotor/common_widgets/information_display/app_badge.dart';
 import 'package:cotor/common_widgets/information_display/info_display.dart';
 import 'package:cotor/common_widgets/bars/bottom_action_bar.dart';
 import 'package:cotor/common_widgets/information_display/user_detail_card.dart';
+import 'package:cotor/common_widgets/information_display/avatar.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/features/models/tutor_profile_model.dart';
+import 'package:cotor/features/tutor_profile_list/helper.dart';
+import 'package:cotor/features/view_tutor_profile/bloc/view_tutor_profile_bloc.dart';
 import 'package:cotor/routing/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +41,7 @@ class TutorProfileTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             UserDetailCard(
+              heroTagForPhoto: profile.uid,
               photoUrl: profile.photoUrl,
               name: profile.tutorName,
               badge: AppBadge(
@@ -46,7 +49,6 @@ class TutorProfileTile extends StatelessWidget {
                 badgeText: profile.tutorOccupation,
                 textStyle: Theme.of(context).textTheme.subtitle2,
               ),
-              heroTagForPhoto: profile.uid,
               radius: 18.0,
             ),
             SizedBox(
@@ -75,6 +77,10 @@ class TutorProfileTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         print('to show user profile page');
+        BlocProvider.of<ViewTutorProfileBloc>(context).add(
+          ViewProfile(profile: profile),
+        );
+        Navigator.of(context).pushNamed(Routes.viewTutorProfilePage);
       },
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -93,22 +99,24 @@ class TutorProfileTile extends StatelessWidget {
             ),
           ],
           descriptions: [
-            wrapper(
-              makeBadges(
+            Helper.wrapper(
+              Helper.makeBadges(
                 profile.subjects,
                 ColorsAndFonts.subjectBadgeColor,
                 context,
               ),
             ),
-            wrapper(
-              makeBadges(
-                profile.levelsTaught,
+            Helper.wrapper(
+              Helper.makeBadges(
+                profile.levelsTaught
+                    .map((e) => Helper.shortenLevel(e))
+                    .toList(),
                 ColorsAndFonts.levelBadgeColor,
                 context,
               ),
             ),
-            wrapper(
-              makeBadges(
+            Helper.wrapper(
+              Helper.makeBadges(
                 profile.formats,
                 ColorsAndFonts.classFormatBadgeColor,
                 context,
@@ -119,35 +127,5 @@ class TutorProfileTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget wrapper(List<Widget> widgets) {
-    return Wrap(
-      runAlignment: WrapAlignment.start,
-      alignment: WrapAlignment.start,
-      spacing: 10.0,
-      runSpacing: 10.0,
-      children: [
-        ...widgets,
-      ],
-    );
-  }
-
-  List<Widget> makeBadges(
-    List<String> items,
-    Color badgeColor,
-    BuildContext context,
-  ) {
-    final List<Widget> badges = [];
-    for (String item in items) {
-      badges.add(
-        AppBadge(
-          badgeColor: badgeColor,
-          badgeText: item,
-          textStyle: Theme.of(context).textTheme.subtitle2,
-        ),
-      );
-    }
-    return badges;
   }
 }

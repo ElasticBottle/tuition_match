@@ -4,8 +4,8 @@ class AppTheme {
   /// Default constructor
   AppTheme({@required this.isDark});
 
-  Color bg1;
-  Color accent1;
+  Color bg1 = Colors.white;
+  Color accent1 = Colors.grey[900];
   bool isDark;
 
   ThemeData get themeData {
@@ -13,35 +13,7 @@ class AppTheme {
     final TextTheme txtTheme = (isDark
             ? Typography.material2018().white
             : Typography.material2018().black)
-        .copyWith(
-      /// Used for large text in dialogs (e.g., the month and year in the dialog
-      /// shown by [showDatePicker]).
-      headline5: TextStyle(),
-
-      /// Used for the primary text in app bars and dialogs (e.g., [AppBar.title]
-      /// and [AlertDialog.title]).
-      headline6: TextStyle(),
-
-      /// Used for the primary text in lists (e.g., [ListTile.title]).
-      subtitle1: TextStyle(),
-
-      /// For medium emphasis text that's a little smaller than [subtitle1].
-      subtitle2: TextStyle(),
-
-      /// Used for emphasizing text that would otherwise be [bodyText2].
-      bodyText1: TextStyle(),
-
-      /// The default text style for [Material].
-      bodyText2: TextStyle(),
-
-      /// Used for text on [RaisedButton] and [FlatButton].
-      button: TextStyle(),
-
-      /// The smallest style.
-      ///
-      /// Typically used for captions or to introduce a (larger) headline.
-      overline: TextStyle(),
-    );
+        .apply(fontFamily: 'Quicksand');
 
     final Color txtColor = txtTheme.bodyText1.color;
     final ColorScheme colorScheme = ColorScheme(

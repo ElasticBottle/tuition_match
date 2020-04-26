@@ -1,4 +1,5 @@
 import 'package:cotor/core/bloc/bloc_delegate.dart';
+import 'package:cotor/core/theme/app_theme.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/initial_page_decider.dart';
 import 'package:cotor/user_data_injector.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return UserDataInjector(
       builder: (context, state) => MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.indigo),
+        theme: AppTheme(isDark: false).themeData,
         debugShowCheckedModeBanner: false,
         home: InitialPageDecider(),
         onGenerateRoute: Router().onGenerateRoute,

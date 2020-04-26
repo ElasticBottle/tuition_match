@@ -3,6 +3,7 @@ import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
+import 'package:cotor/features/view_tutor_profile/bloc/view_tutor_profile_bloc.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +30,9 @@ class UserDataInjector extends StatelessWidget {
             ),
             BlocProvider<ViewAssignmentBloc>(
               create: (context) => sl<ViewAssignmentBloc>(),
+            ),
+            BlocProvider<ViewTutorProfileBloc>(
+              create: (context) => sl<ViewTutorProfileBloc>(),
             ),
             BlocProvider<EditTutorProfileBloc>(
               create: (context) => sl<EditTutorProfileBloc>(),

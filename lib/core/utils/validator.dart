@@ -59,6 +59,9 @@ class PhoneNumValidator extends RegexValidator {
 class NonEmptyStringValidator extends StringValidator {
   @override
   bool isValid(String value) {
+    if (value == null) {
+      return false;
+    }
     return value.isNotEmpty;
   }
 }

@@ -30,6 +30,12 @@ abstract class UserRemoteDataSource {
   Future<bool> delProfile({String uid});
   Future<bool> setTutorProfile({TutorProfileEntity tutorProfile});
   Future<bool> updateTutorProfile({TutorProfileEntity tutorProfile});
+
+  Future<bool> requestTutor({
+    String requestUid,
+    TuteeAssignmentEntity assignment,
+    bool isNewAssignment,
+  });
 }
 
 class FirestoreUserDataSource implements UserRemoteDataSource {
@@ -309,5 +315,15 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
       print(e.toString());
       throw ServerException();
     }
+  }
+
+  @override
+  Future<bool> requestTutor({
+    String requestUid,
+    TuteeAssignmentEntity assignment,
+    bool isNewAssignment,
+  }) {
+    // TODO(ElasticeBottle): implement requestTutor
+    throw UnimplementedError();
   }
 }

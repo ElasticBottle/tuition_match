@@ -1,4 +1,5 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:dartz/dartz.dart';
 
@@ -13,6 +14,11 @@ abstract class UserRepo {
     String firstname,
     String lastname,
     String phoneNum,
+  });
+  Future<Either<Failure, bool>> requestTutor({
+    String uid,
+    TuteeAssignment assignment,
+    bool isNewAssignment,
   });
   void dispose();
 }

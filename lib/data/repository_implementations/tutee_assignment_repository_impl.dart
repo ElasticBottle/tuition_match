@@ -65,7 +65,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
               localDs.cacheAssignmentList(assignmentList, isNew: false);
             }
             return _success(
-                assignmentList.map((e) => e.toDomainEntity()).toList());
+                assignmentList?.map((e) => e.toDomainEntity())?.toList());
           } on ServerException {
             return _failure(ServerFailure());
           }

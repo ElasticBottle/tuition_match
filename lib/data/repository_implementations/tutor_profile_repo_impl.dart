@@ -37,18 +37,21 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
   @override
   Future<Either<Failure, List<TutorProfile>>> getProfileList() async {
     return IsNetworkOnline<Failure, List<TutorProfile>>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final List<TutorProfileEntity> result =
-                await remoteDs.getProfileList();
-            localDs.cacheProfileList(result);
-            return _success(result.map((e) => e.toDomainEntity()).toList());
-          } on ServerException {
-            return _failure(ServerFailure());
-          }
-        });
+      networkInfo: networkInfo,
+      ifOffline: NetworkFailure(),
+      ifOnline: () async {
+        try {
+          final List<TutorProfileEntity> result =
+              await remoteDs.getProfileList();
+          localDs.cacheProfileList(result);
+          return result == null
+              ? _success(<TutorProfile>[])
+              : _success(result.map((e) => e.toDomainEntity()).toList());
+        } on ServerException {
+          return _failure(ServerFailure());
+        }
+      },
+    );
   }
 
   @override
@@ -63,7 +66,9 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
             if (result != null) {
               localDs.cacheProfileList(result, isNew: false);
             }
-            return _success(result.map((e) => e.toDomainEntity()).toList());
+            return result == null
+                ? _success(<TutorProfile>[])
+                : _success(result.map((e) => e.toDomainEntity()).toList());
           } on ServerException {
             return _failure(ServerFailure());
           }
@@ -159,6 +164,13 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
 
   // Update and creation of assignments
   @override
+  Future<Either<Failure, void>> cacheTutorProfileToSet(
+      TutorProfile profile) async {
+    return Right<Failure, void>(await localDs
+        .cacheTutorProfileToSet(TutorProfileEntity.fromDomainEntity(profile)));
+  }
+
+  @override
   Future<Either<Failure, TutorProfile>> getCachedTutorProfileToSet() async {
     try {
       final TutorProfileEntity result =
@@ -171,51 +183,45 @@ class TutorProfileRepoImpl implements TutorProfileRepo {
 
   @override
   Future<Either<Failure, bool>> setTutorProfile(TutorProfile profile) async {
-    return IsNetworkOnline<Failure, bool>().call(
-      networkInfo: networkInfo,
-      ifOffline: NetworkFailure(),
-      ifOnline: () async {
-        return await _setTutorProfile(
-          profile,
-          () {
-            return userDs.setTutorProfile(
-                tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
-          },
-        );
+    return await _setTutorProfile(
+      profile,
+      () {
+        return userDs.setTutorProfile(
+            tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
       },
     );
   }
 
   @override
   Future<Either<Failure, bool>> updateTutorProfile(TutorProfile profile) async {
-    return IsNetworkOnline<Failure, bool>().call(
-      networkInfo: networkInfo,
-      ifOffline: NetworkFailure(),
-      ifOnline: () async {
-        return await _setTutorProfile(
-          profile,
-          () {
-            return userDs.updateTutorProfile(
-                tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
-          },
-        );
+    return await _setTutorProfile(
+      profile,
+      () {
+        return userDs.updateTutorProfile(
+            tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
       },
     );
   }
 
   Future<Either<Failure, bool>> _setTutorProfile(
-      TutorProfile profile, Function settingCall) async {
+      TutorProfile profile, Function databaseCall) async {
     localDs
         .cacheTutorProfileToSet(TutorProfileEntity.fromDomainEntity(profile));
-    try {
-      final bool result = await settingCall();
-      bool isCacheCleared = false;
-      while (!isCacheCleared) {
-        isCacheCleared = await localDs.clearCacheTutorProfile();
-      }
-      return Right<Failure, bool>(result);
-    } on ServerException {
-      return Left<Failure, bool>(ServerFailure());
-    }
+    return IsNetworkOnline<Failure, bool>().call(
+      networkInfo: networkInfo,
+      ifOffline: NetworkFailure(),
+      ifOnline: () async {
+        try {
+          final bool result = await databaseCall();
+          bool isCacheCleared = false;
+          while (!isCacheCleared) {
+            isCacheCleared = await localDs.clearCacheTutorProfile();
+          }
+          return Right<Failure, bool>(result);
+        } on ServerException {
+          return Left<Failure, bool>(ServerFailure());
+        }
+      },
+    );
   }
 }

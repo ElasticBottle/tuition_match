@@ -70,8 +70,8 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       levelsTaught: json[LEVELS_TAUGHT].cast<String>(),
       subjects: json[SUBJECTS].cast<String>(),
       proposedRate: json[PROPOSED_RATE],
-      rateMax: json[RATEMAX],
-      rateMin: json[RATEMIN],
+      rateMax: json[RATEMAX].toDouble(),
+      rateMin: json[RATEMIN].toDouble(),
       rateType: json[RATE_TYPE],
       timing: json[TIMING],
       formats: json[CLASS_FORMATS].cast<String>(),
@@ -179,9 +179,9 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   @override
   double get rateMax => _rateMax;
   @override
-  String get rateType => _timing;
+  String get rateType => _rateType;
   @override
-  String get timing => _rateType;
+  String get timing => _timing;
   @override
   List<String> get formats => _formats;
   @override

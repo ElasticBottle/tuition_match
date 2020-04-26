@@ -137,6 +137,7 @@ class TutorDetails extends StatelessWidget {
                     ratemax: tutorProfileModel.rateMax,
                     rateType: tutorProfileModel.rateType,
                   ),
+                  style: Theme.of(context).textTheme.bodyText2,
                 ),
                 Text(
                   tutorProfileModel.timing,

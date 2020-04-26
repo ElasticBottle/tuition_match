@@ -1,7 +1,7 @@
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:cotor/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:flutter/material.dart';

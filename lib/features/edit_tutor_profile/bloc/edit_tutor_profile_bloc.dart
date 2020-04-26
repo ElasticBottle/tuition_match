@@ -92,13 +92,8 @@ class EditTutorProfileBloc
     UserModel userDetails,
     bool isCacheForm,
   ) async* {
-    tutorProfileInfo = <String, dynamic>{
-      GENDER: Gender.fromIndex(EditTutorProfileState.initial().genderSelection),
-      RATE_TYPE:
-          RateTypes.fromIndex(EditTutorProfileState.initial().rateTypeSelction),
-      IS_PUBLIC: EditTutorProfileState.initial().isAcceptingStudent,
-    };
     this.userDetails = userDetails;
+    tutorProfileInfo = _initialiseMapFields(profile, userDetails.isTutor);
     if (isCacheForm) {
       final result = await getCacheTutorProfile(NoParams());
       yield* result.fold(
@@ -113,6 +108,7 @@ class EditTutorProfileBloc
         },
         (r) async* {
           final TutorProfileModel model = TutorProfileModel.fromDomainEntity(r);
+          tutorProfileInfo = _initialiseMapFields(profile, userDetails.isTutor);
           print('displaying: ' + model.toString());
           yield state.copyWith(
             genderSelection: Gender.toIndex(model.gender),
@@ -156,6 +152,34 @@ class EditTutorProfileBloc
     } else {
       yield state.copyWith();
     }
+  }
+
+  Map<String, dynamic> _initialiseMapFields(
+      TutorProfileModel profile, bool isTutor) {
+    return !isTutor
+        ? tutorProfileInfo = <String, dynamic>{
+            GENDER: Gender.fromIndex(
+                EditTutorProfileState.initial().genderSelection),
+            RATE_TYPE: RateTypes.fromIndex(
+                EditTutorProfileState.initial().rateTypeSelction),
+            IS_PUBLIC: EditTutorProfileState.initial().isAcceptingStudent,
+          }
+        : <String, dynamic>{
+            GENDER: profile.gender,
+            TUTOR_OCCUPATION: profile.tutorOccupation,
+            LEVELS_TAUGHT: profile.levelsTaught,
+            SUBJECTS: profile.subjects,
+            CLASS_FORMATS: profile.formats,
+            RATE_TYPE: profile.rateType,
+            RATEMIN: profile.rateMin,
+            RATEMAX: profile.rateMax,
+            PROPOSED_RATE: profile.proposedRate,
+            TIMING: profile.timing,
+            LOCATION: profile.location,
+            QUALIFICATIONS: profile.qualifications,
+            SELLING_POINTS: profile.sellingPoints,
+            IS_PUBLIC: profile.isPublic,
+          };
   }
 
   Stream<EditTutorProfileState> _mapHandleRateToState(
@@ -309,6 +333,7 @@ class EditTutorProfileBloc
       levelsTaught: tutorProfileInfo[LEVELS_TAUGHT],
       subjects: tutorProfileInfo[SUBJECTS],
       formats: tutorProfileInfo[CLASS_FORMATS],
+      proposedRate: tutorProfileInfo[PROPOSED_RATE] ?? 0.0,
       rateMax: tutorProfileInfo[RATEMAX],
       rateMin: tutorProfileInfo[RATEMIN],
       timing: tutorProfileInfo[TIMING],

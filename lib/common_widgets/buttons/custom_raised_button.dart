@@ -5,14 +5,14 @@ class CustomRaisedButton extends StatelessWidget {
   const CustomRaisedButton({
     Key key,
     @required this.child,
-    this.color,
+    @required this.color,
+    @required this.textColor,
     this.disabledColor = Colors.grey,
-    this.textColor,
     this.height = 50.0,
     this.width = 100.0,
     this.borderRadius = 4.0,
     this.loading = false,
-    this.onPressed,
+    @required this.onPressed,
   }) : super(key: key);
   final Widget child;
   final Color color;

@@ -10,8 +10,8 @@ class ToggleButton extends StatefulWidget {
     this.fontFamily,
     this.textColor = Colors.black,
     this.errorColor = Colors.red,
-    this.titleFontSize = 14.0,
-    this.labelFontSize = 12.0,
+    this.titleFontSize = 16.0,
+    this.labelFontSize = 15.0,
     this.errorFontSize = 11.0,
     @required this.activeBgColor,
     @required this.activeTextColor,
@@ -20,6 +20,8 @@ class ToggleButton extends StatefulWidget {
     @required this.onPressed,
     this.initialLabelIndex = const [0],
     this.icons,
+    this.height = 35.0,
+    this.paddingAfter = 15.0,
   }) : super(key: key);
 
   final String title;
@@ -30,6 +32,8 @@ class ToggleButton extends StatefulWidget {
   final double titleFontSize;
   final double labelFontSize;
   final double errorFontSize;
+  final double height;
+  final double paddingAfter;
   final Color activeBgColor;
   final Color activeTextColor;
   final Color inactiveTextColor;
@@ -46,6 +50,7 @@ class _ToggleButtonState extends State<ToggleButton> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         if (widget.title != null)
           Text(
@@ -58,10 +63,15 @@ class _ToggleButtonState extends State<ToggleButton> {
             ),
           ),
         ToggleButtons(
+          constraints: BoxConstraints.expand(
+            width: MediaQuery.of(context).size.width /
+                (1.3 * widget.labels.length),
+            height: widget.height,
+          ),
           children: List.generate(
               widget.labels.length,
               (index) => Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (widget.icons != null) Icon(widget.icons[index]),
                       Text(
@@ -92,6 +102,9 @@ class _ToggleButtonState extends State<ToggleButton> {
               fontSize: widget.errorFontSize,
             ),
           ),
+        SizedBox(
+          height: widget.paddingAfter,
+        ),
       ],
     );
   }

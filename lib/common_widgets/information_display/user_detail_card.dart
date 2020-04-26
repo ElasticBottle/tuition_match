@@ -47,7 +47,7 @@ class UserDetailCard extends StatelessWidget {
   Widget _decideAvatar(String photoUrl) {
     return heroTagForPhoto != null
         ? Hero(
-            tag: name.toString() + photoUrl,
+            tag: heroTagForPhoto,
             child: Avatar(
               photoUrl: photoUrl,
               radius: radius,

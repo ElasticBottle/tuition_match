@@ -16,6 +16,7 @@ abstract class TutorProfileRepo {
   Future<Either<Failure, List<TutorProfile>>> getNextCriterionList();
 
   // Setting new Assignment
+  Future<Either<Failure, void>> cacheTutorProfileToSet(TutorProfile profile);
   Future<Either<Failure, TutorProfile>> getCachedTutorProfileToSet();
   Future<Either<Failure, bool>> setTutorProfile(TutorProfile profile);
   Future<Either<Failure, bool>> updateTutorProfile(TutorProfile profile);

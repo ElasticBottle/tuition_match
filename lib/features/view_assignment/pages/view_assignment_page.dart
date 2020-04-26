@@ -1,14 +1,12 @@
 import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
 import 'package:cotor/common_widgets/bars/bottom_action_bar.dart';
 import 'package:cotor/common_widgets/information_display/info_display.dart';
-import 'package:cotor/common_widgets/information_display/user_detail_card.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignment_list/widgets/assignment_badge.dart';
+import 'package:cotor/features/models/tutee_assignment_model.dart';
+import 'package:cotor/features/tutee_assignment_list/helper.dart';
 import 'package:cotor/features/tutee_assignment_list/widgets/tutee_card_header.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +36,7 @@ class ViewAssignmentPage extends StatelessWidget {
               BlocBuilder<ViewAssignmentBloc, ViewAssignmentState>(
                 bloc: BlocProvider.of<ViewAssignmentBloc>(context),
                 builder: (context, state) {
-                  final TuteeAssignment assignment = state.assignment;
+                  final TuteeAssignmentModel assignment = state.assignment;
                   return SliverToBoxAdapter(
                     child: Container(
                       padding: EdgeInsets.all(20.0),
@@ -46,41 +44,44 @@ class ViewAssignmentPage extends StatelessWidget {
                         children: <Widget>[
                           TuteeCardHeader(
                             heroTag: assignment.uid +
-                                assignment.subject.toString() +
-                                assignment.level.toString() +
+                                assignment.subjects.toString() +
+                                assignment.levels.toString() +
                                 assignment.dateAdded,
                             tuteeName: assignment.tuteeName,
                             username: assignment.uid,
-                            level: assignment.level,
-                            subject: assignment.subject,
-                            format: assignment.format,
+                            level: assignment.levels,
+                            subject: assignment.subjects,
+                            format: assignment.formats,
                           ),
                           SizedBox(
                             height: 10.0,
                           ),
                           InfoDisplay(
                             icons: [
-                              Icons.location_on,
-                              Icons.watch,
-                              Icons.av_timer,
-                              Icons.attach_money,
-                              Icons.perm_identity,
-                              Icons.work,
-                              Icons.speaker_notes,
+                              Icon(Icons.location_on),
+                              Icon(Icons.watch),
+                              Icon(Icons.av_timer),
+                              Icon(Icons.attach_money),
+                              Icon(Icons.perm_identity),
+                              Icon(Icons.work),
+                              Icon(Icons.speaker_notes),
                             ],
                             descriptions: [
-                              assignment.location,
-                              assignment.timing,
-                              assignment.freq,
-                              assignment.rateMin.toString() +
+                              Text(assignment.location),
+                              Text(assignment.timing),
+                              Text(assignment.freq),
+                              Text(assignment.rateMin.toString() +
                                   '- ' +
-                                  assignment.rateMax.toString(),
-                              describeEnum(assignment.gender),
-                              describeEnum(assignment.tutorOccupation),
-                              assignment.additionalRemarks,
+                                  assignment.rateMax.toString()),
+                              Text(Helper.formatListString(
+                                  assignment.tutorGender)),
+                              Text(
+                                Helper.formatListString(
+                                    assignment.tutorOccupation),
+                              ),
+                              Text(assignment.additionalRemarks ?? ''),
                             ],
                             spacingBetweenFields: 20.0,
-                            tag: assignment.uid,
                           ),
                         ],
                       ),
@@ -94,13 +95,13 @@ class ViewAssignmentPage extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: BlocBuilder<ViewAssignmentBloc, ViewAssignmentState>(
                 builder: (context, state) {
-                  final TuteeAssignment assignment = state.assignment;
+                  final TuteeAssignmentModel assignment = state.assignment;
                   return Padding(
                     padding: EdgeInsets.all(20.0),
                     child: BottomActionBar(
                       heroTag: assignment.uid +
-                          assignment.subject.toString() +
-                          assignment.level.toString(),
+                          assignment.subjects.toString() +
+                          assignment.levels.toString(),
                       numClickAction: assignment.numLiked,
                       mainOnPressed: () {},
                       actionOnPressed: () {},

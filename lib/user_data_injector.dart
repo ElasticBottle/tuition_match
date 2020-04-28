@@ -1,6 +1,8 @@
 import 'package:cotor/features/add_tutee_assignment/bloc/edit_tutee_assignment_bloc.dart';
 import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
+import 'package:cotor/features/request_tutor/request_tutor_form/bloc/request_tutor_form_bloc.dart';
+import 'package:cotor/features/request_tutor/select_existing_assignment/bloc/select_existing_assignment_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:cotor/features/view_assignment/bloc/view_assignment_bloc.dart';
 import 'package:cotor/features/view_tutor_profile/bloc/view_tutor_profile_bloc.dart';
@@ -39,6 +41,12 @@ class UserDataInjector extends StatelessWidget {
             ),
             BlocProvider<EditTuteeAssignmentBloc>(
               create: (context) => sl<EditTuteeAssignmentBloc>(),
+            ),
+            BlocProvider<SelectExistingAssignmentBloc>(
+              create: (context) => sl<SelectExistingAssignmentBloc>(),
+            ),
+            BlocProvider<RequestTutorFormBloc>(
+              create: (context) => sl<RequestTutorFormBloc>(),
             )
           ], child: builder(context, state));
         } else {

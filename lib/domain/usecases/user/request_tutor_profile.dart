@@ -1,12 +1,11 @@
-import 'package:cotor/domain/repositories/tutee_assignment_repo.dart';
-import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
+import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
-import 'package:equatable/equatable.dart';
 
 class RequestTutorProfile extends UseCase<bool, RequestTutorProfileParams> {
   RequestTutorProfile({
@@ -20,28 +19,32 @@ class RequestTutorProfile extends UseCase<bool, RequestTutorProfileParams> {
       uid: params.requestingProfile.uid,
       assignment: params.assignment,
       isNewAssignment: params.isNewAssignment,
+      toSave: params.toSave,
     );
   }
 }
 
 class RequestTutorProfileParams extends Equatable {
-  const RequestTutorProfileParams({
-    this.requestingProfile,
-    this.assignment,
-    this.isNewAssignment,
-  });
+  const RequestTutorProfileParams(
+      {this.requestingProfile,
+      this.assignment,
+      this.isNewAssignment,
+      this.toSave});
   final TutorProfile requestingProfile;
   final TuteeAssignment assignment;
   final bool isNewAssignment;
+  final bool toSave;
 
   @override
   List<Object> get props => [
         requestingProfile,
         assignment,
         isNewAssignment,
+        toSave,
       ];
 
   @override
-  String toString() =>
-      'RequestTutorProfileParams(requestingProfile: $requestingProfile, assignment: $assignment, isNewAssignment: $isNewAssignment)';
+  String toString() {
+    return 'RequestTutorProfileParams(requestingProfile: $requestingProfile, assignment: $assignment, isNewAssignment: $isNewAssignment, toSave: $toSave)';
+  }
 }

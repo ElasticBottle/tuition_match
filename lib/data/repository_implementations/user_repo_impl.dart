@@ -114,7 +114,10 @@ class UserRepoImpl implements UserRepo {
 
   @override
   Future<Either<Failure, bool>> requestTutor(
-      {String uid, TuteeAssignment assignment, bool isNewAssignment}) {
+      {String uid,
+      TuteeAssignment assignment,
+      bool isNewAssignment,
+      bool toSave}) {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
@@ -125,6 +128,7 @@ class UserRepoImpl implements UserRepo {
               requestUid: uid,
               assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
               isNewAssignment: isNewAssignment,
+              toSave: toSave,
             ),
           );
         } on ServerException {

@@ -266,7 +266,7 @@ class TuteeAssignmentModel extends Equatable implements TuteeAssignment {
       ];
 
   @override
-  String toString() => '''TuteeAssignmet {
+  String toString() => '''TuteeAssignment {
     postId : $postId ,
     tutorGender : $tutorGender ,
     levels : $levels ,

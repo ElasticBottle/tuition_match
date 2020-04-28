@@ -10,12 +10,10 @@ import 'package:cotor/common_widgets/platform_alert_dialog.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/domain/entities/class_format.dart';
 import 'package:cotor/domain/entities/gender.dart';
-import 'package:cotor/domain/entities/level.dart';
 import 'package:cotor/domain/entities/rate_types.dart';
 import 'package:cotor/domain/entities/tutor_occupation.dart';
+import 'package:cotor/features/models/map_keys.dart';
 import 'package:cotor/features/request_tutor/request_tutor_form/bloc/request_tutor_form_bloc.dart';
 import 'package:cotor/features/request_tutor/request_tutor_form/helper.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
@@ -70,6 +68,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
       cancelActionText: 'Cancel',
     ).show(context);
     if (isLeaving != null && isLeaving) {
+      requestTutorFormBloc.add(ResetForm());
       Navigator.of(context).pop();
     }
     return false;
@@ -83,6 +82,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
 
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
+          _focusScopeNode.unfocus();
         }
       },
       child: Scaffold(
@@ -91,7 +91,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
           child: CustomScrollView(
             slivers: <Widget>[
               CustomSliverAppbar(
-                title: Strings.editTutorProfile,
+                title: Strings.requestTutor,
                 isTitleCenter: true,
                 showActions: false,
                 leading: IconButton(
@@ -118,11 +118,8 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
                           delay: 3,
                         ).show(context),
                       );
-                    userProfileBloc.add(CachedProfileToSet(true));
                   } else if (state.isSuccess) {
                     requestTutorFormBloc.add(ResetForm());
-                    userProfileBloc.add(UpdateProfileSuccess('Success'));
-                    userProfileBloc.add(CachedProfileToSet(false));
                     Navigator.of(context).pop();
                   }
                 },
@@ -136,7 +133,8 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
                         children: <Widget>[
                           _getNonTextFields(state),
                           _getTextFormFields(state),
-                          _getOpenToApplicationSwitch(state),
+                          _getSaveApplicationSwitch(state),
+                          _getMakePublicSwitch(state),
                           if (state.isPublic) _getAdditionalFields(state),
                           Container(
                             width: MediaQuery.of(context).size.width,
@@ -148,7 +146,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
                               color: ColorsAndFonts.primaryColor,
                               textColor: ColorsAndFonts.backgroundColor,
                               child: Text(
-                                Strings.addAssignment,
+                                Strings.requestTutor,
                                 style: TextStyle(
                                   fontFamily: ColorsAndFonts.primaryFont,
                                   fontWeight: FontWeight.normal,
@@ -172,6 +170,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
   }
 
   Widget _getNonTextFields(RequestTutorFormState state) {
+    print('some state variables' + state.classFormatsToDisplay.toString());
     return Column(
       children: <Widget>[
         ToggleButton(
@@ -268,7 +267,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
               info: Text(
                 Helper.formatPrice(
                   rateMin: state.requestingProfile.rateMin,
-                  ratemax: state.requestingProfile.rateMax,
+                  rateMax: state.requestingProfile.rateMax,
                   rateType: state.requestingProfile.rateType,
                 ),
                 style: Theme.of(context).textTheme.bodyText2,
@@ -278,6 +277,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
             CustomTextField(
               labelText: Strings.proposedRate,
               initialText: state.initialProposedRate,
+              textInputType: TextInputType.number,
               textInputAction: TextInputAction.next,
               onFieldSubmitted: _handleSubmitted,
               errorText: state.isProposedRateValid ? null : Strings.rateError,
@@ -385,16 +385,29 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
     );
   }
 
-  Widget _getOpenToApplicationSwitch(RequestTutorFormState state) {
+  Widget _getSaveApplicationSwitch(RequestTutorFormState state) {
     return SwitchListTile(
-      title: const Text('Accepting Students?'),
+      title: state.isNewAssignment
+          ? const Text('Save for future use?')
+          : const Text('Update existing assignment?'),
+      value: state.saveForFuture,
+      onChanged: (bool value) {
+        requestTutorFormBloc.add(
+            HandleToggleButtonClick(fieldName: SAVE_FOR_FUTURE, index: value));
+      },
+      secondary: const Icon(FontAwesomeIcons.save),
+    );
+  }
+
+  Widget _getMakePublicSwitch(RequestTutorFormState state) {
+    return SwitchListTile(
+      title: const Text('Open to other tutor application?'),
       value: state.isPublic,
       onChanged: (bool value) {
         requestTutorFormBloc
             .add(HandleToggleButtonClick(fieldName: IS_PUBLIC, index: value));
-        setState(() {});
       },
-      secondary: const Icon(FontAwesomeIcons.universalAccess),
+      secondary: const Icon(FontAwesomeIcons.users),
     );
   }
 
@@ -414,6 +427,7 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
             requestTutorFormBloc.add(
               HandleToggleButtonClick(fieldName: TUTOR_GENDER, index: index),
             );
+            setState(() {});
           },
           initialLabelIndex: state.genderSelection,
         ),
@@ -430,10 +444,9 @@ class RequestTutorFormWidgetState extends State<RequestTutorForm> {
               )
               .toList(),
           selectCallback: (List selectedValue) {
-            print(selectedValue.toString());
             selectedValue.removeWhere((dynamic element) => element == null);
             requestTutorFormBloc.add(HandleToggleButtonClick(
-                fieldName: TUTOR_OCCUPATIONS, index: selectedValue[0]));
+                fieldName: TUTOR_OCCUPATIONS, index: selectedValue));
           },
           initValue: state.tutorOccupation,
         ),

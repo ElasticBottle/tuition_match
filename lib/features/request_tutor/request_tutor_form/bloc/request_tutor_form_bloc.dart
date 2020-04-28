@@ -3,14 +3,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/domain/entities/class_format.dart';
 import 'package:cotor/domain/entities/gender.dart';
 import 'package:cotor/domain/entities/rate_types.dart';
 import 'package:cotor/domain/entities/subject.dart' as subject;
-import 'package:cotor/domain/usecases/usecase.dart';
-import 'package:cotor/domain/usecases/user/set_tutee_assignment.dart';
-import 'package:cotor/domain/usecases/user/update_tutee_assignment.dart';
+import 'package:cotor/domain/usecases/user/request_tutor_profile.dart';
+import 'package:cotor/features/models/map_keys.dart';
 import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/models/tutor_profile_model.dart';
 import 'package:cotor/features/models/user_model.dart';
@@ -33,6 +31,7 @@ class RequestTutorFormBloc
 
   Map<String, dynamic> tuteeAssignmentInfo;
   UserModel userDetails;
+  List<String> subjectsToDisplay;
 
   @override
   RequestTutorFormState get initialState {
@@ -58,7 +57,7 @@ class RequestTutorFormBloc
   Stream<RequestTutorFormState> mapEventToState(
     RequestTutorFormEvent event,
   ) async* {
-    if (event is InitialiseProfileFields) {
+    if (event is InitialiseRequestProfileFields) {
       yield* _mapInitialiseFieldsToState(
         event.requestingProfile,
         event.userDetails,
@@ -85,7 +84,8 @@ class RequestTutorFormBloc
     TuteeAssignmentModel userRefAssignment,
   ) async* {
     this.userDetails = userDetails;
-    if (userRefAssignment.postId != null) {
+    subjectsToDisplay = requestingProfile.subjects;
+    if (userRefAssignment.tuteeName != null) {
       userRefAssignment.subjects.retainWhere(
           (subject) => requestingProfile.subjects.contains(subject));
       userRefAssignment.levels.retainWhere(
@@ -95,15 +95,15 @@ class RequestTutorFormBloc
       tuteeAssignmentInfo =
           _initialiseMapFields(userRefAssignment, requestingProfile);
       yield state.copyWith(
+        isNewAssignment: false,
         requestingProfile: requestingProfile,
         userRefAssignment: userRefAssignment,
         levelsToDisplay: requestingProfile.levelsTaught,
         levels: userRefAssignment.levels,
         subjects: userRefAssignment.subjects,
-        subjectsToDisplay:
-            subject.Subject.getSubjectsToDisplay(userRefAssignment.levels),
+        subjectsToDisplay: subjectsToDisplay,
         subjectHint: 'Subjects',
-        classFormatsToDisplay: requestingProfile.formats,
+        classFormatsToDisplay: ClassFormat.formats,
         classFormatSelection: ClassFormat.toIndices(userRefAssignment.formats),
         initialProposedRate: userRefAssignment.proposedRate.toString(),
         rateTypeSelction: RateTypes.toIndex(userRefAssignment.rateType),
@@ -118,10 +118,17 @@ class RequestTutorFormBloc
         initialRateMax: userRefAssignment.rateMax.toString(),
       );
     } else {
+      tuteeAssignmentInfo =
+          _initialiseMapFields(TuteeAssignmentModel(), requestingProfile);
       yield state.copyWith(
+        isNewAssignment: true,
         requestingProfile: requestingProfile,
         levelsToDisplay: requestingProfile.levelsTaught,
-        classFormatsToDisplay: requestingProfile.formats,
+        levels: [],
+        subjectsToDisplay: subjectsToDisplay,
+        subjectHint: 'Please choose a level first',
+        subjects: [],
+        classFormatsToDisplay: ClassFormat.formats,
         classFormatSelection: ClassFormat.toIndices(requestingProfile.formats),
         rateTypeSelction: RateTypes.toIndex(requestingProfile.rateType),
         genderSelection: [Gender.toIndex(requestingProfile.gender)],
@@ -135,7 +142,7 @@ class RequestTutorFormBloc
   Map<String, dynamic> _initialiseMapFields(
       TuteeAssignmentModel userRefAssignment,
       TutorProfileModel requestingProfile) {
-    return userRefAssignment.postId == null
+    return userRefAssignment.tuteeName == null
         ? <String, dynamic>{
             CLASS_FORMATS: requestingProfile.formats,
             RATE_TYPE: requestingProfile.rateType,
@@ -181,7 +188,11 @@ class RequestTutorFormBloc
       {String fieldName, String value}) async* {
     final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(value);
     if (isNotEmpty) {
-      tuteeAssignmentInfo.addAll(<String, dynamic>{fieldName: value});
+      print('called');
+      tuteeAssignmentInfo.addAll(
+        <String, dynamic>{fieldName: value},
+      );
+      print(tuteeAssignmentInfo);
       yield* _mapFieldToErrorState(fieldName, isValid: true);
     } else {
       tuteeAssignmentInfo.remove(fieldName);
@@ -278,8 +289,12 @@ class RequestTutorFormBloc
         if (valid) {
           final List<String> subjectsAvailToTeach =
               subject.Subject.getSubjectsToDisplay(index);
+          subjectsAvailToTeach.removeWhere(
+            (element) => !subjectsToDisplay.contains(element),
+          );
           state.subjects.removeWhere(
-              (element) => !subjectsAvailToTeach.contains(element));
+            (element) => !subjectsAvailToTeach.contains(element),
+          );
           tuteeAssignmentInfo.addAll(<String, dynamic>{
             fieldName: index,
             SUBJECTS: state.subjects,
@@ -295,7 +310,7 @@ class RequestTutorFormBloc
           yield state.update(
             isSelectedLevelsValid: valid,
             subjects: [],
-            subjectsToDisplay: [],
+            subjectsToDisplay: subjectsToDisplay,
             subjectHint: 'please select a level first',
           );
         }
@@ -304,12 +319,17 @@ class RequestTutorFormBloc
         yield state.update(isPublic: index);
         tuteeAssignmentInfo[fieldName] = index;
         break;
+      case SAVE_FOR_FUTURE:
+        yield state.update(saveForFuture: index);
     }
   }
 
   Stream<RequestTutorFormState> _mapSubmitFormToState() async* {
     yield state.loading();
-    final bool isValid = _verifyFields(tuteeAssignmentInfo);
+    final bool isValid = _verifyFields(
+      tuteeAssignmentInfo,
+      state.isPublic,
+    );
     if (!isValid || !state.isValid()) {
       yield state.failure(
           'Please fill in the blanks or make some changes before saving.');
@@ -329,6 +349,7 @@ class RequestTutorFormBloc
       freq: tuteeAssignmentInfo[FREQ],
       additionalRemarks: tuteeAssignmentInfo[ADDITIONAL_REMARKS],
       isPublic: tuteeAssignmentInfo[IS_PUBLIC],
+      isOpen: true,
       isVerifiedAccount: userDetails.isVerifiedAccount,
       tutorGender: tuteeAssignmentInfo[TUTOR_GENDER],
       rateMax: tuteeAssignmentInfo[RATEMAX],
@@ -337,17 +358,18 @@ class RequestTutorFormBloc
     );
     print(model);
     final Either<Failure, bool> result =
-        requestTutorProfile(RequestTutorProfileParams(
+        await requestTutorProfile(RequestTutorProfileParams(
       assignment: model.toDomainEntity(),
       requestingProfile: state.requestingProfile.toDomainEntity(),
       isNewAssignment: state.userRefAssignment.postId == null,
+      toSave: state.saveForFuture,
     ));
 
     yield* result.fold(
       (l) async* {
         if (l is ServerFailure) {
           yield state.failure(
-            'We had problems updating our server. Please wait a wihle and try again later!',
+            'We had problems updating our server. Please wait a while and try again later!',
           );
         } else if (l is NetworkFailure) {
           yield state.failure(
@@ -361,7 +383,7 @@ class RequestTutorFormBloc
     );
   }
 
-  bool _verifyFields(Map<String, dynamic> tuteeAssignmentInfo) {
+  bool _verifyFields(Map<String, dynamic> tuteeAssignmentInfo, bool isPublic) {
     final List<String> fieldsToVerify = [
       LEVELS,
       SUBJECTS,
@@ -373,14 +395,21 @@ class RequestTutorFormBloc
       FREQ,
       ADDITIONAL_REMARKS,
       IS_PUBLIC,
-      TUTOR_GENDER,
-      RATEMIN,
-      RATEMAX,
-      TUTOR_OCCUPATIONS,
     ];
+    if (isPublic) {
+      fieldsToVerify.addAll([
+        TUTOR_GENDER,
+        RATEMIN,
+        RATEMAX,
+        TUTOR_OCCUPATIONS,
+      ]);
+    }
     bool toReturn = true;
+    print('keys: ' + tuteeAssignmentInfo.keys.toList().toString());
+    print(tuteeAssignmentInfo);
     for (var key in fieldsToVerify) {
       if (!tuteeAssignmentInfo.containsKey(key)) {
+        print('key not foudn: ' + key);
         toReturn = false;
       }
     }

@@ -2,6 +2,7 @@ part of 'request_tutor_form_bloc.dart';
 
 class RequestTutorFormState extends Equatable {
   const RequestTutorFormState({
+    this.isNewAssignment,
     this.requestingProfile,
     this.userRefAssignment,
     this.levelsToDisplay,
@@ -21,6 +22,7 @@ class RequestTutorFormState extends Equatable {
     this.genderSelection,
     this.rateTypeSelction,
     this.tutorOccupation,
+    this.saveForFuture,
     this.isPublic,
     this.isProposedRateValid,
     this.isRateMinValid,
@@ -44,14 +46,15 @@ class RequestTutorFormState extends Equatable {
 
   factory RequestTutorFormState.initial() {
     return RequestTutorFormState(
-      requestingProfile: TutorProfileModel(),
+      isNewAssignment: true,
+      requestingProfile: TutorProfileModel.empty(),
       userRefAssignment: TuteeAssignmentModel(),
       levelsToDisplay: const [],
       subjectsToDisplay: const [],
       subjectHint: 'Please select a level first',
       genderSelection: const [],
       classFormatsToDisplay: const [],
-      classFormatSelection: const [1],
+      classFormatSelection: const [],
       levels: const [],
       subjects: const [],
       tutorOccupation: const [],
@@ -63,6 +66,7 @@ class RequestTutorFormState extends Equatable {
       initiallocation: '',
       initialFreq: '',
       initialAdditionalRemarks: '',
+      saveForFuture: true,
       isPublic: false,
       isProposedRateValid: true,
       isRateMinValid: true,
@@ -85,6 +89,7 @@ class RequestTutorFormState extends Equatable {
     );
   }
 
+  final bool isNewAssignment;
   final TutorProfileModel requestingProfile;
   final TuteeAssignmentModel userRefAssignment;
   final List<String> subjectsToDisplay;
@@ -105,6 +110,7 @@ class RequestTutorFormState extends Equatable {
   final int rateTypeSelction;
   final List<String> tutorOccupation;
   final bool isPublic;
+  final bool saveForFuture;
   final bool isProposedRateValid;
   final bool isRateMinValid;
   final bool isRateMaxValid;
@@ -171,6 +177,7 @@ class RequestTutorFormState extends Equatable {
   }
 
   RequestTutorFormState update({
+    bool isNewAssignment,
     TutorProfileModel requestingProfile,
     TuteeAssignmentModel userRefAssignment,
     List<String> levelsToDisplay,
@@ -190,6 +197,7 @@ class RequestTutorFormState extends Equatable {
     List<int> genderSelection,
     int rateTypeSelction,
     List<String> tutorOccupation,
+    bool saveForFuture,
     bool isPublic,
     bool isRateMinValid,
     bool isRateMaxValid,
@@ -206,6 +214,7 @@ class RequestTutorFormState extends Equatable {
     bool isTutorOccupationValid,
   }) {
     return copyWith(
+      isNewAssignment: isNewAssignment,
       requestingProfile: requestingProfile,
       userRefAssignment: userRefAssignment,
       levelsToDisplay: levelsToDisplay,
@@ -225,6 +234,7 @@ class RequestTutorFormState extends Equatable {
       genderSelection: genderSelection,
       rateTypeSelction: rateTypeSelction,
       tutorOccupation: tutorOccupation,
+      saveForFuture: saveForFuture,
       isPublic: isPublic,
       isProposedRateValid: isProposedRateValid,
       isRateMinValid: isRateMinValid,
@@ -248,6 +258,7 @@ class RequestTutorFormState extends Equatable {
   }
 
   RequestTutorFormState copyWith({
+    bool isNewAssignment,
     TutorProfileModel requestingProfile,
     TuteeAssignmentModel userRefAssignment,
     List<String> levelsToDisplay,
@@ -267,6 +278,7 @@ class RequestTutorFormState extends Equatable {
     List<int> genderSelection,
     int rateTypeSelction,
     List<String> tutorOccupation,
+    bool saveForFuture,
     bool isPublic,
     bool isProposedRateValid,
     bool isRateMinValid,
@@ -288,6 +300,7 @@ class RequestTutorFormState extends Equatable {
     String successMessage,
   }) {
     return RequestTutorFormState(
+      isNewAssignment: isNewAssignment ?? this.isNewAssignment,
       requestingProfile: requestingProfile ?? this.requestingProfile,
       userRefAssignment: userRefAssignment ?? this.userRefAssignment,
       levelsToDisplay: levelsToDisplay ?? this.levelsToDisplay,
@@ -309,6 +322,7 @@ class RequestTutorFormState extends Equatable {
       genderSelection: genderSelection ?? this.genderSelection,
       rateTypeSelction: rateTypeSelction ?? this.rateTypeSelction,
       tutorOccupation: tutorOccupation ?? this.tutorOccupation,
+      saveForFuture: saveForFuture ?? this.saveForFuture,
       isPublic: isPublic ?? this.isPublic,
       isProposedRateValid: isProposedRateValid ?? this.isProposedRateValid,
       isRateMinValid: isRateMinValid ?? this.isRateMinValid,
@@ -337,6 +351,7 @@ class RequestTutorFormState extends Equatable {
 
   @override
   List<Object> get props => [
+        isNewAssignment,
         requestingProfile,
         userRefAssignment,
         levelsToDisplay,
@@ -356,6 +371,7 @@ class RequestTutorFormState extends Equatable {
         genderSelection,
         rateTypeSelction,
         tutorOccupation,
+        saveForFuture,
         isPublic,
         isProposedRateValid,
         isRateMinValid,
@@ -380,6 +396,7 @@ class RequestTutorFormState extends Equatable {
   @override
   String toString() {
     return '''RequestTutorFormState(
+      isNewAssignment: $isNewAssignment,
       requestingProfile: $requestingProfile,
       userRefAssignment: $userRefAssignment,
       levelsToDisplay: $levelsToDisplay,
@@ -398,6 +415,7 @@ class RequestTutorFormState extends Equatable {
       genderSelection: $genderSelection,
       rateTypeSelction: $rateTypeSelction, 
       tutorOccupation: $tutorOccupation, 
+      saveForFuture: $saveForFuture,
       isPublic: $isPublic, 
       isProposedRateValid: $isProposedRateValid,
       isRateMinValid: $isRateMinValid, 

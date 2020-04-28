@@ -1,5 +1,5 @@
 class Helper {
-  static String formatPrice({double rateMin, double ratemax, String rateType}) {
-    return '\$$rateMin - \$$rateMin \/$rateType';
+  static String formatPrice({double rateMin, double rateMax, String rateType}) {
+    return '\$$rateMin - \$$rateMax \/$rateType';
   }
 }

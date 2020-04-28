@@ -7,8 +7,8 @@ abstract class RequestTutorFormEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialiseProfileFields extends RequestTutorFormEvent {
-  const InitialiseProfileFields({
+class InitialiseRequestProfileFields extends RequestTutorFormEvent {
+  const InitialiseRequestProfileFields({
     this.requestingProfile,
     this.userRefAssignment,
     this.userDetails,
@@ -26,7 +26,7 @@ class InitialiseProfileFields extends RequestTutorFormEvent {
 
   @override
   String toString() =>
-      'InitialiseProfileFields(requestingProfile: $requestingProfile, userRefAssignment: $userRefAssignment, userDetails: $userDetails)';
+      'InitialiseRequestProfileFields(requestingProfile: $requestingProfile, userRefAssignment: $userRefAssignment, userDetails: $userDetails)';
 }
 
 /// [HandleToggleButtonClick] should be called before [CheckDropDownNotEmpty] or [SaveField].

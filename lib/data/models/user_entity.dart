@@ -34,7 +34,7 @@ class UserEntity extends Equatable implements User {
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     final Map<String, dynamic> toConvert = json[USER_ASSIGNMENTS];
     final Map<String, TuteeAssignmentEntity> userAssignments = {};
-    for (MapEntry<String, Map<String, dynamic>> entry in toConvert.entries) {
+    for (MapEntry<String, dynamic> entry in toConvert.entries) {
       userAssignments.addAll({
         entry.key: TuteeAssignmentEntity.fromJson(entry.value),
       });

@@ -25,7 +25,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     String sellingPoints,
     String location,
     bool isPublic,
-    int numClicks,
     int numRequest,
     int numLiked,
     double rating,
@@ -49,7 +48,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
         _sellingPoints = sellingPoints,
         _location = location,
         _isPublic = isPublic,
-        _numClicks = numClicks,
         _numRequest = numRequest,
         _numLiked = numLiked,
         _rating = rating,
@@ -79,7 +77,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       sellingPoints: json[SELLING_POINTS],
       location: json[LOCATION],
       isPublic: json[IS_PUBLIC],
-      numClicks: json[NUM_CLICKS],
       numRequest: json[NUM_REQUEST],
       numLiked: json[NUM_LIKED],
       rating: json[RATING],
@@ -121,7 +118,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       sellingPoints: profile.sellingPoints,
       location: profile.location,
       isPublic: profile.isPublic,
-      numClicks: profile.numClicks,
       numRequest: profile.numRequest,
       numLiked: profile.numLiked,
       rating: profile.rating,
@@ -148,7 +144,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   final String _sellingPoints;
   final String _location;
   final bool _isPublic;
-  final int _numClicks;
   final int _numRequest;
   final int _numLiked;
   final double _rating;
@@ -193,8 +188,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
   @override
   bool get isPublic => _isPublic;
   @override
-  int get numClicks => _numClicks;
-  @override
   int get numRequest => _numRequest;
   @override
   int get numLiked => _numLiked;
@@ -229,28 +222,44 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       LOCATION: location,
       IS_PUBLIC: isPublic,
       IS_VERIFIED_TUTOR: isVerifiedTutor,
-      NUM_CLICKS: numClicks,
       NUM_REQUEST: numRequest,
       NUM_LIKED: numLiked,
       RATING: rating,
     };
   }
 
-  List<dynamic> toDocumentSnapshot() {
-    // TODO(ElasticBottle): figure out more things to exclude to rely on server side
+  Map<String, dynamic> toNewDocumentSnapshot() {
+    final Map<String, dynamic> toUpdate = toJson();
+
     final List<String> toExclude = [
-      UID,
       DATE_ADDED,
       DATE_MODIFIED,
-      NUM_CLICKS,
-      NUM_REQUEST,
-      NUM_LIKED,
-      RATING,
     ];
-
-    final Map<String, dynamic> toUpdate = toJson();
     toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
-    return <dynamic>[uid, toUpdate];
+
+    toUpdate.addAll(<String, dynamic>{
+      NUM_REQUEST: 0,
+      NUM_LIKED: 0,
+      RATING: 0.0,
+    });
+    return toUpdate;
+  }
+
+  Map<String, dynamic> toExistingDocumentSnapshot(Map<String, dynamic> data) {
+    final Map<String, dynamic> toUpdate = toJson();
+
+    final List<String> toExclude = [
+      DATE_MODIFIED,
+    ];
+    toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
+
+    toUpdate.addAll(<String, dynamic>{
+      DATE_ADDED: data[DATE_ADDED],
+      NUM_REQUEST: data[NUM_REQUEST],
+      NUM_LIKED: data[NUM_LIKED],
+      RATING: data[RATING],
+    });
+    return toUpdate;
   }
 
   TutorProfile toDomainEntity() {
@@ -274,7 +283,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       sellingPoints: sellingPoints,
       location: location,
       isPublic: isPublic,
-      numClicks: numClicks,
       numRequest: numRequest,
       numLiked: numLiked,
       rating: rating,
@@ -302,7 +310,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     String sellingPoints,
     String location,
     bool isPublic,
-    int numClicks,
     int numRequest,
     int numLiked,
     double rating,
@@ -328,7 +335,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
       sellingPoints: sellingPoints ?? this.sellingPoints,
       location: location ?? this.location,
       isPublic: isPublic ?? this.isPublic,
-      numClicks: numClicks ?? this.numClicks,
       numRequest: numRequest ?? this.numRequest,
       numLiked: numLiked ?? this.numLiked,
       rating: rating ?? this.rating,
@@ -357,7 +363,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
         sellingPoints,
         location,
         isPublic,
-        numClicks,
         numRequest,
         numLiked,
         rating,
@@ -385,7 +390,6 @@ class TutorProfileEntity extends Equatable implements TutorProfile {
     sellingPoints : $sellingPoints ,
     location : $location ,
     isPublic : $isPublic ,
-    numClicks: $numClicks,
     numRequest : $numRequest ,
     numLiked : $numLiked ,
     rating : $rating ,

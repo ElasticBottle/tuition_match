@@ -3,34 +3,33 @@ import 'package:cotor/data/models/name_entity.dart';
 import 'package:cotor/domain/entities/name.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
   TuteeAssignmentEntity({
-    @required String postId,
-    @required String photoUrl,
-    @required String uid,
-    @required Name tuteeNameModel,
-    @required List<String> tutorGender,
-    @required List<String> levels,
-    @required List<String> subjects,
-    @required List<String> formats,
-    @required List<String> tutorOccupation,
-    @required String timing,
-    @required String location,
-    @required String freq,
+    String postId,
+    String photoUrl,
+    String uid,
+    Name tuteeNameModel,
+    List<String> tutorGender,
+    List<String> levels,
+    List<String> subjects,
+    List<String> formats,
+    List<String> tutorOccupation,
+    String timing,
+    String location,
+    String freq,
     double proposedRate,
     double rateMin,
     double rateMax,
-    @required String rateType,
-    @required String additionalRemarks,
-    @required bool isOpen,
-    @required bool isPublic,
+    String rateType,
+    String additionalRemarks,
+    bool isOpen,
+    bool isPublic,
     int numApplied,
     int numLiked,
     String dateAdded,
-    @required bool isVerifiedAccount,
+    bool isVerifiedAccount,
   })  : _postId = postId,
         _photoUrl = photoUrl,
         _uid = uid,
@@ -203,7 +202,7 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
       TUTEE_NAME: _tuteeNameModel?.toJson(),
       PHOTOURL: photoUrl,
       TUTOR_GENDER: tutorGender,
-      TUTOR_OCCUPATION: tutorOccupation,
+      TUTOR_OCCUPATIONS: tutorOccupation,
       CLASS_FORMATS: formats,
       SUBJECTS: subjects,
       LEVELS: levels,
@@ -224,21 +223,35 @@ class TuteeAssignmentEntity extends Equatable implements TuteeAssignment {
     };
   }
 
-  List<dynamic> toDocumentSnapshot() {
-    // TODO(ElasticBottle): think about all the breaking things you are doin.
-    /// can remove more items whose data can be pulled from server side to ensure
-    /// that things stay up to date
-
+  Map<String, dynamic> toNewDocumentSnapshot() {
     final List<String> toExclude = [
       POSTID,
-      DATE_ADDED,
-      NUM_APPLIED,
-      NUM_LIKED,
-      IS_OPEN,
     ];
     final Map<String, dynamic> toUpdate = toJson();
     toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
-    return <dynamic>[_postId, toUpdate];
+    toUpdate.addAll(
+      <String, dynamic>{
+        NUM_APPLIED: 0,
+        NUM_LIKED: 0,
+      },
+    );
+    return toUpdate;
+  }
+
+  Map<String, dynamic> toExistingDocumentSnapshot(Map<String, dynamic> data) {
+    final List<String> toExclude = [
+      POSTID,
+    ];
+    final Map<String, dynamic> toUpdate = toJson();
+    toUpdate.removeWhere((key, dynamic value) => toExclude.contains(key));
+    toUpdate.addAll(
+      <String, dynamic>{
+        DATE_ADDED: data[DATE_ADDED],
+        NUM_APPLIED: data[NUM_APPLIED],
+        NUM_LIKED: data[NUM_LIKED],
+      },
+    );
+    return toUpdate;
   }
 
   TuteeAssignment toDomainEntity() {

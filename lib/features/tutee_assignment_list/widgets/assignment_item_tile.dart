@@ -16,11 +16,13 @@ class AssignmentItemTile extends StatelessWidget {
     this.cardColor = ColorsAndFonts.backgroundColor,
     this.cardElevation = SpacingsAndHeights.cardElevation,
     this.cardPadding = SpacingsAndHeights.cardPadding,
+    this.bottombar = const SizedBox(),
   });
   final TuteeAssignmentModel assignment;
   final Color cardColor;
   final double cardElevation;
   final double cardPadding;
+  final Widget bottombar;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -54,6 +56,7 @@ class AssignmentItemTile extends StatelessWidget {
             SizedBox(
               height: 10.0,
             ),
+            bottombar,
             BottomActionBar(
               heroTag: assignment.uid +
                   assignment.subjects.toString() +

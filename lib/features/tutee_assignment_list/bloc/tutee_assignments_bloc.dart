@@ -2,13 +2,16 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/features/models/tutee_assignment_model.dart';
-import 'package:cotor/features/tutee_assignment_list/bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
 import 'package:flutter/material.dart';
+
+part 'tutee_assignments_event.dart';
+part 'tutee_assignments_state.dart';
 
 const String SERVER_FAILURE_MSG =
     'Sorry, Our Server is having problems processing the request (||^_^), retrieving last fetched list';
@@ -35,9 +38,11 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
   AssignmentsState get initialState => Loading();
 
   @override
-  Stream<AssignmentsState> transformEvents(
+  Stream<Transition<AssignmentsEvent, AssignmentsState>> transformEvents(
     Stream<AssignmentsEvent> events,
-    Stream<AssignmentsState> Function(AssignmentsEvent event) next,
+    Stream<Transition<AssignmentsEvent, AssignmentsState>> Function(
+            AssignmentsEvent event)
+        transitionFn,
   ) {
     final nonDebounceStream = events.where((event) {
       return event is! GetNextAssignmentList;
@@ -46,9 +51,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
       return event is GetNextAssignmentList;
     }).debounceTime(Duration(milliseconds: 500));
     return super.transformEvents(
-      nonDebounceStream.mergeWith([debounceStream]),
-      next,
-    );
+        nonDebounceStream.mergeWith([debounceStream]), transitionFn);
   }
 
   @override
@@ -56,7 +59,7 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
     AssignmentsEvent event,
   ) async* {
     if (event is GetAssignmentList) {
-      yield* _mapGetAssignmentListToState(event);
+      yield* _mapGetAssignmentListToState();
     } else if (event is GetNextAssignmentList) {
       yield* _mepGetNextAssignmentListToState(event);
     } else if (event is GetCachedAssignmentList) {
@@ -64,63 +67,81 @@ class AssignmentsBloc extends Bloc<AssignmentsEvent, AssignmentsState> {
     }
   }
 
-  Stream<AssignmentsState> _mapGetAssignmentListToState(
-      GetAssignmentList event) async* {
+  Stream<AssignmentsState> _mapGetAssignmentListToState() async* {
     yield Loading();
     assignments.clear();
     final result = await getAssignmentList(NoParams());
     yield* result.fold(
       (failure) async* {
-        yield AssignmentError(message: _mapFailureToFailureMessage(failure));
+        yield InitialAssignmentsLoadError(
+          message: _mapFailureToFailureMessage(failure),
+          isCacheError: false,
+        );
       },
       (assignmentList) async* {
-        assignments.addAll(assignmentList
-            .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
-        yield AssignmentLoaded(
+        if (assignmentList.isNotEmpty) {
+          assignments.addAll(assignmentList
+              .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
+          yield AssignmentLoaded.normal(
             assignments: assignments,
-            isCachedList: false,
-            isEnd: false,
-            isFetching: false);
+          );
+        } else {
+          yield AssignmentLoaded.empty();
+        }
       },
     );
   }
 
   Stream<AssignmentsState> _mepGetNextAssignmentListToState(
       GetNextAssignmentList event) async* {
-    final AssignmentLoaded currentState = state;
-    yield currentState.copyWith(isFetching: true);
-    final result = await getNextAssignments(NoParams());
-    yield* result.fold(
-      (failure) async* {
-        yield AssignmentError(message: _mapFailureToFailureMessage(failure));
-      },
-      (assignmentList) async* {
-        if (assignmentList != null) {
-          assignments.addAll(assignmentList
-              .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
-          yield currentState.copyWith(assignments: assignments);
-        } else {
-          yield currentState.copyWith(assignments: assignments, isEnd: true);
-        }
-      },
-    );
+    if (state is AssignmentLoaded) {
+      final AssignmentLoaded currentState = state;
+      yield currentState.update(isFetching: true);
+      final result = await getNextAssignments(NoParams());
+      yield* result.fold(
+        (failure) async* {
+          yield currentState.copyWith(
+            isGetNextListError: true,
+          );
+        },
+        (assignmentList) async* {
+          if (assignmentList != null) {
+            assignments.addAll(assignmentList
+                .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
+            yield currentState.update(assignments: assignments);
+          } else {
+            yield currentState.update(
+              assignments: assignments,
+              isEnd: true,
+            );
+          }
+        },
+      );
+    }
   }
 
   Stream<AssignmentsState> _mapGetCachedAssignmentListToState(
       GetCachedAssignmentList event) async* {
-    final AssignmentLoaded currentState = state;
-    yield currentState.copyWith(isFetching: true);
+    yield Loading();
     final result = await getCachedAssignments(NoParams());
     yield* result.fold(
       (failure) async* {
-        yield CachedAssignmentError(
-            message: _mapFailureToFailureMessage(failure));
+        yield InitialAssignmentsLoadError(
+          message: _mapFailureToFailureMessage(failure),
+          isCacheError: true,
+        );
       },
       (assignmentList) async* {
-        assignments.addAll(assignmentList
-            .map((e) => TuteeAssignmentModel.fromDomainEntity(e)));
-        yield currentState.copyWith(
-            assignments: assignmentList, isCachedList: true);
+        assignments = assignmentList
+            .map((e) => TuteeAssignmentModel.fromDomainEntity(e))
+            .toList();
+        yield AssignmentLoaded(
+          assignments: assignments,
+          isCachedList: true,
+          isEnd: false,
+          isFetching: false,
+          isGetNextListError: false,
+        );
       },
     );
   }

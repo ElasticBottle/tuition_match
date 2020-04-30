@@ -40,10 +40,8 @@ class TutorProfileListBloc
   TutorProfileListState get initialState => Loading();
 
   @override
-  Stream<TutorProfileListState> transformEvents(
-    Stream<TutorProfileListEvent> events,
-    Stream<TutorProfileListState> Function(TutorProfileListEvent event) next,
-  ) {
+  Stream<Transition<TutorProfileListEvent, TutorProfileListState>>
+      transformEvents(Stream<TutorProfileListEvent> events, transitionFn) {
     final nonDebounceStream = events.where((event) {
       return event is! GetNextTutorProfileList;
     });
@@ -52,7 +50,7 @@ class TutorProfileListBloc
     }).debounceTime(Duration(milliseconds: 500));
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
-      next,
+      transitionFn,
     );
   }
 
@@ -75,7 +73,7 @@ class TutorProfileListBloc
     final result = await getTutorProfileList(NoParams());
     yield* result.fold(
       (failure) async* {
-        yield TutorProfilesError(
+        yield InitialTutorProfilesLoadError(
           message: _mapFailureToFailureMessage(failure),
           isCacheError: false,
         );
@@ -101,7 +99,6 @@ class TutorProfileListBloc
     yield* result.fold(
       (failure) async* {
         yield currentState.copyWith(
-          isFetching: false,
           isGetNextListError: true,
         );
       },
@@ -109,10 +106,9 @@ class TutorProfileListBloc
         if (tutorProfileList != null) {
           profiles.addAll(tutorProfileList
               .map((e) => TutorProfileModel.fromDomainEntity(e)));
-          yield currentState.update(profiles: profiles, isFetching: false);
+          yield currentState.update(profiles: profiles);
         } else {
-          yield currentState.update(
-              profiles: profiles, isFetching: false, isEnd: true);
+          yield currentState.update(profiles: profiles, isEnd: true);
         }
       },
     );
@@ -123,7 +119,7 @@ class TutorProfileListBloc
     final result = await getCachedTutorProfileList(NoParams());
     yield* result.fold(
       (failure) async* {
-        yield TutorProfilesError(
+        yield InitialTutorProfilesLoadError(
           message: _mapFailureToFailureMessage(failure),
           isCacheError: true,
         );

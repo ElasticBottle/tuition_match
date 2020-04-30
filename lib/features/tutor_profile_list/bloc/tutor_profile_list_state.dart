@@ -30,7 +30,7 @@ class TutorProfilesLoaded extends TutorProfileListState {
   }
   factory TutorProfilesLoaded.normal({List<TutorProfileModel> profiles}) {
     return TutorProfilesLoaded(
-      profiles: profiles,
+      profiles: [...profiles],
       isFetching: false,
       isEnd: false,
       isCachedList: false,
@@ -66,7 +66,7 @@ class TutorProfilesLoaded extends TutorProfileListState {
     bool isGetNextListError,
   }) {
     return TutorProfilesLoaded(
-      profiles: profiles ?? this.profiles,
+      profiles: profiles ?? [...this.profiles],
       isFetching: isFetching ?? this.isFetching,
       isEnd: isEnd ?? this.isEnd,
       isCachedList: isCachedList ?? this.isCachedList,
@@ -93,8 +93,8 @@ class TutorProfilesLoaded extends TutorProfileListState {
      }''';
 }
 
-class TutorProfilesError extends TutorProfileListState {
-  const TutorProfilesError(
+class InitialTutorProfilesLoadError extends TutorProfileListState {
+  const InitialTutorProfilesLoadError(
       {@required this.message, @required this.isCacheError});
   final String message;
   final bool isCacheError;

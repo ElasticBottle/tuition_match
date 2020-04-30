@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'tutee_assignments_bloc.dart';
 
 abstract class AssignmentsEvent extends Equatable {
   const AssignmentsEvent();

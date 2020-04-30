@@ -5,7 +5,7 @@ import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/features/tutee_assignment_list/bloc/bloc.dart';
+import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assignments_bloc.dart';
 import 'package:cotor/features/tutee_assignment_list/widgets/assignment_item_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +44,6 @@ class _AssignmentListPageState extends State<AssignmentListPage>
     super.build(context);
     return RefreshIndicator(
       onRefresh: () async {
-        print('refresh assignment list');
         assignmentsBloc.add(GetAssignmentList());
       },
       displacement: SpacingsAndHeights.refreshDisplacement,
@@ -59,21 +58,8 @@ class _AssignmentListPageState extends State<AssignmentListPage>
           BlocConsumer<AssignmentsBloc, AssignmentsState>(
             bloc: assignmentsBloc,
             listener: (context, state) {
-              if (state is CachedAssignmentError) {
-                // TODO(ElasticBottle): remove when error page is done up for this state
-                _displaySnacBar(
-                  message: state.message,
-                  context: context,
-                  action: SnackBarAction(
-                    label: 'Refresh',
-                    textColor: ColorsAndFonts.secondaryColor,
-                    onPressed: () {
-                      assignmentsBloc.add(GetAssignmentList());
-                    },
-                  ),
-                );
-              }
-              if (state is AssignmentError) {
+              if (state is InitialAssignmentsLoadError) {
+                // TODO(ElasticBottle): reafctor with custom snack bar
                 _displaySnacBar(
                   context: context,
                   message: state.message,
@@ -83,11 +69,21 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                     onPressed: Scaffold.of(context).hideCurrentSnackBar,
                   ),
                 );
-              }
-              if (state is AssignmentLoaded && state.isCachedList) {
+              } else if (state is AssignmentLoaded && state.isCachedList) {
                 _displaySnacBar(
                   context: context,
                   message: Strings.cachedAssignmentLoadedMsg,
+                  action: SnackBarAction(
+                    label: 'dismiss',
+                    textColor: ColorsAndFonts.secondaryColor,
+                    onPressed: Scaffold.of(context).hideCurrentSnackBar,
+                  ),
+                );
+              } else if (state is AssignmentLoaded &&
+                  state.isGetNextListError) {
+                _displaySnacBar(
+                  context: context,
+                  message: Strings.getNextListError,
                   action: SnackBarAction(
                     label: 'dismiss',
                     textColor: ColorsAndFonts.secondaryColor,
@@ -110,10 +106,12 @@ class _AssignmentListPageState extends State<AssignmentListPage>
                     );
                   },
                 );
-              } else if (state is AssignmentError) {
+              } else if (state is InitialAssignmentsLoadError &&
+                  !state.isCacheError) {
                 assignmentsBloc.add(GetCachedAssignmentList());
                 return SliverLoadingWidget();
-              } else if (state is CachedAssignmentError) {
+              } else if (state is InitialAssignmentsLoadError &&
+                  state.isCacheError) {
                 // TODO(ElasticBottle): create page with image and message bleow it explaining the error and offer action button if any
               }
               // TODO(ElasticBottle): replace widget below with page containing image and message explainging unknonwn happening and offer action button if any

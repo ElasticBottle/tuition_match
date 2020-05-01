@@ -15,7 +15,7 @@ class EditTuteeAssignmentState extends Equatable {
     this.classFormatSelection,
     this.genderSelection,
     this.rateTypeSelction,
-    this.tutorOccupation,
+    this.tutorOccupations,
     this.isAcceptingTutors,
     this.isRateMinValid,
     this.isRateMaxValid,
@@ -33,18 +33,19 @@ class EditTuteeAssignmentState extends Equatable {
     this.isSuccess,
     this.isFailure,
     this.failureMessage,
+    this.successMessage,
   });
 
   factory EditTuteeAssignmentState.initial() {
     return EditTuteeAssignmentState(
-      subjectsToDisplay: [],
+      subjectsToDisplay: const [],
       subjectHint: 'Please select a level first',
-      genderSelection: [0, 1],
-      classFormatSelection: [1],
-      levels: [],
-      tutorOccupation: [],
+      genderSelection: const [0, 1],
+      classFormatSelection: const [1],
+      levels: const [],
+      tutorOccupations: const [],
       rateTypeSelction: 0,
-      subjects: [],
+      subjects: const [],
       initialRateMin: '',
       initialRateMax: '',
       initialTiming: '',
@@ -68,6 +69,7 @@ class EditTuteeAssignmentState extends Equatable {
       isSubmitting: false,
       isSuccess: false,
       failureMessage: null,
+      successMessage: null,
     );
   }
 
@@ -84,7 +86,7 @@ class EditTuteeAssignmentState extends Equatable {
   final List<int> classFormatSelection;
   final List<int> genderSelection;
   final int rateTypeSelction;
-  final List<String> tutorOccupation;
+  final List<String> tutorOccupations;
   final bool isAcceptingTutors;
   final bool isRateMinValid;
   final bool isRateMaxValid;
@@ -102,6 +104,7 @@ class EditTuteeAssignmentState extends Equatable {
   final bool isSuccess;
   final bool isFailure;
   final String failureMessage;
+  final String successMessage;
 
   bool isValid() {
     return isRateMinValid &&
@@ -118,12 +121,13 @@ class EditTuteeAssignmentState extends Equatable {
         isTutorOccupationsValid;
   }
 
-  EditTuteeAssignmentState success() {
+  EditTuteeAssignmentState success(String msg) {
     return copyWith(
       isFailure: false,
       isSubmitting: false,
       isSuccess: true,
       failureMessage: null,
+      successMessage: null,
     );
   }
 
@@ -133,14 +137,36 @@ class EditTuteeAssignmentState extends Equatable {
       isSubmitting: false,
       isSuccess: false,
       failureMessage: msg,
+      successMessage: null,
     );
   }
 
   EditTuteeAssignmentState loading() {
-    return copyWith(isSubmitting: true);
+    return copyWith(
+      isSubmitting: true,
+      isFailure: false,
+      isSuccess: false,
+      failureMessage: null,
+      successMessage: null,
+    );
   }
 
   EditTuteeAssignmentState update({
+    List<String> subjectsToDisplay,
+    String subjectHint,
+    String initialRateMin,
+    String initialRateMax,
+    String initialTiming,
+    String initiallocation,
+    String initialFreq,
+    String initialAdditionalRemarks,
+    List<String> levels,
+    List<String> subjects,
+    List<int> classFormatSelection,
+    List<int> genderSelection,
+    int rateTypeSelction,
+    List<String> tutorOccupations,
+    bool isAcceptingTutors,
     bool isRateMinValid,
     bool isRateMaxValid,
     bool isTimingValid,
@@ -155,6 +181,21 @@ class EditTuteeAssignmentState extends Equatable {
     bool isTutorOccupationsValid,
   }) {
     return copyWith(
+      subjectsToDisplay: subjectsToDisplay,
+      subjectHint: subjectHint,
+      initialRateMin: initialRateMin,
+      initialRateMax: initialRateMax,
+      initialTiming: initialTiming,
+      initiallocation: initiallocation,
+      initialFreq: initialFreq,
+      initialAdditionalRemarks: initialAdditionalRemarks,
+      levels: levels,
+      subjects: subjects,
+      classFormatSelection: classFormatSelection,
+      genderSelection: genderSelection,
+      rateTypeSelction: rateTypeSelction,
+      tutorOccupations: tutorOccupations,
+      isAcceptingTutors: isAcceptingTutors,
       isRateMinValid: isRateMinValid,
       isRateMaxValid: isRateMaxValid,
       isTimingValid: isTimingValid,
@@ -171,6 +212,7 @@ class EditTuteeAssignmentState extends Equatable {
       isSubmitting: false,
       isSuccess: false,
       failureMessage: null,
+      successMessage: null,
     );
   }
 
@@ -188,7 +230,7 @@ class EditTuteeAssignmentState extends Equatable {
     List<int> classFormatSelection,
     List<int> genderSelection,
     int rateTypeSelction,
-    List<String> tutorOccupation,
+    List<String> tutorOccupations,
     bool isAcceptingTutors,
     bool isRateMinValid,
     bool isRateMaxValid,
@@ -206,6 +248,7 @@ class EditTuteeAssignmentState extends Equatable {
     bool isSuccess,
     bool isFailure,
     String failureMessage,
+    String successMessage,
   }) {
     return EditTuteeAssignmentState(
       subjectsToDisplay: subjectsToDisplay ?? this.subjectsToDisplay,
@@ -222,7 +265,7 @@ class EditTuteeAssignmentState extends Equatable {
       classFormatSelection: classFormatSelection ?? this.classFormatSelection,
       genderSelection: genderSelection ?? this.genderSelection,
       rateTypeSelction: rateTypeSelction ?? this.rateTypeSelction,
-      tutorOccupation: tutorOccupation ?? this.tutorOccupation,
+      tutorOccupations: tutorOccupations ?? this.tutorOccupations,
       isAcceptingTutors: isAcceptingTutors ?? this.isAcceptingTutors,
       isRateMinValid: isRateMinValid ?? this.isRateMinValid,
       isRateMaxValid: isRateMaxValid ?? this.isRateMaxValid,
@@ -244,6 +287,7 @@ class EditTuteeAssignmentState extends Equatable {
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
       failureMessage: failureMessage ?? this.failureMessage,
+      successMessage: successMessage ?? this.successMessage,
     );
   }
 
@@ -262,7 +306,7 @@ class EditTuteeAssignmentState extends Equatable {
         classFormatSelection,
         genderSelection,
         rateTypeSelction,
-        tutorOccupation,
+        tutorOccupations,
         isAcceptingTutors,
         isRateMinValid,
         isRateMaxValid,
@@ -280,6 +324,7 @@ class EditTuteeAssignmentState extends Equatable {
         isSuccess,
         isFailure,
         failureMessage,
+        successMessage,
       ];
 
   @override
@@ -297,7 +342,7 @@ class EditTuteeAssignmentState extends Equatable {
       classFormatSelection: $classFormatSelection, 
       genderSelection: $genderSelection,
       rateTypeSelction: $rateTypeSelction, 
-      tutorOccupation: $tutorOccupation, 
+      tutorOccupations: $tutorOccupations, 
       isAcceptingTutors: $isAcceptingTutors, 
       isRateMinValid: $isRateMinValid, 
       isRateMaxValid: $isRateMaxValid, 
@@ -314,6 +359,7 @@ class EditTuteeAssignmentState extends Equatable {
       isSubmitting: $isSubmitting, 
       isSuccess: $isSuccess, 
       isFailure: $isFailure, 
-      failureMessage: $failureMessage)''';
+      failureMessage: $failureMessage,
+      successMessage: $successMessage)''';
   }
 }

@@ -31,14 +31,7 @@ class EditTuteeAssignmentBloc
   final SetTuteeAssignment setTuteeAssignment;
   final UpdateTuteeAssignment updateTuteeAssignment;
 
-  Map<String, dynamic> tuteeAssignmentInfo = <String, dynamic>{
-    TUTOR_GENDER: EditTuteeAssignmentState.initial().genderSelection,
-    CLASS_FORMATS: EditTuteeAssignmentState.initial().classFormatSelection,
-    LEVELS: <dynamic>[],
-    SUBJECTS: <dynamic>[],
-    TUTOR_OCCUPATIONS: <dynamic>[],
-    RATE_TYPE: EditTuteeAssignmentState.initial().rateTypeSelction,
-  };
+  Map<String, dynamic> tuteeAssignmentInfo = <String, dynamic>{};
   // Map<String, String> stringValues = <String, String>{};
   UserModel userDetails;
   bool isUpdate;
@@ -49,23 +42,17 @@ class EditTuteeAssignmentBloc
   }
 
   @override
-  Stream<EditTuteeAssignmentState> transformEvents(
-      Stream<EditTuteeAssignmentEvent> events,
-      Stream<EditTuteeAssignmentState> Function(EditTuteeAssignmentEvent)
-          next) {
+  Stream<Transition<EditTuteeAssignmentEvent, EditTuteeAssignmentState>>
+      transformEvents(Stream<EditTuteeAssignmentEvent> events, transitionFn) {
+    final Stream<EditTuteeAssignmentEvent> nonDebounceStream = events
+        .where((event) => event is! HandleRates && event is! HandleTextField);
     final Stream<EditTuteeAssignmentEvent> debounceStream = events
-        .where((event) =>
-            event is CheckRatesAreValid ||
-            event is CheckDropDownNotEmpty ||
-            event is CheckTextFieldNotEmpty)
+        .where((event) => event is HandleRates || event is HandleTextField)
         .debounceTime(Duration(milliseconds: 300));
-    final Stream<EditTuteeAssignmentEvent> nonDebounceStream = events.where(
-        (event) =>
-            events is! CheckRatesAreValid &&
-            event is! CheckDropDownNotEmpty &&
-            event is! CheckTextFieldNotEmpty);
-    return super
-        .transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
+    return super.transformEvents(
+      nonDebounceStream.mergeWith([debounceStream]),
+      transitionFn,
+    );
   }
 
   @override
@@ -77,16 +64,14 @@ class EditTuteeAssignmentBloc
         event.userDetails,
         event.assignment,
       );
-    } else if (event is CheckRatesAreValid) {
-      yield* _mapCheckRatesAreValidToState(event.toCheck, event.fieldName);
-    } else if (event is CheckTextFieldNotEmpty) {
-      yield* _mapCheckTextFieldNotEmptyToState(event.toCheck, event.fieldName);
-    } else if (event is CheckDropDownNotEmpty) {
-      yield* _mapCheckDropDownNotEmptyToState(event.fieldName);
     } else if (event is HandleToggleButtonClick) {
-      yield* _mapHandleToggleButtonClickToSate(event.fieldName, event.index);
-    } else if (event is SaveField) {
-      yield* _mapSaveFieldToState(event.key, value: event.value);
+      yield* _mapHandleToggleButtonClickToState(event.fieldName, event.index);
+    } else if (event is HandleRates) {
+      yield* _mapHandleRateToState(
+          fieldName: event.fieldName, value: event.value);
+    } else if (event is HandleTextField) {
+      yield* _mapHandleTextField(
+          fieldName: event.fieldName, value: event.value);
     } else if (event is SubmitForm) {
       yield* _mapSubmitFormToState();
     }
@@ -98,14 +83,19 @@ class EditTuteeAssignmentBloc
   ) async* {
     this.userDetails = userDetails;
     isUpdate = !assignment.isEmpty();
+    tuteeAssignmentInfo = _initialiseMapFields(assignment, isUpdate);
+
     if (isUpdate) {
       yield state.copyWith(
-          genderSelection: Gender.toIndices(assignment.tutorGender),
+          genderSelection: Gender.toIndices(assignment.tutorGenders),
+          classFormatSelection: ClassFormat.toIndices(assignment.formats),
           levels: assignment.levels,
           subjects: assignment.subjects,
-          tutorOccupation: assignment.tutorOccupation,
+          subjectsToDisplay:
+              subject.Subject.getSubjectsToDisplay(assignment.levels),
+          subjectHint: 'Subjects',
+          tutorOccupations: assignment.tutorOccupations,
           rateTypeSelction: RateTypes.toIndex(assignment.rateType),
-          classFormatSelection: ClassFormat.toIndices(assignment.formats),
           initialRateMin: assignment.rateMin.toString(),
           initialRateMax: assignment.rateMax.toString(),
           initialTiming: assignment.timing,
@@ -113,39 +103,82 @@ class EditTuteeAssignmentBloc
           initialFreq: assignment.freq,
           initialAdditionalRemarks: assignment.additionalRemarks,
           isAcceptingTutors: assignment.isPublic
-          //  initialSelectedLevelsTaught:,
+          //  initialSelectedLevels:,
           //  initialSelectedSubjects:,
           //  initialLessonFormat: profile.formats,
           );
     } else {
-      yield state.copyWith();
+      yield state.copyWith(
+        genderSelection: [0, 1],
+        subjectsToDisplay: [],
+        classFormatSelection: [1],
+        tutorOccupations: [],
+        levels: [],
+        subjects: [],
+      );
     }
   }
 
-  Stream<EditTuteeAssignmentState> _mapCheckRatesAreValidToState(
-      String toCheck, String fieldName) async* {
-    final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(toCheck);
-    final bool isValidRate = validator.isDoubleValidator.isValid(toCheck);
+  Map<String, dynamic> _initialiseMapFields(
+      TuteeAssignmentModel assignment, bool isUpdate) {
+    return !isUpdate
+        ? <String, dynamic>{
+            TUTOR_GENDER: Gender.fromIndices(
+                EditTuteeAssignmentState.initial().genderSelection),
+            CLASS_FORMATS: ClassFormat.fromIndices(
+              EditTuteeAssignmentState.initial().classFormatSelection,
+            ),
+            RATE_TYPE: RateTypes.fromIndex(
+                EditTuteeAssignmentState.initial().rateTypeSelction),
+            PROPOSED_RATE: 0.0,
+            RATEMAX:
+                double.parse(EditTuteeAssignmentState.initial().initialRateMax),
+            RATEMIN:
+                double.parse(EditTuteeAssignmentState.initial().initialRateMin),
+            IS_PUBLIC: EditTuteeAssignmentState.initial().isAcceptingTutors,
+          }
+        : <String, dynamic>{
+            TUTOR_GENDER: assignment.tutorGenders,
+            TUTOR_OCCUPATIONS: assignment.tutorOccupations,
+            LEVELS: assignment.levels,
+            SUBJECTS: assignment.subjects,
+            CLASS_FORMATS: assignment.formats,
+            RATE_TYPE: assignment.rateType,
+            RATEMIN: assignment.rateMin,
+            RATEMAX: assignment.rateMax,
+            PROPOSED_RATE: assignment.proposedRate,
+            TIMING: assignment.timing,
+            LOCATION: assignment.location,
+            FREQ: assignment.freq,
+            ADDITIONAL_REMARKS: assignment.additionalRemarks,
+            IS_PUBLIC: assignment.isPublic,
+          };
+  }
+
+  Stream<EditTuteeAssignmentState> _mapHandleRateToState(
+      {String fieldName, String value}) async* {
+    final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(value);
+    final bool isValidRate = validator.isDoubleValidator.isValid(value);
     if (isValidRate && isNotEmpty) {
       yield* _mapFieldToErrorState(fieldName, isValid: true);
+      tuteeAssignmentInfo
+          .addAll(<String, dynamic>{fieldName: double.parse(value)});
     } else {
       yield* _mapFieldToErrorState(fieldName, isValid: false);
+      tuteeAssignmentInfo.remove(fieldName);
     }
   }
 
-  Stream<EditTuteeAssignmentState> _mapCheckTextFieldNotEmptyToState(
-      String toCheck, String fieldName) async* {
-    final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(toCheck);
+  Stream<EditTuteeAssignmentState> _mapHandleTextField(
+      {String fieldName, String value}) async* {
+    final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(value);
     if (isNotEmpty) {
+      tuteeAssignmentInfo.addAll(<String, dynamic>{fieldName: value});
       yield* _mapFieldToErrorState(fieldName, isValid: true);
     } else {
+      tuteeAssignmentInfo.remove(fieldName);
       yield* _mapFieldToErrorState(fieldName, isValid: false);
     }
-  }
-
-  Stream<EditTuteeAssignmentState> _mapCheckDropDownNotEmptyToState(
-      String fieldName) async* {
-    yield* _mapFieldToErrorState(fieldName);
   }
 
   Stream<EditTuteeAssignmentState> _mapFieldToErrorState(String fieldName,
@@ -166,117 +199,108 @@ class EditTuteeAssignmentBloc
       case FREQ:
         yield state.update(isFreqValid: isValid);
         break;
-      case LEVELS:
-        final bool valid = state.levels.isNotEmpty;
-        if (valid) {
-          yield state.copyWith(
-            subjectHint: 'Subjects',
-            isSelectedLevelsValid: valid,
-          );
-        } else {
-          yield state.copyWith(
-              isSelectedLevelsValid: valid,
-              subjectsToDisplay: [],
-              subjectHint: 'please select a level first');
-        }
-        break;
-      case SUBJECTS:
-        yield state.update(isSelectedSubjectsValid: state.subjects.isNotEmpty);
-        break;
-      case CLASS_FORMATS:
-        yield state.update(
-            isClassFormatsValid: state.classFormatSelection.isNotEmpty);
-        break;
-      case TUTOR_GENDER:
-        yield state.update(isGenderValid: state.genderSelection.isNotEmpty);
-        break;
-      case TUTOR_OCCUPATIONS:
-        yield state.update(
-            isTutorOccupationsValid: state.tutorOccupation != null);
-        break;
-      case RATE_TYPE:
       case ADDITIONAL_REMARKS:
-        yield state.update(isAdditionalRemarksValid: true);
+        yield state.update(isAdditionalRemarksValid: isValid);
         break;
     }
   }
 
-  Stream<EditTuteeAssignmentState> _mapHandleToggleButtonClickToSate(
+  Stream<EditTuteeAssignmentState> _mapHandleToggleButtonClickToState(
       String fieldName, dynamic index) async* {
     switch (fieldName) {
       case TUTOR_GENDER:
         state.genderSelection.contains(index)
             ? state.genderSelection.remove(index)
             : state.genderSelection.add(index);
-        yield state.copyWith(genderSelection: state.genderSelection);
+        yield state.update(
+          genderSelection: index,
+          isGenderValid: state.genderSelection.isNotEmpty,
+        );
+        state.genderSelection.isNotEmpty
+            ? tuteeAssignmentInfo[fieldName] = Gender.fromIndices(index)
+            : tuteeAssignmentInfo.remove(fieldName);
         break;
       case CLASS_FORMATS:
         state.classFormatSelection.contains(index)
             ? state.classFormatSelection.remove(index)
             : state.classFormatSelection.add(index);
-        yield state.copyWith(classFormatSelection: state.classFormatSelection);
-        break;
-      case LEVELS:
-        yield state.copyWith(
-            subjectsToDisplay:
-                subject.Subject.getSubjectsToDisplay(state.levels),
-            levels: index);
+        yield state.update(
+          classFormatSelection: state.classFormatSelection,
+          isClassFormatsValid: state.classFormatSelection.isNotEmpty,
+        );
+        state.classFormatSelection.isNotEmpty
+            ? tuteeAssignmentInfo.addAll(<String, dynamic>{
+                fieldName: ClassFormat.fromIndices(state.classFormatSelection)
+              })
+            : tuteeAssignmentInfo.remove(fieldName);
         break;
       case RATE_TYPE:
-        yield state.copyWith(rateTypeSelction: index);
+        yield state.update(
+          rateTypeSelction: index,
+          isTypeRateValid: true,
+        );
+        tuteeAssignmentInfo[fieldName] = RateTypes.fromIndex(index);
+
         break;
       case TUTOR_OCCUPATIONS:
-        yield state.copyWith(tutorOccupation: index);
+        yield state.update(
+          tutorOccupations: index,
+          isTutorOccupationsValid: index.isNotEmpty,
+        );
+        index.isNotEmpty
+            ? tuteeAssignmentInfo[fieldName] = index
+            : tuteeAssignmentInfo.remove(fieldName);
         break;
       case SUBJECTS:
-        yield state.copyWith(subjects: index);
+        yield state.update(
+          subjects: index,
+          isSelectedSubjectsValid: index.isNotEmpty,
+        );
+        index.isNotEmpty
+            ? tuteeAssignmentInfo[fieldName] = index
+            : tuteeAssignmentInfo.remove(fieldName);
         break;
-      case IS_PUBLIC:
-        yield state.copyWith(isAcceptingTutors: index);
-        break;
-    }
-  }
-
-  Stream<EditTuteeAssignmentState> _mapSaveFieldToState(String key,
-      {dynamic value}) async* {
-    switch (key) {
-      case CLASS_FORMATS:
-        tuteeAssignmentInfo.addAll(<String, dynamic>{
-          key: ClassFormat.fromIndices(state.classFormatSelection)
-        });
-        break;
-      case RATE_TYPE:
-        tuteeAssignmentInfo.addAll(<String, dynamic>{
-          key: RateTypes.fromIndex(state.rateTypeSelction)
-        });
-        break;
-      case TUTOR_GENDER:
-        tuteeAssignmentInfo.addAll(
-            <String, dynamic>{key: Gender.fromIndices(state.genderSelection)});
-        break;
-      case RATEMIN:
-      case RATEMAX:
-      case PROPOSED_RATE:
-        if (value.isNotEmpty) {
-          tuteeAssignmentInfo
-              .addAll(<String, dynamic>{key: double.parse(value)});
+      case LEVELS:
+        yield state.update(levels: index);
+        final bool valid = index.isNotEmpty;
+        if (valid) {
+          final List<String> subjectsAvailToTeach =
+              subject.Subject.getSubjectsToDisplay(index);
+          state.subjects.removeWhere(
+              (element) => !subjectsAvailToTeach.contains(element));
+          tuteeAssignmentInfo.addAll(<String, dynamic>{
+            fieldName: index,
+            SUBJECTS: state.subjects,
+          });
+          yield state.update(
+            subjectsToDisplay: subjectsAvailToTeach,
+            subjects: state.subjects,
+            subjectHint: 'Subjects',
+            isSelectedLevelsValid: valid,
+          );
         } else {
-          tuteeAssignmentInfo.addAll(<String, dynamic>{key: value});
+          tuteeAssignmentInfo.remove(fieldName);
+          tuteeAssignmentInfo.remove(SUBJECTS);
+          yield state.update(
+            isSelectedLevelsValid: valid,
+            subjects: [],
+            subjectsToDisplay: [],
+            subjectHint: 'please select a level first',
+          );
         }
         break;
-      default:
-        tuteeAssignmentInfo.addAll(<String, dynamic>{key: value});
+      case IS_PUBLIC:
+        yield state.update(isAcceptingTutors: index);
+        tuteeAssignmentInfo[fieldName] = index;
         break;
     }
-    yield state.copyWith();
   }
 
   Stream<EditTuteeAssignmentState> _mapSubmitFormToState() async* {
     yield state.loading();
-    Either<Failure, bool> result;
-    print(tuteeAssignmentInfo);
-    yield* _verifyFields(tuteeAssignmentInfo);
-    if (!state.isValid()) {
+
+    final bool isValid = _verifyFields(tuteeAssignmentInfo);
+    if (!isValid || !state.isValid()) {
       yield state
           .failure('Please make sure all fields are properly filled in!');
       return;
@@ -284,12 +308,13 @@ class EditTuteeAssignmentBloc
 
     final TuteeAssignmentModel model = TuteeAssignmentModel(
       uid: userDetails.uid,
-      tutorGender: tuteeAssignmentInfo[TUTOR_GENDER],
+      tutorGenders: tuteeAssignmentInfo[TUTOR_GENDER],
       rateType: tuteeAssignmentInfo[RATE_TYPE],
-      tutorOccupation: tuteeAssignmentInfo[TUTOR_OCCUPATIONS],
-      levels: tuteeAssignmentInfo[LEVELS_TAUGHT],
+      tutorOccupations: tuteeAssignmentInfo[TUTOR_OCCUPATIONS],
+      levels: tuteeAssignmentInfo[LEVELS],
       subjects: tuteeAssignmentInfo[SUBJECTS],
       formats: tuteeAssignmentInfo[CLASS_FORMATS],
+      proposedRate: tuteeAssignmentInfo[PROPOSED_RATE],
       rateMax: tuteeAssignmentInfo[RATEMAX],
       rateMin: tuteeAssignmentInfo[RATEMIN],
       timing: tuteeAssignmentInfo[TIMING],
@@ -303,38 +328,51 @@ class EditTuteeAssignmentBloc
       isVerifiedAccount: userDetails.isVerifiedAccount,
     );
     print(model);
-    if (isUpdate) {
-      result = await updateTuteeAssignment(model.toDomainEntity());
-    } else {
-      result = await setTuteeAssignment(model.toDomainEntity());
-    }
+    final Either<Failure, bool> result = isUpdate
+        ? await updateTuteeAssignment(model.toDomainEntity())
+        : await setTuteeAssignment(model.toDomainEntity());
+
     yield* result.fold(
       (l) async* {
-        yield state.failure('something went wrong');
+        if (l is ServerFailure) {
+          yield state.failure(
+            'We had problems updating our server. You can save your edits and try again later!',
+          );
+        } else if (l is NetworkFailure) {
+          yield state.failure(
+            'No Internet! Check connection and Try again',
+          );
+        }
       },
       (r) async* {
-        yield state.success();
+        yield state.success('Success!');
       },
     );
   }
 
-  Stream<EditTuteeAssignmentState> _verifyFields(
-      Map<String, dynamic> tuteeAssignmentInfo) async* {
-    final List<String> keys = [
+  bool _verifyFields(Map<String, dynamic> tutorProfileInfo) {
+    final List<String> fieldsToVerify = [
       TUTOR_GENDER,
-      CLASS_FORMATS,
+      TUTOR_OCCUPATIONS,
       LEVELS,
       SUBJECTS,
-      TUTOR_OCCUPATIONS,
+      CLASS_FORMATS,
       RATE_TYPE,
+      RATEMIN,
+      RATEMAX,
+      PROPOSED_RATE,
+      TIMING,
+      LOCATION,
+      FREQ,
+      ADDITIONAL_REMARKS,
+      IS_PUBLIC,
     ];
-    for (MapEntry<String, dynamic> entry in tuteeAssignmentInfo.entries) {
-      if (entry.value is String) {
-        yield* _mapCheckTextFieldNotEmptyToState(entry.value, entry.key);
+    for (String key in fieldsToVerify) {
+      if (!tutorProfileInfo.containsKey(key)) {
+        print('tutor profile info does not contain' + key);
+        return false;
       }
     }
-    for (String key in keys) {
-      yield* _mapCheckDropDownNotEmptyToState(key);
-    }
+    return true;
   }
 }

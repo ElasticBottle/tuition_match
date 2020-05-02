@@ -1,5 +1,3 @@
-import 'package:flutter/services.dart';
-
 abstract class StringValidator {
   bool isValid(String value);
 }
@@ -28,28 +26,11 @@ class RegexValidator implements StringValidator {
   }
 }
 
-class ValidatorInputFormatter implements TextInputFormatter {
-  ValidatorInputFormatter({this.editingValidator});
-  final StringValidator editingValidator;
-
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    final bool oldValueValid = editingValidator.isValid(oldValue.text);
-    final bool newValueValid = editingValidator.isValid(newValue.text);
-    if (oldValueValid && !newValueValid) {
-      return oldValue;
-    }
-    return newValue;
-  }
-}
-
-class EmailEditingRegexValidator extends RegexValidator {
-  EmailEditingRegexValidator() : super(regexSource: '^(|\\S)+\$');
-}
-
-class EmailSubmitRegexValidator extends RegexValidator {
-  EmailSubmitRegexValidator() : super(regexSource: '^\\S+@\\S+\\.\\S+\$');
+class EmailRegistrationRegexValidator extends RegexValidator {
+// Valid Email has the symbols @ and
+// It also has text before, in between, and after those two symbols.
+// e.g. Hello@test.com, 1@2.3
+  EmailRegistrationRegexValidator() : super(regexSource: '^\\S+@\\S+\\.\\S+\$');
 }
 
 class PhoneNumValidator extends RegexValidator {
@@ -89,13 +70,10 @@ class IsDoubleValidator extends StringValidator {
 }
 
 class EmailAndPasswordValidators {
-  final TextInputFormatter emailInputFormatter =
-      ValidatorInputFormatter(editingValidator: EmailEditingRegexValidator());
-  final StringValidator emailSubmitValidator = EmailSubmitRegexValidator();
-  final StringValidator passwordRegisterSubmitValidator =
+  final StringValidator emailRegistrationValidator =
+      EmailRegistrationRegexValidator();
+  final StringValidator passwordRegistrationValidator =
       MinLengthStringValidator(8);
-  final StringValidator passwordSignInSubmitValidator =
-      NonEmptyStringValidator();
   final StringValidator nonEmptyStringValidator = NonEmptyStringValidator();
   final IsDoubleValidator isDoubleValidator = IsDoubleValidator();
   final PhoneNumValidator phoneNumValidator = PhoneNumValidator();

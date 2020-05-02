@@ -58,16 +58,16 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<Either<Failure, void>> sendEmailVerification() async {
-    return IsNetworkOnline<Failure, void>().call(
+  Future<Either<Failure, bool>> sendEmailVerification() async {
+    return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, void>(await auth.sendEmailVerification());
+          return Right<Failure, bool>(await auth.sendEmailVerification());
         } catch (e) {
           final AuthenticationException exception = e;
-          return Left<Failure, void>(
+          return Left<Failure, bool>(
               AuthenticationFailure(message: exception.authError));
         }
       },
@@ -92,13 +92,13 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   }
 
   @override
-  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
-    return IsNetworkOnline<Failure, void>().call(
+  Future<Either<Failure, bool>> sendPasswordResetEmail(String email) async {
+    return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, void>(await auth.sendPasswordResetEmail(email));
+          return Right<Failure, bool>(await auth.sendPasswordResetEmail(email));
         } catch (e) {
           final AuthenticationException exception = e;
           return Left<Failure, bool>(

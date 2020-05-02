@@ -4,12 +4,12 @@ import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class ForgotPassword extends UseCase<void, ForgotPasswordParams> {
+class ForgotPassword extends UseCase<bool, ForgotPasswordParams> {
   ForgotPassword({this.repo});
   AuthServiceRepo repo;
 
   @override
-  Future<Either<Failure, void>> call(ForgotPasswordParams params) async {
+  Future<Either<Failure, bool>> call(ForgotPasswordParams params) async {
     return await repo.sendPasswordResetEmail(params.email);
   }
 }

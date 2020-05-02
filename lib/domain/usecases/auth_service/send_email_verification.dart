@@ -8,8 +8,8 @@ class SendEmailVerification extends UseCase<void, NoParams> {
   AuthServiceRepo repo;
 
   @override
-  Future<Either<Failure, void>> call(NoParams params) async {
-    final Either<Failure, void> result = await repo.sendEmailVerification();
+  Future<Either<Failure, bool>> call(NoParams params) async {
+    final Either<Failure, bool> result = await repo.sendEmailVerification();
     return result;
   }
 }

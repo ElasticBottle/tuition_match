@@ -13,9 +13,9 @@ abstract class AuthServiceRemote {
     String password,
   });
   Future<bool> isUsernameValid(String username);
-  Future<void> sendEmailVerification();
+  Future<bool> sendEmailVerification();
   Future<bool> isLoggedInUserEmailVerified();
-  Future<void> sendPasswordResetEmail(String email);
+  Future<bool> sendPasswordResetEmail(String email);
   Future<UserEntity> signInWithGoogle();
   // Future<User> signInWithFacebook();
   Future<void> signOut();
@@ -128,14 +128,15 @@ class FirebaseAuthService implements AuthServiceRemote {
   }
 
   @override
-  Future<void> sendEmailVerification() async {
+  Future<bool> sendEmailVerification() async {
     final FirebaseUser user = await auth.currentUser();
     String errorMessage = '';
     if (user == null) {
       throw AuthenticationException(USER_NOT_LOGGED_IN);
     }
     try {
-      return await user.sendEmailVerification();
+      await user.sendEmailVerification();
+      return true;
     } catch (e) {
       print(e.toString());
       errorMessage = _getErrorMessage(e.code);
@@ -143,6 +144,7 @@ class FirebaseAuthService implements AuthServiceRemote {
     if (errorMessage.isNotEmpty) {
       throw AuthenticationException(errorMessage);
     }
+    return false;
   }
 
   @override
@@ -155,10 +157,11 @@ class FirebaseAuthService implements AuthServiceRemote {
   }
 
   @override
-  Future<void> sendPasswordResetEmail(String email) async {
+  Future<bool> sendPasswordResetEmail(String email) async {
     String errorMessage = '';
     try {
       await auth.sendPasswordResetEmail(email: email);
+      return true;
     } catch (e) {
       print(e.toString());
       errorMessage = _getErrorMessage(e.code);
@@ -166,7 +169,7 @@ class FirebaseAuthService implements AuthServiceRemote {
     if (errorMessage.isNotEmpty) {
       throw AuthenticationException(errorMessage);
     }
-    return;
+    return false;
   }
 
   @override

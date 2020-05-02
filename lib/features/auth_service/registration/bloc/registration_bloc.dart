@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
@@ -67,7 +68,6 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   }
 
   Stream<RegistrationState> _mapEmailChangedToState(String email) async* {
-    print(email);
     final bool isValidEmail =
         validator.emailRegistrationValidator.isValid(email);
     if (isValidEmail) {
@@ -154,11 +154,25 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       lastName: lastName,
       phoneNum: phoneNum,
     ));
-    result.fold((Failure failure) async* {
-      final AuthenticationFailure fail = failure;
-      yield RegistrationStateImpl.failure(fail.message);
-    }, (r) async* {
-      yield RegistrationStateImpl.success();
-    });
+    yield* result.fold(
+      (Failure failure) async* {
+        yield RegistrationStateImpl.failure(_mapFailureToMsg(failure));
+      },
+      (r) async* {
+        yield RegistrationStateImpl.success();
+      },
+    );
+  }
+
+  String _mapFailureToMsg(Failure failure) {
+    if (failure is AuthenticationFailure) {
+      return failure.message;
+    } else if (failure is ServerFailure) {
+      return Strings.serverFailureErrorMsg;
+    } else if (failure is NetworkFailure) {
+      return Strings.networkFailureErrorMsg;
+    } else {
+      return Strings.unknownFailureErrorMsg;
+    }
   }
 }

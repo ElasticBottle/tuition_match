@@ -148,12 +148,13 @@ class RegistrationStateImpl extends RegistrationState {
       !isPhoneNumError;
 
   @override
-  RegistrationState update(
-      {bool isEmailError,
-      bool isPasswordError,
-      bool isFirstNameError,
-      bool isLastNameError,
-      bool isPhoneNumError}) {
+  RegistrationState update({
+    bool isEmailError,
+    bool isPasswordError,
+    bool isFirstNameError,
+    bool isLastNameError,
+    bool isPhoneNumError,
+  }) {
     return copyWith(
       isEmailError: isEmailError,
       isPasswordError: isPasswordError,

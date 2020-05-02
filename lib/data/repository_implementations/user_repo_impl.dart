@@ -70,8 +70,7 @@ class UserRepoImpl implements UserRepo {
   }
 
   @override
-  Future<Either<Failure, void>> createNewUser({
-    String email,
+  Future<Either<Failure, void>> createNewUserDocument({
     String firstname,
     String lastname,
     String phoneNum,

@@ -9,8 +9,7 @@ abstract class UserRepo {
   Future<Either<Failure, User>> getCurrentLoggedInUser();
   Future<Either<Failure, User>> getUserInfo(String uid);
   Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(String uid);
-  Future<Either<Failure, void>> createNewUser({
-    String email,
+  Future<Either<Failure, void>> createNewUserDocument({
     String firstname,
     String lastname,
     String phoneNum,

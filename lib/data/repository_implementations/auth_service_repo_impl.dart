@@ -2,11 +2,11 @@ import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/data/datasources/auth_service_remote.dart';
+import 'package:cotor/data/datasources/user_remote_data_source.dart';
 import 'package:cotor/data/models/user_entity.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
-import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -15,39 +15,17 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
   AuthServiceRepoImpl({
     @required this.networkInfo,
     @required this.auth,
-    @required this.userRepo,
+    @required this.userRemoteDs,
   });
   final NetworkInfo networkInfo;
   final AuthServiceRemote auth;
-  final UserRepo userRepo;
-
-  @override
-  Future<Either<Failure, bool>> isUsernameValid(String username) async {
-    return IsNetworkOnline<Failure, bool>().call(
-      networkInfo: networkInfo,
-      ifOffline: NetworkFailure(),
-      ifOnline: () async {
-        try {
-          final bool result = await auth.isUsernameValid(username);
-          return Right<Failure, bool>(result);
-        } catch (e) {
-          if (e is AuthenticationException) {
-            return Left<Failure, bool>(
-                AuthenticationFailure(message: e.authError));
-          } else {
-            return Left<Failure, bool>(
-                AuthenticationFailure(message: e.toString()));
-          }
-        }
-      },
-    );
-  }
+  final UserRemoteDataSource userRemoteDs;
 
   @override
   Future<Either<Failure, bool>> createAccountWithEmail({
     String email,
     String password,
-    String username,
+    String phoneNum,
     String firstName,
     String lastName,
   }) async {
@@ -58,8 +36,8 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
         try {
           final bool result = await auth.createAccountWithEmail(
               email: email, password: password);
-          await userRepo.createNewUser(
-            email: email,
+          await userRemoteDs.createNewUserDocument(
+            phoneNum: phoneNum,
             firstname: firstName,
             lastname: lastName,
           );

@@ -31,8 +31,12 @@ abstract class AuthServiceRepo {
   // Future<Either<Failure, User>> signInWithFacebook();
   Future<Either<Failure, void>> signOut();
 
-  Future<Either<Failure, bool>> isUsernameValid(String username);
-  Future<Either<Failure, bool>> createAccountWithEmail(
-      {String email, String password, String firstName, String lastName});
+  Future<Either<Failure, bool>> createAccountWithEmail({
+    String email,
+    String password,
+    String phoneNum,
+    String firstName,
+    String lastName,
+  });
   void dispose();
 }

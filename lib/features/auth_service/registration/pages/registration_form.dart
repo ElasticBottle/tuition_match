@@ -1,8 +1,7 @@
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
-import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/bloc/registraiton_bloc/registration_bloc.dart';
+import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,6 +15,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneNumController = TextEditingController();
 
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
@@ -30,7 +30,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
       _emailController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty &&
       _firstNameController.text.isNotEmpty &&
-      _lastNameController.text.isNotEmpty;
+      _lastNameController.text.isNotEmpty &&
+      _phoneNumController.text.isNotEmpty;
 
   bool isRegisterButtonEnabled(RegistrationState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
@@ -42,6 +43,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
     _registrationBloc = BlocProvider.of<RegistrationBloc>(context);
     _emailController.addListener(_onEmailChanged);
     _passwordController.addListener(_onPasswordChanged);
+    _phoneNumController.addListener(_onPhoneNumChanged);
     _firstNameController.addListener(_onFirstNameChanged);
     _lastNameController.addListener(_onLastNameChanged);
   }
@@ -52,7 +54,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
       listener: (context, state) {
         if (state.isSuccess) {
           Navigator.of(context).pop();
-          // BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
           Scaffold.of(context)
@@ -62,7 +63,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(state.loginError),
+                    Text(state.failureMessage),
                     Icon(Icons.error),
                   ],
                 ),
@@ -86,31 +87,56 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         CustomTextField(
+                          controller: _emailController,
                           labelText: Strings.emailLabel,
+                          hintText: Strings.emailHint,
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
-                          errorText: state.emailError,
+                          errorText: state.isEmailError
+                              ? Strings.errorEmailInvalid
+                              : null,
                         ),
                         CustomTextField(
+                          controller: _passwordController,
                           labelText: Strings.passwordLabel,
-                          hintText: Strings.password8CharactersLabel,
+                          hintText: Strings.passwordHint,
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
-                          errorText: state.passwordError,
+                          errorText: state.isPasswordError
+                              ? Strings.errorPasswordTooShort
+                              : null,
+                          isObscureText: true,
+                          isShowObscuretextToggle: true,
                         ),
                         CustomTextField(
+                          controller: _phoneNumController,
+                          labelText: Strings.phoneNumLabel,
+                          textInputType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: _handleSubmitted,
+                          errorText: state.isPhoneNumError
+                              ? Strings.errorPhoneNumInvalid
+                              : null,
+                        ),
+                        CustomTextField(
+                          controller: _firstNameController,
                           labelText: Strings.firstnameLabel,
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
-                          errorText: state.firstNameError,
+                          errorText: state.isFirstNameError
+                              ? Strings.errorFieldEmpty
+                              : null,
                         ),
                         CustomTextField(
+                          controller: _lastNameController,
                           labelText: Strings.lastnameLabel,
                           textInputAction: TextInputAction.send,
                           onFieldSubmitted: isRegisterButtonEnabled(state)
                               ? (value) => _onFormSubmitted
                               : null,
-                          errorText: state.lastNameError,
+                          errorText: state.isLastNameError
+                              ? Strings.errorFieldEmpty
+                              : null,
                         ),
                       ],
                     ),
@@ -123,16 +149,10 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         ? _onFormSubmitted
                         : null,
                     loading: state.isSubmitting,
-                    color: ColorsAndFonts.primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     child: Text(
-                      Strings.register,
-                      style: TextStyle(
-                        color: ColorsAndFonts.backgroundColor,
-                        fontFamily: ColorsAndFonts.primaryFont,
-                        fontWeight: FontWeight.normal,
-                        fontSize:
-                            ColorsAndFonts.AddAssignmntSubmitButtonFontSize,
-                      ),
+                      Strings.registerButtonText,
+                      style: Theme.of(context).textTheme.button,
                     ),
                   ),
                 ),
@@ -177,6 +197,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
     );
   }
 
+  void _onPhoneNumChanged() {
+    _registrationBloc.add(
+      PhoneNumChanged(phoneNum: _phoneNumController.text),
+    );
+  }
+
   void _onFormSubmitted() {
     _registrationBloc.add(
       Submitted(
@@ -184,7 +210,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
         password: _passwordController.text,
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
-        phoneNum: '87654321',
+        phoneNum: _phoneNumController.text,
       ),
     );
   }

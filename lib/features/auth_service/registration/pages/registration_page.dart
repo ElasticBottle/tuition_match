@@ -1,5 +1,5 @@
-import 'package:cotor/features/auth_service/bloc/registraiton_bloc/registration_bloc.dart';
-import 'package:cotor/features/auth_service/pages/registration_form.dart';
+import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
+import 'package:cotor/features/auth_service/registration/pages/registration_form.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

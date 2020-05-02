@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_out.dart';
 import 'package:cotor/domain/usecases/is_first_app_launch.dart';
 import 'package:cotor/domain/usecases/set_is_first_app_launch_false.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/usecases/user/get_current_user.dart';
 import 'package:cotor/domain/usecases/user/get_user_profile.dart';
 import 'package:cotor/domain/usecases/user/user_stream.dart';
@@ -87,7 +87,7 @@ class AuthServiceBloc extends Bloc<AuthServiceEvent, AuthServiceState> {
         // - Needs to verify email
         // - Is existing user
         final Either<Failure, User> databaseProfile =
-            await getUserProfile(UserParams(uid: user.uid));
+            await getUserProfile(GetUserProfileParams(uid: user.uid));
         yield* databaseProfile.fold(
           (Failure noDataBaseProfile) async* {
             if (noDataBaseProfile is NoUserFailure) {

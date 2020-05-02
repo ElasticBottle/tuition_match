@@ -78,10 +78,10 @@ class Submitted extends RegistrationEvent {
   final String lastName;
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [email, password, firstName, lastName, phoneNum];
 
   @override
   String toString() {
-    return 'Submitted { email: $email, password: $password }';
+    return 'Submitted(email: $email, password: $password, phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
   }
 }

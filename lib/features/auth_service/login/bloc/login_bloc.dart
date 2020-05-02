@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:bloc/bloc.dart';
@@ -16,12 +16,16 @@ import 'package:flutter/material.dart';
 part 'login_event.dart';
 part 'login_state.dart';
 
+const int DEBOUNCE_TIME = 300;
+
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     @required this.signInWithEmail,
     @required this.signInWithGoogle,
     @required this.validator,
-  });
+  })  : assert(signInWithEmail != null),
+        assert(signInWithGoogle != null),
+        assert(validator != null);
 
   final SignInWithEmail signInWithEmail;
   final SignInWithGoogle signInWithGoogle;
@@ -31,20 +35,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginState get initialState => LoginFormState.initial();
 
   @override
-  Stream<LoginState> transformEvents(
-    Stream<LoginEvent> events,
-    Stream<LoginState> Function(LoginEvent) next,
-  ) {
+  Stream<Transition<LoginEvent, LoginState>> transformEvents(
+      Stream<LoginEvent> events, transitionFn) {
     final nonDebounceStream = events.where((event) {
       return event is! EmailChanged && event is! PasswordChanged;
     });
     final debounceStream = events.where((event) {
       return event is EmailChanged || event is PasswordChanged;
-    }).debounceTime(Duration(milliseconds: 300));
+    }).debounceTime(Duration(milliseconds: DEBOUNCE_TIME));
     return super.transformEvents(
-      nonDebounceStream.mergeWith([debounceStream]),
-      next,
-    );
+        nonDebounceStream.mergeWith([debounceStream]), transitionFn);
   }
 
   @override
@@ -66,47 +66,38 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Stream<LoginState> _mapEmailChangedToState(String email) async* {
-    final bool isValidEmail = validator.emailSubmitValidator.isValid(email);
     final bool notEmpty = validator.nonEmptyStringValidator.isValid(email);
-    if (isValidEmail && notEmpty) {
-      yield state.copyWith(
-        passwordError: state.passwordError,
-        isLoginFailure: false,
+    if (notEmpty) {
+      yield state.update(
+        isEmailError: false,
       );
     } else {
-      yield state.copyWith(
-        emailError: Strings.invalidEmailErrorText,
-        passwordError: state.passwordError,
-        isLoginFailure: false,
+      yield state.update(
+        isEmailError: true,
       );
     }
   }
 
   Stream<LoginState> _mapPasswordChangedToState(String password) async* {
     final bool isValidPassword =
-        validator.passwordSignInSubmitValidator.isValid(password);
+        validator.nonEmptyStringValidator.isValid(password);
     if (isValidPassword) {
       yield state.copyWith(
-        emailError: state.emailError,
-        isLoginFailure: false,
+        isPasswordError: false,
       );
     } else {
       yield state.copyWith(
-        emailError: state.emailError,
-        passwordError: Strings.invalidPasswordEmpty,
-        isLoginFailure: false,
+        isPasswordError: true,
       );
     }
   }
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     yield LoginFormState.submitting();
-
     final Either<Failure, User> result = await signInWithGoogle(NoParams());
     yield* result.fold(
       (Failure failure) async* {
-        final AuthenticationFailure fail = failure;
-        yield LoginFormState.failure(fail.message);
+        yield LoginFormState.failure(_mapFailureToMessage(failure));
       },
       (User user) async* {
         yield LoginFormState.success();
@@ -119,7 +110,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     yield LoginFormState.submitting();
 
     final Either<Failure, User> result = await signInWithEmail(
-      EmailSignInParams(
+      SignInWithEmailParams(
         email: email,
         password: password,
       ),
@@ -127,12 +118,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     yield* result.fold(
       (Failure failure) async* {
-        final AuthenticationFailure fail = failure;
-        yield LoginFormState.failure(fail.message);
+        yield LoginFormState.failure(_mapFailureToMessage(failure));
       },
       (User user) async* {
         yield LoginFormState.success();
       },
     );
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    if (failure is AuthenticationFailure) {
+      return failure.message;
+    } else if (failure is NetworkFailure) {
+      return Strings.networkFailureErrorMsg;
+    } else {
+      return Strings.unknownFailureErrorMsg;
+    }
   }
 }

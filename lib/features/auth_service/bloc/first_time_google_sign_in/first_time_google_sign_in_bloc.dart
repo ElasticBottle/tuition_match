@@ -32,11 +32,8 @@ class FirstTimeGoogleSignInBloc
       FirstTimeGoogleSignInState.empty();
 
   @override
-  Stream<FirstTimeGoogleSignInState> transformEvents(
-    Stream<FirstTimeGoogleSignInEvent> events,
-    Stream<FirstTimeGoogleSignInState> Function(FirstTimeGoogleSignInEvent)
-        next,
-  ) {
+  Stream<Transition<FirstTimeGoogleSignInEvent, FirstTimeGoogleSignInState>>
+      transformEvents(Stream<FirstTimeGoogleSignInEvent> events, transitionFn) {
     final nonDebounceStream = events.where((event) {
       return event is Submitted;
     });
@@ -45,7 +42,7 @@ class FirstTimeGoogleSignInBloc
     }).debounceTime(Duration(milliseconds: 500));
     return super.transformEvents(
       nonDebounceStream.mergeWith([debounceStream]),
-      next,
+      transitionFn,
     );
   }
 
@@ -74,7 +71,7 @@ class FirstTimeGoogleSignInBloc
     if (isValidPhoneNum) {
       yield state.copyWith();
     } else {
-      yield state.copyWith(phoneNumError: Strings.invalidPhoneNum);
+      yield state.copyWith(phoneNumError: Strings.errorPhoneNumInvalid);
     }
   }
 
@@ -85,7 +82,7 @@ class FirstTimeGoogleSignInBloc
     if (isValidfirstName) {
       yield state.copyWith();
     } else {
-      yield state.copyWith(firstNameError: Strings.invalidFieldCannotBeEmpty);
+      yield state.copyWith(firstNameError: Strings.errorFieldEmpty);
     }
   }
 
@@ -96,7 +93,7 @@ class FirstTimeGoogleSignInBloc
     if (isValidlastName) {
       yield state.copyWith();
     } else {
-      yield state.copyWith(lastNameError: Strings.invalidFieldCannotBeEmpty);
+      yield state.copyWith(lastNameError: Strings.errorFieldEmpty);
     }
   }
 

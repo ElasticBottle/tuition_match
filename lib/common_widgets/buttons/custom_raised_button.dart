@@ -5,8 +5,8 @@ class CustomRaisedButton extends StatelessWidget {
   const CustomRaisedButton({
     Key key,
     @required this.child,
-    @required this.color,
-    @required this.textColor,
+    this.color,
+    this.textColor,
     this.disabledColor = Colors.grey,
     this.height = 50.0,
     this.width = 100.0,
@@ -50,9 +50,9 @@ class CustomRaisedButton extends StatelessWidget {
             Radius.circular(borderRadius),
           ),
         ), // height / 2
-        color: color,
+        color: color ?? Theme.of(context).colorScheme.onBackground,
         disabledColor: disabledColor,
-        textColor: textColor,
+        textColor: textColor ?? Theme.of(context).textTheme.button.color,
         onPressed: onPressed,
       ),
     );

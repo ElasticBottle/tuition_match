@@ -1,8 +1,10 @@
-import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+typedef StringFn = Function(String);
+
+class CustomTextField extends StatefulWidget {
   const CustomTextField({
+    Key key,
     this.onFieldSubmitted,
     this.onSaved,
     this.onChanged,
@@ -12,34 +14,63 @@ class CustomTextField extends StatelessWidget {
     this.helpText,
     this.labelText,
     this.errorText,
-    this.hintFontSize = 12.0,
-    this.helperFontSize = 12.0,
-    this.labelFontSize = 18.0,
+    this.hintTextStyle,
+    this.helperTextStyle,
+    this.labeltextStyle,
     this.textInputAction = TextInputAction.next,
+    this.textInputType = TextInputType.text,
     this.prefixIcon,
+    this.suffixIcon,
     this.maxLines = 1,
-    this.bottomPadding = 30.0,
+    this.paddding = const EdgeInsets.only(bottom: 30.0),
     this.controller,
     this.isObscureText = false,
-  }) : assert(controller == null || initialText == null);
-  final Function(String) onFieldSubmitted;
-  final Function(String) onSaved;
-  final Function(String) validator;
-  final Function(String) onChanged;
+    this.isShowObscuretextToggle = false,
+  })  : assert(controller == null || initialText == null),
+        super(key: key);
+  final StringFn onFieldSubmitted;
+  final StringFn onSaved;
+  final StringFn validator;
+  final StringFn onChanged;
+  final TextEditingController controller;
   final String initialText;
   final String hintText;
   final String helpText;
   final String labelText;
   final String errorText;
-  final double labelFontSize;
-  final double helperFontSize;
-  final double hintFontSize;
+  final TextStyle labeltextStyle;
+  final TextStyle helperTextStyle;
+  final TextStyle hintTextStyle;
   final TextInputAction textInputAction;
+  final TextInputType textInputType;
   final Widget prefixIcon;
+  final Widget suffixIcon;
   final int maxLines;
-  final double bottomPadding;
-  final TextEditingController controller;
+  final EdgeInsets paddding;
   final bool isObscureText;
+  final bool isShowObscuretextToggle;
+
+  @override
+  _CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  Widget _suffixIcon;
+  bool _isObscureText;
+  @override
+  void initState() {
+    super.initState();
+    _suffixIcon = widget.suffixIcon;
+    _isObscureText = widget.isObscureText;
+    if (widget.isShowObscuretextToggle) {
+      _suffixIcon = IconButton(
+        icon: Icon(Icons.remove_red_eye),
+        onPressed: () {
+          _isObscureText = !_isObscureText;
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,41 +83,31 @@ class CustomTextField extends StatelessWidget {
         }
       },
       child: Padding(
-        padding: EdgeInsets.only(bottom: bottomPadding),
+        padding: widget.paddding,
         child: TextFormField(
-          controller: controller,
-          initialValue: initialText,
-          obscureText: isObscureText,
-          textInputAction: textInputAction,
-          onFieldSubmitted: onFieldSubmitted,
-          validator: validator,
-          onChanged: onChanged,
-          onSaved: onSaved,
+          controller: widget.controller,
+          initialValue: widget.initialText,
+          obscureText: _isObscureText,
+          keyboardType: widget.textInputType,
+          textInputAction: widget.textInputAction,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          validator: widget.validator,
+          onChanged: widget.onChanged,
+          onSaved: widget.onSaved,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            labelText: labelText,
-            labelStyle: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-              fontSize: labelFontSize,
-            ),
-            helperText: helpText,
-            helperStyle: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-              fontWeight: FontWeight.normal,
-              fontSize: helperFontSize,
-            ),
-            hintText: hintText,
-            hintStyle: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-              fontWeight: FontWeight.normal,
-              fontSize: hintFontSize,
-            ),
-            errorText: errorText,
-            prefixIcon: prefixIcon,
-            fillColor: Colors.grey[200],
+            labelText: widget.labelText,
+            labelStyle:
+                widget.labeltextStyle ?? Theme.of(context).textTheme.headline5,
+            helperText: widget.helpText,
+            helperStyle:
+                widget.helperTextStyle ?? Theme.of(context).textTheme.bodyText1,
+            hintText: widget.hintText,
+            hintStyle:
+                widget.hintTextStyle ?? Theme.of(context).textTheme.bodyText2,
+            errorText: widget.errorText,
+            prefixIcon: widget.prefixIcon,
+            suffixIcon: _suffixIcon,
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -95,8 +116,8 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(5.0),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide:
-                  BorderSide(color: ColorsAndFonts.primaryColor, width: 1.0),
+              borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary, width: 1.0),
               borderRadius: BorderRadius.circular(5.0),
             ),
             errorBorder: OutlineInputBorder(
@@ -108,7 +129,7 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(5.0),
             ),
           ),
-          maxLines: maxLines,
+          maxLines: widget.maxLines,
         ),
       ),
     );

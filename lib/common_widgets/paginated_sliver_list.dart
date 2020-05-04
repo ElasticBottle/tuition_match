@@ -65,7 +65,7 @@ class EndTile extends StatelessWidget {
       case LoadState.allLoaded:
         child = Center(
           child: Text(
-            Strings.endTileAllItemLoaded,
+            Strings.allItemLoaded,
             style: TextStyle(
               color: ColorsAndFonts.primaryColor,
               fontFamily: ColorsAndFonts.primaryFont,

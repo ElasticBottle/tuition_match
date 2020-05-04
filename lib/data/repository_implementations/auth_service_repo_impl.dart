@@ -40,6 +40,11 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
     );
   }
 
+//  ___ _             _   _
+// / __(_)__ _ _ _   | | | |_ __
+// \__ \ / _` | ' \  | |_| | '_ \
+// |___/_\__, |_||_|  \___/| .__/
+//       |___/             |_|
   @override
   Future<Either<Failure, bool>> createAccountWithEmail({
     String email,
@@ -127,6 +132,12 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
     );
   }
 
+//  ___ _             ___
+// / __(_)__ _ _ _   |_ _|_ _
+// \__ \ / _` | ' \   | || ' \
+// |___/_\__, |_||_| |___|_||_|
+//       |___/
+
   @override
   Future<Either<Failure, User>> signInWithEmailAndPassword(
       String email, String password) async {
@@ -188,6 +199,7 @@ class AuthServiceRepoImpl implements AuthServiceRepo {
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
+        // TODO(ElasticBottle): consider removing try catch block since signout doesn't throw exceptions
         try {
           return Right<Failure, void>(await auth.signOut());
         } catch (e) {

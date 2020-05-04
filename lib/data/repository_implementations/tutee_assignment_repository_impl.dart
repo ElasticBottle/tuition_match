@@ -4,7 +4,6 @@ import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/data/datasources/tutee_assignments/tutee_assignment_local_data_source.dart';
 import 'package:cotor/data/datasources/tutee_assignments/tutee_assignment_remote_data_source.dart';
-import 'package:cotor/data/datasources/user/user_remote_data_source.dart';
 import 'package:cotor/data/models/tutee_assignment_entity.dart';
 import 'package:cotor/data/models/tutee_criteria_params_entity.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
@@ -18,11 +17,9 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
     @required this.remoteDs,
     @required this.localDs,
     @required this.networkInfo,
-    @required this.userDs,
   });
   final TuteeAssignmentRemoteDataSource remoteDs;
   final TuteeAssignmentLocalDataSource localDs;
-  final UserRemoteDataSource userDs;
   final NetworkInfo networkInfo;
   Left<Failure, List<TuteeAssignment>> _failure(Failure fail) {
     return Left<Failure, List<TuteeAssignment>>(fail);

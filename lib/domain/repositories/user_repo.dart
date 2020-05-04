@@ -13,13 +13,11 @@ import 'package:dartz/dartz.dart';
 /// * Allowing user to change things relating to their profile
 /// * Allowing users to hanlde core business functions (accepting and rejecting students // tutors)
 abstract class UserRepo {
-/////////////////////////////////////////////////////////////////////
 //   ___                       _                      _       __
 //  / __|___ _ _  ___ _ _ __ _| |  _  _ ___ ___ _ _  (_)_ _  / _|___
 // | (_ / -_) ' \/ -_) '_/ _` | | | || (_-</ -_) '_| | | ' \|  _/ _ \
 //  \___\___|_||_\___|_| \__,_|_|  \_,_/__/\___|_|   |_|_||_|_| \___/
 //
-/////////////////////////////////////////////////////////////////////
 
   /// Gets [User] as a stream
   ///
@@ -62,22 +60,18 @@ abstract class UserRepo {
     String phoneNum,
   });
 
-//////////////////////////////
 //  ___ _        _
 // / __| |_ __ _| |_ _  _ ___
 // \__ \  _/ _` |  _| || (_-<
 // |___/\__\__,_|\__|\_,_/__/
-//////////////////////////////
 
-/////////////////////////////////////
 //  ___                      _
 // | _ \___ __ _ _  _ ___ __| |_ ___
 // |   / -_) _` | || / -_|_-<  _(_-<
 // |_|_\___\__, |\_,_\___/__/\__/__/
 //            |_|
-/////////////////////////////////////
 
-  /// Adds a assignment to requested tutor while updating user's own request
+  /// Adds a assignment to requested tutor while updating user's own request records
   ///
   /// Returns Either:
   /// * __[true]__ upon successful request
@@ -90,13 +84,11 @@ abstract class UserRepo {
     bool toSave,
   });
 
-////////////////////////////////////////////////////////////////////
 //  _   _                 _          _                         _
 // | | | |___ ___ _ _    /_\   _____(_)__ _ _ _  _ __  ___ _ _| |_
 // | |_| (_-</ -_) '_|  / _ \ (_-<_-< / _` | ' \| '  \/ -_) ' \  _|
 //  \___//__/\___|_|   /_/ \_\/__/__/_\__, |_||_|_|_|_\___|_||_\__|
 //                                    |___/
-////////////////////////////////////////////////////////////////////
 
 // TODO(ElasticBottle): Actually think about the implementation
   Future<Either<Failure, TuteeAssignment>> getCachedTuteeAssignmentToSet();
@@ -126,12 +118,10 @@ abstract class UserRepo {
   /// * __[NetworkFailure]__ when called without internet access on user's device
   Future<Either<Failure, bool>> delAssignment({String uid, String postId});
 
-////////////////////////////////////////////////
 //  _   _               ___          __ _ _
 // | | | |___ ___ _ _  | _ \_ _ ___ / _(_) |___
 // | |_| (_-</ -_) '_| |  _/ '_/ _ \  _| | / -_)
 //  \___//__/\___|_|   |_| |_| \___/_| |_|_\___|
-////////////////////////////////////////////////
 
   /// Cache [TutorProfile] for future retrieval
   Future<Either<Failure, void>> cacheTutorProfileToSet(TutorProfile profile);
@@ -159,7 +149,7 @@ abstract class UserRepo {
   /// * __[NetworkFailure]__ when called without internet access on user's device
   Future<Either<Failure, bool>> updateTutorProfile(TutorProfile profile);
 
-  /// Deletes specified user assignment
+  /// Deletes specified user Profile
   ///
   /// Returns Either:
   /// * __[true]__ upon successful deletion

@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
@@ -144,7 +145,7 @@ void main() {
         expect: <AssignmentsState>[
           Loading(),
           InitialAssignmentsLoadError(
-            message: NETWORK_FAILURE_MSG,
+            message: Strings.networkFailureErrorMsg,
             isCacheError: false,
           )
         ],
@@ -166,7 +167,7 @@ void main() {
         expect: <AssignmentsState>[
           Loading(),
           InitialAssignmentsLoadError(
-            message: SERVER_FAILURE_MSG,
+            message: Strings.serverFailureErrorMsg,
             isCacheError: false,
           )
         ],
@@ -318,7 +319,7 @@ void main() {
         expect: <AssignmentsState>[
           Loading(),
           InitialAssignmentsLoadError(
-            message: CACHE_FAILURE_MSG,
+            message: Strings.cacheFailureErrorMsg,
             isCacheError: true,
           )
         ],

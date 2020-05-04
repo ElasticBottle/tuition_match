@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_cached_tutor_list.dart';
@@ -145,7 +146,7 @@ void main() {
         expect: <TutorProfileListState>[
           Loading(),
           InitialTutorProfilesLoadError(
-            message: NETWORK_FAILURE_MSG,
+            message: Strings.networkFailureErrorMsg,
             isCacheError: false,
           )
         ],
@@ -168,7 +169,7 @@ void main() {
         expect: <TutorProfileListState>[
           Loading(),
           InitialTutorProfilesLoadError(
-            message: SERVER_FAILURE_MSG,
+            message: Strings.serverFailureErrorMsg,
             isCacheError: false,
           )
         ],
@@ -327,7 +328,7 @@ void main() {
         expect: <TutorProfileListState>[
           Loading(),
           InitialTutorProfilesLoadError(
-            message: CACHE_FAILURE_MSG,
+            message: Strings.cacheFailureErrorMsg,
             isCacheError: true,
           )
         ],

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_cached_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_next_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_tutor_list.dart';
@@ -12,15 +13,6 @@ import 'package:flutter/material.dart';
 
 part 'tutor_profile_list_event.dart';
 part 'tutor_profile_list_state.dart';
-
-const String SERVER_FAILURE_MSG =
-    'Sorry, Our Server is having problems processing the request (||^_^), retrieving last fetched list';
-const String NETWORK_FAILURE_MSG =
-    'No internet access, please check your connection, retrieving last fetched list';
-const String CACHE_FAILURE_MSG =
-    'No last fetched list, please try again when you\'re online!';
-const String UNKNOWN_FAILURE_MSG =
-    'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
 
 class TutorProfileListBloc
     extends Bloc<TutorProfileListEvent, TutorProfileListState> {
@@ -142,16 +134,16 @@ class TutorProfileListBloc
   String _mapFailureToFailureMessage(Failure failure) {
     switch (failure.runtimeType) {
       case NetworkFailure:
-        return NETWORK_FAILURE_MSG;
+        return Strings.networkFailureErrorMsg;
         break;
       case ServerFailure:
-        return SERVER_FAILURE_MSG;
+        return Strings.serverFailureErrorMsg;
         break;
       case CacheFailure:
-        return CACHE_FAILURE_MSG;
+        return Strings.cacheFailureErrorMsg;
         break;
       default:
-        return UNKNOWN_FAILURE_MSG;
+        return Strings.unknownFailureErrorMsg;
         break;
     }
   }

@@ -5,17 +5,29 @@ import 'package:cotor/data/models/tutee_assignment_entity.dart';
 import 'package:cotor/domain/entities/tutee_criteria_params.dart';
 
 abstract class TuteeAssignmentRemoteDataSource {
-  ///
+  /// Retrieves a copy of the latest [List<TuteeAssignmentEntity>] based on [params]
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<TuteeAssignmentEntity>> getAssignmentByCriterion(
       TuteeCriteriaParams params);
+
+  /// Retrieves next [List<TuteeAssignmentEntity>] based on [params] as left of by [getAssignmentByCriterion(params)]
+  ///
+  /// [getAssignmentByCriterion(params)] should be called at least once before this
+  ///
+  /// Throws a [ServerException] for all error codes.
   Future<List<TuteeAssignmentEntity>> getNextCriterionList();
 
-  ///
+  /// Retrieves a copy of the latest [List<TuteeAssignmentEntity>]
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<TuteeAssignmentEntity>> getAssignmentList();
+
+  /// Retrieves the next assignment list as left off by [getAssigmentList()]
+  ///
+  /// [getAssignmentList()] should be called at least once before this
+  ///
+  /// Throws a [ServerException] for all error codes.
   Future<List<TuteeAssignmentEntity>> getNextAssignmentList();
 }
 

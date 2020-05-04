@@ -11,20 +11,33 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class UserRemoteDataSource {
+//   ___                       _                      _       __
+//  / __|___ _ _  ___ _ _ __ _| |  _  _ ___ ___ _ _  (_)_ _  / _|___
+// | (_ / -_) ' \/ -_) '_/ _` | | | || (_-</ -_) '_| | | ' \|  _/ _ \
+//  \___\___|_||_\___|_| \__,_|_|  \_,_/__/\___|_|   |_|_||_|_| \___/
+//
+
   /// Returns a [Stream<UserEntity>] listening to the user public info
-  /// Trigger everytime the logged in user updates the profile
+  ///
+  /// Trigger everytime the logged in user updates the profile.
   /// This includes changes to user's [TutorProfile] and [TuteeAssignment]
   /// This does no include changes to user's [RequestedTutors], [AppliedAssignments], and [Likes]
   Stream<UserEntity> userProfileStream(String uid);
 
-  /// Returns [Future<UserEntity>].
-  /// Throws [NoUserException] if document does not exist for that particulat [uid]
-  /// Throw [ServerException] for all other errors.
+  /// Retreives [UserEntity] of the user corresponding to [uid]
+  ///
+  /// Throws:
+  /// * [NoUserException] if document does not exist for that particulat [uid]
+  /// * [ServerException] for all other errors.
   Future<UserEntity> getUserInfo(String uid);
 
+  /// Gets the private info of user [uid]
+  ///
   /// Throw [ServerException] for all errors.
   Future<PrivateUserInfo> getUserPrivateInfo(String uid);
 
+  /// Creates a new database entry for user [uid]
+  ///
   /// Throws [ServerException] for all errors
   Future<void> createNewUserDocument({
     String uid,
@@ -34,14 +47,56 @@ abstract class UserRemoteDataSource {
     String phoneNum,
   });
 
-  Future<bool> delAssignment({String postId, String uid});
+  //  _   _                 _          _                         _
+// | | | |___ ___ _ _    /_\   _____(_)__ _ _ _  _ __  ___ _ _| |_
+// | |_| (_-</ -_) '_|  / _ \ (_-<_-< / _` | ' \| '  \/ -_) ' \  _|
+//  \___//__/\___|_|   /_/ \_\/__/__/_\__, |_||_|_|_|_\___|_||_\__|
+//                                    |___/
+
+  /// Creates new user Assignment
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
   Future<bool> setTuteeAssignment({TuteeAssignmentEntity tuteeParams});
+
+  /// Updates user assignment
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
   Future<bool> updateTuteeAssignment({TuteeAssignmentEntity tuteeParams});
 
-  Future<bool> delProfile({String uid});
+  /// Deletes specified user assignment
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
+  Future<bool> delAssignment({String postId, String uid});
+
+//  _   _               ___          __ _ _
+// | | | |___ ___ _ _  | _ \_ _ ___ / _(_) |___
+// | |_| (_-</ -_) '_| |  _/ '_/ _ \  _| | / -_)
+//  \___//__/\___|_|   |_| |_| \___/_| |_|_\___|
+
+  /// Creates new user Profile
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
   Future<bool> setTutorProfile({TutorProfileEntity tutorProfile});
+
+  /// Updates user Profile
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
   Future<bool> updateTutorProfile({TutorProfileEntity tutorProfile});
 
+  /// Deletes specified user Profile
+  ///
+  /// Throws __[ServerException]__ when there are errors processing the request
+  Future<bool> delProfile({String uid});
+
+//  ___                      _
+// | _ \___ __ _ _  _ ___ __| |_ ___
+// |   / -_) _` | || / -_|_-<  _(_-<
+// |_|_\___\__, |\_,_\___/__/\__/__/
+//            |_|
+
+  /// Adds a assignment to requested tutor while updating user's own request records
+  ///
+  /// Throws__[ServerException]__ when there are errors processing the request
   Future<bool> requestTutor({
     String requestUid,
     TuteeAssignmentEntity assignment,
@@ -55,6 +110,11 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   final Firestore store;
   final FirebaseAuth auth;
 
+//   ___                       _                      _       __
+//  / __|___ _ _  ___ _ _ __ _| |  _  _ ___ ___ _ _  (_)_ _  / _|___
+// | (_ / -_) ' \/ -_) '_/ _` | | | || (_-</ -_) '_| | | ' \|  _/ _ \
+//  \___\___|_||_\___|_| \__,_|_|  \_,_/__/\___|_|   |_|_||_|_| \___/
+//
   @override
   Stream<UserEntity> userProfileStream(String uid) {
     return store.document(FirestorePath.users(uid)).snapshots().map(
@@ -143,40 +203,11 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     }
   }
 
-  @override
-  Future<bool> delAssignment({String postId, String uid}) async {
-    final DocumentReference userRef = store.document(FirestorePath.users(uid));
-    try {
-      await store.runTransaction((Transaction tx) async {
-        final DocumentSnapshot userSnapshot = await tx.get(userRef);
-        final Map<String, Map<String, dynamic>> userAssignments =
-            userSnapshot.data[USER_ASSIGNMENTS];
-        userAssignments.remove(postId);
-        tx.update(
-            userRef, <String, dynamic>{USER_ASSIGNMENTS: userAssignments});
-        tx.delete(store.document(FirestorePath.assignment(postId)));
-      });
-      return true;
-    } catch (e) {
-      print(e.toString());
-      throw ServerException();
-    }
-  }
-
-  @override
-  Future<bool> delProfile({String uid}) async {
-    try {
-      await store.runTransaction((Transaction tx) async {
-        tx.update(store.document(FirestorePath.users(uid)),
-            <String, dynamic>{TUTOR_PROFILE: '', IS_TUTOR: false});
-        tx.delete(store.document(FirestorePath.tutorProfile(uid)));
-      });
-      return true;
-    } catch (e) {
-      print(e.toString());
-      throw ServerException();
-    }
-  }
+//  _   _                 _          _                         _
+// | | | |___ ___ _ _    /_\   _____(_)__ _ _ _  _ __  ___ _ _| |_
+// | |_| (_-</ -_) '_|  / _ \ (_-<_-< / _` | ' \| '  \/ -_) ' \  _|
+//  \___//__/\___|_|   /_/ \_\/__/__/_\__, |_||_|_|_|_\___|_||_\__|
+//                                    |___/
 
   @override
   Future<bool> setTuteeAssignment({TuteeAssignmentEntity tuteeParams}) async {
@@ -259,6 +290,31 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
   }
 
   @override
+  Future<bool> delAssignment({String postId, String uid}) async {
+    final DocumentReference userRef = store.document(FirestorePath.users(uid));
+    try {
+      await store.runTransaction((Transaction tx) async {
+        final DocumentSnapshot userSnapshot = await tx.get(userRef);
+        final Map<String, Map<String, dynamic>> userAssignments =
+            userSnapshot.data[USER_ASSIGNMENTS];
+        userAssignments.remove(postId);
+        tx.update(
+            userRef, <String, dynamic>{USER_ASSIGNMENTS: userAssignments});
+        tx.delete(store.document(FirestorePath.assignment(postId)));
+      });
+      return true;
+    } catch (e) {
+      print(e.toString());
+      throw ServerException();
+    }
+  }
+
+//  _   _               ___          __ _ _
+// | | | |___ ___ _ _  | _ \_ _ ___ / _(_) |___
+// | |_| (_-</ -_) '_| |  _/ '_/ _ \  _| | / -_)
+//  \___//__/\___|_|   |_| |_| \___/_| |_|_\___|
+
+  @override
   Future<bool> setTutorProfile({TutorProfileEntity tutorProfile}) async {
     final Map<String, dynamic> toAdd = tutorProfile.toNewDocumentSnapshot();
     toAdd.addAll(
@@ -322,6 +378,26 @@ class FirestoreUserDataSource implements UserRemoteDataSource {
     }
   }
 
+  @override
+  Future<bool> delProfile({String uid}) async {
+    try {
+      await store.runTransaction((Transaction tx) async {
+        tx.update(store.document(FirestorePath.users(uid)),
+            <String, dynamic>{TUTOR_PROFILE: '', IS_TUTOR: false});
+        tx.delete(store.document(FirestorePath.tutorProfile(uid)));
+      });
+      return true;
+    } catch (e) {
+      print(e.toString());
+      throw ServerException();
+    }
+  }
+
+//  ___                      _
+// | _ \___ __ _ _  _ ___ __| |_ ___
+// |   / -_) _` | || / -_|_-<  _(_-<
+// |_|_\___\__, |\_,_\___/__/\__/__/
+//            |_|
   @override
   Future<bool> requestTutor({
     String requestUid,

@@ -5,17 +5,29 @@ import 'package:cotor/data/models/tutor_criteria_params_entity.dart';
 import 'package:cotor/data/models/tutor_profile_entity.dart';
 
 abstract class TutorProfileRemoteDataSource {
-  ///
+  /// Retrieves a copy of the latest [List<TutorProfileEntity>] based on [params]
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<TutorProfileEntity>> getProfileByCriterion(
       TutorCriteriaParamsEntity params);
+
+  /// Retrieves next [List<TutorProfileEntity>] based on [params] as left of by [getProfileByCriterion(params)]
+  ///
+  /// [getProfileByCriterion(params)] should be called at least once before this
+  ///
+  /// Throws a [ServerException] for all error codes.
   Future<List<TutorProfileEntity>> getNextCriterionList();
 
-  ///
+  /// Retrieves a copy of the latest [List<TutorProfileEntity>]
   ///
   /// Throws a [ServerException] for all error codes.
   Future<List<TutorProfileEntity>> getProfileList();
+
+  /// Retrieves the next assignment list as left off by [getProfileList()]
+  ///
+  /// [getProfileList()] should be called at least once before this
+  ///
+  /// Throws a [ServerException] for all error codes.
   Future<List<TutorProfileEntity>> getNextProfileList();
 }
 

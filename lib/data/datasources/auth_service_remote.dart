@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/core/error/exception.dart';
-import 'package:cotor/data/datasources/firestore_path.dart';
 import 'package:cotor/data/models/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -14,24 +13,73 @@ abstract class AuthServiceRemote {
 
   /// Used to get the currently logged in user if any
   ///
-  /// Returns [Future<UserEntity>] of the current logged in user.
+  /// Returns [UserEntity] for currently logged-in user.
   ///
   /// Throws [NoUserException] if there is no current user
   ///
-  /// User [getUserInfo] if you want to retrieved user info.
+  /// Use [getUserInfo] if you want to retrieved logged-in user info.
   Future<UserEntity> getCurrentUser();
 
-  Future<UserEntity> signInWithEmailAndPassword(String email, String password);
+//  ___ _             _   _
+// / __(_)__ _ _ _   | | | |_ __
+// \__ \ / _` | ' \  | |_| | '_ \
+// |___/_\__, |_||_|  \___/| .__/
+//       |___/             |_|
+
+  /// Creates a user account
+  ///
+  /// All fields should be provided
+  ///
+  /// Returns [true] on successful account creation
+  ///
+  /// Throws [AuthenticationException] for any errors
   Future<bool> createAccountWithEmail({
     String email,
     String password,
   });
-  Future<bool> isUsernameValid(String username);
+
+  /// Sends an email to user for verification
+  ///
+  /// Returns [true] if user successfully sent email verification
+  ///
+  /// Throws [AuthenticationException] if there is no user logged in
+  /// or any error while sending the verification email
   Future<bool> sendEmailVerification();
+
+  /// Checks if currently logged in user's email is verified
+  ///
+  /// Returns [bool] indicating verifivation state of user's email
+  ///
+  /// Throws [AuthenticationException] if there is no user logged in
   Future<bool> isLoggedInUserEmailVerified();
+
+  /// Sends a reset password to [email]
+  ///
+  /// Returns [true] if successfully sent the user's reset email
+  ///
+  /// Throws [AuthenticationException] if there was an error sending the email
   Future<bool> sendPasswordResetEmail(String email);
+
+//  ___ _             ___
+// / __(_)__ _ _ _   |_ _|_ _
+// \__ \ / _` | ' \   | || ' \
+// |___/_\__, |_||_| |___|_||_|
+//       |___/
+
+  /// Signs user in based on their email and password
+  ///
+  /// Throws [AuthenticationException] if there was error signing in
+  Future<UserEntity> signInWithEmailAndPassword(String email, String password);
+
+  /// Signs user in with their google acocunt
+  ///
+  /// Throws [PlatformException] on error signing in with Google
   Future<UserEntity> signInWithGoogle();
   // Future<User> signInWithFacebook();
+
+  /// Signs the currently logged in user out
+  ///
+  /// Does nothing us no user is currently signed in
   Future<void> signOut();
 }
 
@@ -112,48 +160,24 @@ class FirebaseAuthService implements AuthServiceRemote {
     return errorMessage;
   }
 
-  @override
-  Future<UserEntity> signInWithEmailAndPassword(
-      String email, String password) async {
-    String errorMessage = '';
-    UserEntity user;
-    try {
-      final AuthResult result = await auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      user = UserEntity.fromFirebaseUser(result.user);
-      // user = result.user;
-      // name = user.displayName;
-      // email = user.email;
-      // userId = user.uid;
-    } catch (error) {
-      print(error.toString());
-      errorMessage = _getErrorMessage(error.code);
-    }
-    if (errorMessage != null) {
-      throw AuthenticationException(errorMessage);
-    }
-
-    return user;
-  }
+//  ___ _             _   _
+// / __(_)__ _ _ _   | | | |_ __
+// \__ \ / _` | ' \  | |_| | '_ \
+// |___/_\__, |_||_|  \___/| .__/
+//       |___/             |_|
 
   @override
   Future<bool> createAccountWithEmail({
     String email,
     String password,
-    String username,
   }) async {
-    String errorMessage = '';
     try {
       await auth.createUserWithEmailAndPassword(
           email: email, password: password);
-
       await sendEmailVerification();
     } catch (error) {
       print(error.toString());
-      errorMessage = _getErrorMessage(error.code);
-    }
-    if (errorMessage != '') {
-      throw AuthenticationException(errorMessage);
+      AuthenticationException(_getErrorMessage(error.code));
     }
     return true;
   }
@@ -161,7 +185,6 @@ class FirebaseAuthService implements AuthServiceRemote {
   @override
   Future<bool> sendEmailVerification() async {
     final FirebaseUser user = await auth.currentUser();
-    String errorMessage = '';
     if (user == null) {
       throw AuthenticationException(USER_NOT_LOGGED_IN);
     }
@@ -170,12 +193,8 @@ class FirebaseAuthService implements AuthServiceRemote {
       return true;
     } catch (e) {
       print(e.toString());
-      errorMessage = _getErrorMessage(e.code);
+      throw AuthenticationException(_getErrorMessage(e.code));
     }
-    if (errorMessage.isNotEmpty) {
-      throw AuthenticationException(errorMessage);
-    }
-    return false;
   }
 
   @override
@@ -189,18 +208,32 @@ class FirebaseAuthService implements AuthServiceRemote {
 
   @override
   Future<bool> sendPasswordResetEmail(String email) async {
-    String errorMessage = '';
     try {
       await auth.sendPasswordResetEmail(email: email);
       return true;
     } catch (e) {
       print(e.toString());
-      errorMessage = _getErrorMessage(e.code);
+      throw AuthenticationException(_getErrorMessage(e.code));
     }
-    if (errorMessage.isNotEmpty) {
-      throw AuthenticationException(errorMessage);
+  }
+
+//  ___ _             ___
+// / __(_)__ _ _ _   |_ _|_ _
+// \__ \ / _` | ' \   | || ' \
+// |___/_\__, |_||_| |___|_||_|
+//       |___/
+
+  @override
+  Future<UserEntity> signInWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      final AuthResult result = await auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return UserEntity.fromFirebaseUser(result.user);
+    } catch (error) {
+      print(error.toString());
+      throw AuthenticationException(_getErrorMessage(error.code));
     }
-    return false;
   }
 
   @override
@@ -229,7 +262,7 @@ class FirebaseAuthService implements AuthServiceRemote {
   // @override
   // Future<User> signInWithFacebook() async {
   //   final FacebookLogin facebookLogin = FacebookLogin();
-  //   // https://github.com/roughike/flutter_facebook_login/issues/210
+  // https://github.com/roughike/flutter_facebook_login/issues/210
   //   facebookLogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
   //   final FacebookLoginResult result =
   //       await facebookLogin.logIn(<String>['public_profile']);
@@ -252,12 +285,5 @@ class FirebaseAuthService implements AuthServiceRemote {
     // final FacebookLogin facebookLogin = FacebookLogin();
     // await facebookLogin.logOut();
     return auth.signOut();
-  }
-
-  @override
-  Future<bool> isUsernameValid(String username) async {
-    final DocumentSnapshot result =
-        await store.document(FirestorePath.users(username)).get();
-    return result != null;
   }
 }

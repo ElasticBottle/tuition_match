@@ -4,12 +4,11 @@ class Strings {
   static const String cancel = 'Cancel';
   static const String dismiss = 'Dismiss';
 
-  ///////////////////////////////////
-  /// ___
-  ///| __|_ _ _ _ ___ _ _ ___
-  ///| _|| '_| '_/ _ \ '_(_-<
-  ///|___|_| |_| \___/_| /__/
-  ///////////////////////////////////
+  // ___
+  //| __|_ _ _ _ ___ _ _ ___
+  //| _|| '_| '_/ _ \ '_(_-<
+  //|___|_| |_| \___/_| /__/
+
   /// Used when displaying side effects to inform Users of what went wrong.
   ///
   /// Naming Convention:
@@ -17,35 +16,34 @@ class Strings {
   /// - ends with 'ErrorMsg'
 
   // Error messages
+  static const String noUserFailureErrorMsg =
+      'There is currently no user to create profile for.';
   static const String serverFailureErrorMsg =
       'Sorry, Our Server is having problems processing the request (||^_^), retrieving last fetched list';
   static const String networkFailureErrorMsg =
       'No internet access, please check your connection, retrieving last fetched list';
   static const String cacheFailureErrorMsg =
       'No last fetched list, please try again when you\'re online!';
-  static const String unknownFailureErrorMsg =
-      'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
   static const String cannotSaveNameAndPhoneNumber =
       'An error occured trying to process the application';
+  static const String unknownFailureErrorMsg =
+      'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
 
-  //////////////////////////////////////////////
-  ///            _   _         _         __  __
-  ///  __ _ _  _| |_| |_    __| |_ _  _ / _|/ _|
-  /// / _` | || |  _| ' \  (_-<  _| || |  _|  _|
-  /// \__,_|\_,_|\__|_||_| /__/\__|\_,_|_| |_|
-  /////////////////////////////////////......../
+  //            _   _         _         __  __
+  //  __ _ _  _| |_| |_    __| |_ _  _ / _|/ _|
+  // / _` | || |  _| ' \  (_-<  _| || |  _|  _|
+  // \__,_|\_,_|\__|_||_| /__/\__|\_,_|_| |_|
   // Logout
   static const String logout = 'Logout';
   static const String logoutAreYouSure =
       'Are you sure that you want to logout?';
   static const String logoutFailed = 'Logout failed';
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///  __                                 _   _   _        _                    _                __ _     _    _
-  /// / _|___ _ _ _ __  ___  __ _ _ _  __| | | |_| |_  ___(_)_ _  __ ____ _ _ _(_)___ _  _ ___  / _(_)___| |__| |___
-  ///|  _/ _ \ '_| '  \(_-< / _` | ' \/ _` | |  _| ' \/ -_) | '_| \ V / _` | '_| / _ \ || (_-< |  _| / -_) / _` (_-<
-  ///|_| \___/_| |_|_|_/__/ \__,_|_||_\__,_|  \__|_||_\___|_|_|    \_/\__,_|_| |_\___/\_,_/__/ |_| |_\___|_\__,_/__/
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //  __                                 _   _   _        _                    _                __ _     _    _
+  // / _|___ _ _ _ __  ___  __ _ _ _  __| | | |_| |_  ___(_)_ _  __ ____ _ _ _(_)___ _  _ ___  / _(_)___| |__| |___
+  //|  _/ _ \ '_| '  \(_-< / _` | ' \/ _` | |  _| ' \/ -_) | '_| \ V / _` | '_| / _ \ || (_-< |  _| / -_) / _` (_-<
+  //|_| \___/_| |_|_|_/__/ \__,_|_||_\__,_|  \__|_||_\___|_|_|    \_/\__,_|_| |_\___/\_,_/__/ |_| |_\___|_\__,_/__/
+
   /// Used for the labelling, hinting, informing, and describing of text fields
   /// Naming Convention:
   /// ERROR = Prefaced with 'error'
@@ -81,8 +79,8 @@ class Strings {
   static const String errorEmailInvalid = 'Email is invalid';
   static const String passwordHint = 'Password (8+ characters)';
   static const String errorPasswordTooShort = 'Password is too short';
-  static const String firstnameLabel = 'First Name';
-  static const String lastnameLabel = 'Last Name';
+  static const String firstNameLabel = 'First Name';
+  static const String lastNameLabel = 'Last Name';
   static const String registerButtonText = 'Register';
 
   // First time google sign in page
@@ -128,16 +126,12 @@ class Strings {
       'Tutor\'s Preferred Location';
   static const String requestTutorButtonText = 'Request Tutor';
 
-  ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-  ///.____    .__          __    __________
-  ///|    |   |__| _______/  |_  \______   \_____     ____   ____   ______
-  ///|    |   |  |/  ___/\   __\  |     ___/\__  \   / ___\_/ __ \ /  ___/
-  ///|    |___|  |\___ \  |  |    |    |     / __ \_/ /_/  >  ___/ \___ \
-  ///|_______ \__/____  > |__|    |____|    (____  /\___  / \___  >____  >
-  ///        \/       \/                         \//_____/      \/     \/
-  ////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  //.____    .__          __    __________
+  //|    |   |__| _______/  |_  \______   \_____     ____   ____   ______
+  //|    |   |  |/  ___/\   __\  |     ___/\__  \   / ___\_/ __ \ /  ___/
+  //|    |___|  |\___ \  |  |    |    |     / __ \_/ /_/  >  ___/ \___ \
+  //|_______ \__/____  > |__|    |____|    (____  /\___  / \___  >____  >
+  //        \/       \/                         \//_____/      \/     \/
 
   // AssignmentList page
   static const String assignmentTitle = 'Assignments';

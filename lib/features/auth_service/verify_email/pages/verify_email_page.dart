@@ -1,6 +1,6 @@
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
+import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/verify_email/bloc/verify_email_bloc.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,7 @@ class VerifyEmailPageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: BlocListener<VerifyEmailBloc, VerifyEmailState>(
+      child: BlocConsumer<VerifyEmailBloc, VerifyEmailState>(
         listener: (context, state) {
           if (state.error != null) {
             Scaffold.of(context)
@@ -55,40 +55,37 @@ class VerifyEmailPageBody extends StatelessWidget {
               );
           }
         },
-        child: BlocBuilder<VerifyEmailBloc, VerifyEmailState>(
-          bloc: BlocProvider.of<VerifyEmailBloc>(context),
-          builder: (BuildContext context, VerifyEmailState state) {
-            return Column(
-              children: <Widget>[
-                Icon(
-                  Icons.perm_identity,
-                  size: 50,
-                ),
-                Text(
-                  '''Please check the email that you used to register for a confirmation email!
+        builder: (BuildContext context, VerifyEmailState state) {
+          return Column(
+            children: <Widget>[
+              Icon(
+                Icons.perm_identity,
+                size: 50,
+              ),
+              Text(
+                '''Please check the email that you used to register for a confirmation email!
                   Once verified, give it five seconds for everything to sync and pull to refresh!''',
+              ),
+              CustomRaisedButton(
+                child: Text(
+                  'Resend Email Verification',
                 ),
-                CustomRaisedButton(
-                  child: Text(
-                    'Resend Email Verification',
-                  ),
-                  loading: state.isSending,
-                  onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
-                      .add(SendVerificationEmail()),
-                ),
-                FlatButton(
-                  onPressed: () =>
-                      BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
-                  child: state.isSigningOut
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Text('Log out'),
-                ),
-              ],
-            );
-          },
-        ),
+                loading: state.isSending,
+                onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
+                    .add(SendVerificationEmail()),
+              ),
+              FlatButton(
+                onPressed: () =>
+                    BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
+                child: state.isSigningOut
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Text('Log out'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

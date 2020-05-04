@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/core/usecases/usecase.dart';
 import 'package:cotor/domain/usecases/auth_service/send_email_verification.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_out.dart';
+import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 

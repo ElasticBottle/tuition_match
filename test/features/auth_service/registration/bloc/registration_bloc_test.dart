@@ -3,6 +3,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
+import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
 import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,6 +11,8 @@ import 'package:mockito/mockito.dart';
 
 class MockCreateAccountWithEmail extends Mock
     implements CreateAccountWithEmail {}
+
+class MockCreateUserDocument extends Mock implements CreateUserDocument {}
 
 class MockEmailAndPasswordValidators extends Mock
     implements EmailAndPasswordValidators {}
@@ -29,6 +32,7 @@ void main() {
   group('Registration Bloc', () {
     RegistrationBloc registrationBloc;
     CreateAccountWithEmail createAccountWithEmail;
+    CreateUserDocument createUserDocument;
     EmailAndPasswordValidators validators;
     NonEmptyStringValidator nonEmptyStringValidator;
     EmailRegistrationRegexValidator emailRegistrationRegexValidator;
@@ -37,12 +41,14 @@ void main() {
 
     setUp(() {
       createAccountWithEmail = MockCreateAccountWithEmail();
+      createUserDocument = MockCreateUserDocument();
       validators = MockEmailAndPasswordValidators();
       nonEmptyStringValidator = MockNonEmptyStringValidator();
       emailRegistrationRegexValidator = MockEmailRegistrationRegexValidator();
       minLengthStringValidator = MockMinLengthStringValidator();
       phoneNumValidator = MockPhoneNumValidator();
       registrationBloc = RegistrationBloc(
+        createUserDocument: createUserDocument,
         createAccountWithEmail: createAccountWithEmail,
         validator: validators,
       );
@@ -57,6 +63,17 @@ void main() {
         expect(
           () => RegistrationBloc(
             createAccountWithEmail: null,
+            createUserDocument: createUserDocument,
+            validator: validators,
+          ),
+          throwsA(isAssertionError),
+        );
+      });
+      test('Throws AssertionError if createUserDocument is null', () {
+        expect(
+          () => RegistrationBloc(
+            createAccountWithEmail: createAccountWithEmail,
+            createUserDocument: null,
             validator: validators,
           ),
           throwsA(isAssertionError),
@@ -66,6 +83,7 @@ void main() {
         expect(
           () => RegistrationBloc(
             createAccountWithEmail: createAccountWithEmail,
+            createUserDocument: createUserDocument,
             validator: null,
           ),
           throwsA(isAssertionError),
@@ -373,7 +391,8 @@ void main() {
 
     group('Submitted (register With Email and Password)', () {
       void _verifyInteractions() {
-        verify(createAccountWithEmail(argThat(isA<CreateAccountParams>())))
+        verify(createAccountWithEmail(
+                argThat(isA<CreateAccountWithEmailParams>())))
             .called(1);
         verifyNoMoreInteractions(createAccountWithEmail);
       }
@@ -471,6 +490,113 @@ void main() {
           bloc.add(Submitted(
             email: 'test',
             password: 'password',
+            firstName: 'john',
+            lastName: 'mary',
+            phoneNum: '98765432',
+          ));
+        },
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.submitting(),
+          RegistrationStateImpl.failure(Strings.networkFailureErrorMsg),
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+    });
+
+    group('External Sign Up Submission', () {
+      void _verifyInteractions() {
+        verify(createUserDocument(argThat(isA<CreateUserDocumentParams>())))
+            .called(1);
+        verifyNoMoreInteractions(createUserDocument);
+      }
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.success()] when successfully created user documents',
+        build: () async {
+          when(createUserDocument(any))
+              .thenAnswer((realInvocation) async => Right(true));
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(ExternalSignUpSubmission(
+            firstName: 'john',
+            lastName: 'mary',
+            phoneNum: '98765432',
+          ));
+        },
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.submitting(),
+          RegistrationStateImpl.success(),
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: [AuthErrorMsg])] when error registering user',
+        build: () async {
+          when(createUserDocument(any)).thenAnswer(
+            (realInvocation) async => Left(NoUserFailure()),
+          );
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(ExternalSignUpSubmission(
+            firstName: 'john',
+            lastName: 'mary',
+            phoneNum: '98765432',
+          ));
+        },
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.submitting(),
+          RegistrationStateImpl.failure(Strings.noUserFailureErrorMsg)
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: [Strings.serverFailureErrorMsg])] when error creating user profile',
+        build: () async {
+          when(createUserDocument(any)).thenAnswer(
+            (realInvocation) async => Left(ServerFailure()),
+          );
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(ExternalSignUpSubmission(
+            firstName: 'john',
+            lastName: 'mary',
+            phoneNum: '98765432',
+          ));
+        },
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.submitting(),
+          RegistrationStateImpl.failure(Strings.serverFailureErrorMsg)
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: Stirngs.networkFailureErrorMsg)] when no internet connection',
+        build: () async {
+          when(createUserDocument(any)).thenAnswer(
+            (realInvocation) async => Left(NetworkFailure()),
+          );
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(ExternalSignUpSubmission(
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',

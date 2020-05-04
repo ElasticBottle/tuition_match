@@ -120,7 +120,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         ),
                         CustomTextField(
                           controller: _firstNameController,
-                          labelText: Strings.firstnameLabel,
+                          labelText: Strings.firstNameLabel,
                           textInputAction: TextInputAction.next,
                           onFieldSubmitted: _handleSubmitted,
                           errorText: state.isFirstNameError
@@ -129,7 +129,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         ),
                         CustomTextField(
                           controller: _lastNameController,
-                          labelText: Strings.lastnameLabel,
+                          labelText: Strings.lastNameLabel,
                           textInputAction: TextInputAction.send,
                           onFieldSubmitted: isRegisterButtonEnabled(state)
                               ? (value) => _onFormSubmitted

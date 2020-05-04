@@ -5,6 +5,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
+import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +20,13 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   RegistrationBloc({
     @required this.validator,
     @required this.createAccountWithEmail,
+    @required this.createUserDocument,
   })  : assert(validator != null),
-        assert(createAccountWithEmail != null);
+        assert(createAccountWithEmail != null),
+        assert(createUserDocument != null);
   final EmailAndPasswordValidators validator;
   final CreateAccountWithEmail createAccountWithEmail;
+  final CreateUserDocument createUserDocument;
 
   @override
   RegistrationState get initialState => RegistrationStateImpl.empty();
@@ -60,6 +64,12 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       yield* _mapFormSubmittedToState(
         email: event.email,
         password: event.password,
+        firstName: event.firstName,
+        lastName: event.lastName,
+        phoneNum: event.phoneNum,
+      );
+    } else if (event is ExternalSignUpSubmission) {
+      yield* _mapExternalSignUpSubmissionToState(
         firstName: event.firstName,
         lastName: event.lastName,
         phoneNum: event.phoneNum,
@@ -147,9 +157,28 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
   }) async* {
     yield RegistrationStateImpl.submitting();
     final Either<Failure, bool> result =
-        await createAccountWithEmail(CreateAccountParams(
+        await createAccountWithEmail(CreateAccountWithEmailParams(
       email: email,
       password: password,
+      firstName: firstName,
+      lastName: lastName,
+      phoneNum: phoneNum,
+    ));
+    yield* result.fold(
+      (Failure failure) async* {
+        yield RegistrationStateImpl.failure(_mapFailureToMsg(failure));
+      },
+      (r) async* {
+        yield RegistrationStateImpl.success();
+      },
+    );
+  }
+
+  Stream<RegistrationState> _mapExternalSignUpSubmissionToState(
+      {String firstName, String lastName, String phoneNum}) async* {
+    yield RegistrationStateImpl.submitting();
+    final Either<Failure, bool> result =
+        await createUserDocument(CreateUserDocumentParams(
       firstName: firstName,
       lastName: lastName,
       phoneNum: phoneNum,
@@ -171,6 +200,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       return Strings.serverFailureErrorMsg;
     } else if (failure is NetworkFailure) {
       return Strings.networkFailureErrorMsg;
+    } else if (failure is NoUserFailure) {
+      return Strings.noUserFailureErrorMsg;
     } else {
       return Strings.unknownFailureErrorMsg;
     }

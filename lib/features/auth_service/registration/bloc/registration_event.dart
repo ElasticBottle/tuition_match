@@ -85,3 +85,21 @@ class Submitted extends RegistrationEvent {
     return 'Submitted(email: $email, password: $password, phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
   }
 }
+
+class ExternalSignUpSubmission extends RegistrationEvent {
+  const ExternalSignUpSubmission({
+    @required this.firstName,
+    @required this.lastName,
+    @required this.phoneNum,
+  });
+  final String phoneNum;
+  final String firstName;
+  final String lastName;
+
+  @override
+  List<Object> get props => [firstName, lastName, phoneNum];
+
+  @override
+  String toString() =>
+      'ExternalSignInSubmission(phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
+}

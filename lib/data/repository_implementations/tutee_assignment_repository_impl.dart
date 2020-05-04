@@ -2,9 +2,9 @@ import 'package:cotor/core/error/exception.dart';
 import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/data/datasources/tutee_assignment_local_data_source.dart';
-import 'package:cotor/data/datasources/tutee_assignment_remote_data_source.dart';
-import 'package:cotor/data/datasources/user_remote_data_source.dart';
+import 'package:cotor/data/datasources/tutee_assignments/tutee_assignment_local_data_source.dart';
+import 'package:cotor/data/datasources/tutee_assignments/tutee_assignment_remote_data_source.dart';
+import 'package:cotor/data/datasources/user/user_remote_data_source.dart';
 import 'package:cotor/data/models/tutee_assignment_entity.dart';
 import 'package:cotor/data/models/tutee_criteria_params_entity.dart';
 import 'package:cotor/domain/entities/tutee_assignment.dart';
@@ -46,7 +46,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
             localDs.cacheAssignmentList(assignmentList);
             return _success(
                 assignmentList.map((e) => e.toDomainEntity()).toList());
-          } on ServerException {
+          } catch (e) {
             return _failure(ServerFailure());
           }
         });
@@ -66,7 +66,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
             }
             return _success(
                 assignmentList?.map((e) => e.toDomainEntity())?.toList());
-          } on ServerException {
+          } catch (e) {
             return _failure(ServerFailure());
           }
         });
@@ -79,7 +79,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
       final List<TuteeAssignmentEntity> result =
           await localDs.getLastAssignmentList();
       return _success(result.map((e) => e.toDomainEntity()).toList());
-    } on CacheException {
+    } catch (e) {
       return _failure(CacheFailure());
     }
   }
@@ -93,7 +93,7 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
         final List<TuteeAssignmentEntity> result =
             await remoteDs.getAssignmentByCriterion(params);
         return _success(result.map((e) => e.toDomainEntity()).toList());
-      } on ServerException {
+      } catch (e) {
         return _cacheCriterionAndReturnFailure(ServerFailure(), params);
       }
     } else {
@@ -110,99 +110,34 @@ class TuteeAssignmentRepoImpl implements TuteeAssignmentRepo {
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getNextCriterionList() async {
     return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final List<TuteeAssignmentEntity> result =
-                await remoteDs.getNextCriterionList();
-            return _success(result.map((e) => e.toDomainEntity()).toList());
-          } on ServerException {
-            return _failure(ServerFailure());
-          }
-        });
+      networkInfo: networkInfo,
+      ifOffline: NetworkFailure(),
+      ifOnline: () async {
+        try {
+          final List<TuteeAssignmentEntity> result =
+              await remoteDs.getNextCriterionList();
+          return _success(result.map((e) => e.toDomainEntity()).toList());
+        } catch (e) {
+          return _failure(ServerFailure());
+        }
+      },
+    );
   }
 
   @override
   Future<Either<Failure, List<TuteeAssignment>>> getByCachedCriterion() async {
     return IsNetworkOnline<Failure, List<TuteeAssignment>>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final TuteeCriteriaParamsEntity params =
-                await localDs.getCachedParams();
-            return await getByCriterion(params.toDomainEntity());
-          } on CacheException {
-            return _failure(CacheFailure());
-          }
-        });
-  }
-
-  // Deleting Assingments
-  @override
-  Future<Either<Failure, bool>> delAssignment(
-      {String postId, String uid}) async {
-    return IsNetworkOnline<Failure, bool>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final bool result =
-                await userDs.delAssignment(postId: postId, uid: uid);
-            return Right<Failure, bool>(result);
-          } on ServerException {
-            return Left<Failure, bool>(ServerFailure());
-          }
-        });
-  }
-
-  // Update and creation of assignments
-  @override
-  Future<Either<Failure, TuteeAssignment>>
-      getCachedTuteeAssignmentToSet() async {
-    try {
-      final TuteeAssignmentEntity result =
-          await localDs.getCachedTuteeAssignmentToSet();
-      return Right<Failure, TuteeAssignment>(result.toDomainEntity());
-    } on CacheException {
-      return Left<Failure, TuteeAssignment>(CacheFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> setTuteeAssignment(
-      TuteeAssignment assignment) async {
-    return IsNetworkOnline<Failure, bool>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final bool result = await userDs.setTuteeAssignment(
-                tuteeParams:
-                    TuteeAssignmentEntity.fromDomainEntity(assignment));
-            return Right<Failure, bool>(result);
-          } on ServerException {
-            return Left<Failure, bool>(ServerFailure());
-          }
-        });
-  }
-
-  @override
-  Future<Either<Failure, bool>> updateTuteeAssignment(
-      TuteeAssignment assignment) async {
-    return IsNetworkOnline<Failure, bool>().call(
-        networkInfo: networkInfo,
-        ifOffline: NetworkFailure(),
-        ifOnline: () async {
-          try {
-            final bool result = await userDs.updateTuteeAssignment(
-                tuteeParams:
-                    TuteeAssignmentEntity.fromDomainEntity(assignment));
-            return Right<Failure, bool>(result);
-          } on ServerException {
-            return Left<Failure, bool>(ServerFailure());
-          }
-        });
+      networkInfo: networkInfo,
+      ifOffline: NetworkFailure(),
+      ifOnline: () async {
+        try {
+          final TuteeCriteriaParamsEntity params =
+              await localDs.getCachedParams();
+          return await getByCriterion(params.toDomainEntity());
+        } on CacheException {
+          return _failure(CacheFailure());
+        }
+      },
+    );
   }
 }

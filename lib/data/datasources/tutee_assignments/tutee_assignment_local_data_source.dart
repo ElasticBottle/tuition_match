@@ -7,15 +7,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_ASSIGNMENT_LIST = 'CACHED_ASSIGNMENT_LIST';
 const CACHED_TUTEE_CRITERION = 'CACHED_TUTEE_CRITERION';
-const CACHED_ASSIGNMENT = 'CACHED_ASSIGNMENT';
 
 abstract class TuteeAssignmentLocalDataSource {
-  /// Gets the cached [TuteeAssignmnetModel] which was gotten the last time
+  /// Gets the cached [List<TuteeAssignmnetEntity>] last retrieved when
   /// the user had an internet connection.
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<List<TuteeAssignmentEntity>> getLastAssignmentList();
 
+  /// Cache the [List<TuteeAssignmnetEntity>] for possible retrieval later
   Future<void> cacheAssignmentList(
     List<TuteeAssignmentEntity> assignmentsToCache, {
     bool isNew = true,
@@ -26,10 +26,9 @@ abstract class TuteeAssignmentLocalDataSource {
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<TuteeCriteriaParamsEntity> getCachedParams();
-  Future<void> cacheCriterion(TuteeCriteriaParamsEntity params);
 
-  Future<TuteeAssignmentEntity> getCachedTuteeAssignmentToSet();
-  Future<void> cacheTuteeAssignmentToSet(TuteeAssignmentEntity tuteeAssignment);
+  /// Cache the [TuteeCriteriaParamsEntity] for possible retrieval later
+  Future<void> cacheCriterion(TuteeCriteriaParamsEntity params);
 }
 
 class TuteeAssignmentLocalDataSourceImpl
@@ -105,30 +104,5 @@ class TuteeAssignmentLocalDataSourceImpl
       print('tutee_assignment local data source error getLastAssingemntList');
       throw CacheException();
     }
-  }
-
-  @override
-  Future<TuteeAssignmentEntity> getCachedTuteeAssignmentToSet() {
-    final String jsonString =
-        sharedPreferences.getString(CACHED_ASSIGNMENT_LIST);
-    if (jsonString != null) {
-      final Map<String, dynamic> cachedAssignmentString =
-          json.decode(jsonString);
-      return Future.value(
-          TuteeAssignmentEntity.fromJson(cachedAssignmentString));
-    } else {
-      print(
-          'tutee_assignment local data source error getCachedTuteeAssignmentToSet');
-      throw CacheException();
-    }
-  }
-
-  @override
-  Future<void> cacheTuteeAssignmentToSet(
-      TuteeAssignmentEntity tuteeAssignment) {
-    return sharedPreferences.setString(
-      CACHED_ASSIGNMENT,
-      json.encode(tuteeAssignment.toJson()),
-    );
   }
 }

@@ -7,6 +7,20 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthServiceRemote {
+  /// Returns a [Stream<UserEntity>] listening to the Auth state
+  ///
+  /// Triggers everytime a user logs in or out
+  Stream<UserEntity> get userStream;
+
+  /// Used to get the currently logged in user if any
+  ///
+  /// Returns [Future<UserEntity>] of the current logged in user.
+  ///
+  /// Throws [NoUserException] if there is no current user
+  ///
+  /// User [getUserInfo] if you want to retrieved user info.
+  Future<UserEntity> getCurrentUser();
+
   Future<UserEntity> signInWithEmailAndPassword(String email, String password);
   Future<bool> createAccountWithEmail({
     String email,
@@ -28,6 +42,23 @@ class FirebaseAuthService implements AuthServiceRemote {
   final FirebaseAuth auth;
   final Firestore store;
   final GoogleSignIn googleSignIn;
+
+  @override
+  Stream<UserEntity> get userStream {
+    return auth.onAuthStateChanged
+        .map((event) => UserEntity.fromFirebaseUser(event));
+  }
+
+  @override
+  Future<UserEntity> getCurrentUser() async {
+    final FirebaseUser user = await auth.currentUser();
+    if (user == null) {
+      throw NoUserException();
+    }
+    user.reload();
+    final FirebaseUser newUser = await auth.currentUser();
+    return UserEntity.fromFirebaseUser(newUser);
+  }
 
   String _getErrorMessage(String code) {
     String errorMessage = '';

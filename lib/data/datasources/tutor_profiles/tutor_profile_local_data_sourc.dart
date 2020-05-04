@@ -6,32 +6,32 @@ import 'package:cotor/data/models/tutor_profile_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_PROFILE_LIST = 'CACHED_PROFILE_LIST';
-const CACHED_TUTOR_CRITERION = 'CACHED__TUTOR_CRITERION';
-const CACHED_PROFILE = 'CACHED_PROFILE';
+const CACHED_TUTOR_CRITERION = 'CACHED_TUTOR_CRITERION';
 
 abstract class TutorProfileLocalDataSource {
-  /// Gets the cached [TuteeAssignmnetModel] which was gotten the last time
-  /// the user had an internet connection.
+  /// Returns the cached [List<TutorProfileEntity>] that the user last retrieved
+  /// with an internet connection
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<List<TutorProfileEntity>> getLastProfileList();
 
+  /// Cache the [List<TutorProfileEntity>] to be retrieved later
   Future<void> cacheProfileList(
     List<TutorProfileEntity> profilesToCache, {
+
+    /// Wether caching to an existing List
+    /// or caching to a new list
     bool isNew = true,
   });
 
+  /// Cache the [TutorCriteriaParamsEntity] for possible retrieval later
   Future<void> cacheCriterion(TutorCriteriaParamsEntity params);
 
-  /// Gets the cached [CriteriaParams] which was used when the user attempted
+  /// Gets the cached [TutorCriteriaParamsEntity] which was used when the user attempted
   /// to search for assignments matching a particular set of criterion
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<TutorCriteriaParamsEntity> getCachedParams();
-
-  Future<TutorProfileEntity> getCachedTutorProfileToSet();
-  Future<void> cacheTutorProfileToSet(TutorProfileEntity params);
-  Future<bool> clearCacheTutorProfile();
 }
 
 class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
@@ -103,31 +103,5 @@ class TutorProfileLocalDataSourceImpl implements TutorProfileLocalDataSource {
       print('tutor profile lcoal data source getLastProfileList');
       throw CacheException();
     }
-  }
-
-  @override
-  Future<TutorProfileEntity> getCachedTutorProfileToSet() {
-    final String jsonString = sharedPreferences.getString(CACHED_PROFILE);
-    if (jsonString != null) {
-      final Map<String, dynamic> cachedAssignmentString =
-          Map<String, dynamic>.from(json.decode(jsonString));
-      return Future.value(TutorProfileEntity.fromJson(cachedAssignmentString));
-    } else {
-      print('tutor profile local data source getcachedTutorProfileToSet');
-      throw CacheException();
-    }
-  }
-
-  @override
-  Future<void> cacheTutorProfileToSet(TutorProfileEntity profile) {
-    return sharedPreferences.setString(
-      CACHED_PROFILE,
-      json.encode(profile.toJson()),
-    );
-  }
-
-  @override
-  Future<bool> clearCacheTutorProfile() async {
-    return await sharedPreferences.remove(CACHED_PROFILE_LIST);
   }
 }

@@ -1,26 +1,52 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class CreateAccountWithEmail extends UseCase<bool, CreateAccountParams> {
-  CreateAccountWithEmail({this.repo});
+/// Creates a Firebase auth account for the user.
+/// Creates a user document in firebase for the user.
+///
+/// Return Failure type is one of:
+///
+/// [NetworkFailure]: when there is no internet connection on user's current device
+///
+/// [AuthenticationFailure]: when there is error creating firebase Auth account for user
+///
+/// [NoUserFailure]: when the created firebaseAuth user is somehow not logged in after account creation
+///
+/// [serverFailure]: when there is error creating the documents
+class CreateAccountWithEmail
+    extends UseCase<bool, CreateAccountWithEmailParams> {
+  CreateAccountWithEmail({
+    this.repo,
+    this.createUserDocument,
+  });
   AuthServiceRepo repo;
+  CreateUserDocument createUserDocument;
   @override
-  Future<Either<Failure, bool>> call(CreateAccountParams params) async {
-    final Either<Failure, bool> success = await repo.createAccountWithEmail(
+  Future<Either<Failure, bool>> call(
+      CreateAccountWithEmailParams params) async {
+    Either<Failure, bool> success = await repo.createAccountWithEmail(
       email: params.email,
       password: params.password,
-      firstName: params.firstName,
-      lastName: params.lastName,
     );
+    success.fold(
+      (l) => null,
+      (r) async => success = await createUserDocument(CreateUserDocumentParams(
+        firstName: params.firstName,
+        lastName: params.lastName,
+        phoneNum: params.phoneNum,
+      )),
+    );
+
     return success;
   }
 }
 
-class CreateAccountParams extends Equatable {
-  const CreateAccountParams({
+class CreateAccountWithEmailParams extends Equatable {
+  const CreateAccountWithEmailParams({
     this.firstName,
     this.lastName,
     this.email,

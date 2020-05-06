@@ -1,8 +1,9 @@
+import 'package:cotor/domain/entities/user/user.dart';
+import 'package:cotor/domain/repositories/auth_service_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/user.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
 
@@ -18,20 +19,24 @@ import 'package:cotor/domain/usecases/usecase.dart';
 ///
 /// [serverFailure]: when there is error creating the documents
 class CreateUserDocument extends UseCase<bool, CreateUserDocumentParams> {
-  CreateUserDocument({this.repo});
-  UserRepo repo;
+  CreateUserDocument({
+    this.userRepo,
+    this.authServiceRepo,
+  });
+  final AuthServiceRepo authServiceRepo;
+  final UserRepo userRepo;
 
   @override
   Future<Either<Failure, bool>> call(CreateUserDocumentParams params) async {
     Either<Failure, bool> success;
     final Either<Failure, User> currentUser =
-        await repo.getCurrentLoggedInUser();
+        await authServiceRepo.getCurrentLoggedInUser();
     currentUser.fold(
       (l) => success = Left<Failure, bool>(l),
       (r) async {
-        success = await repo.createNewUserDocument(
-          uid: r.uid,
-          photoUrl: r.photoUrl,
+        success = await userRepo.createNewUserDocument(
+          uid: r.identity.uid,
+          photoUrl: r.identity.photoUrl,
           phoneNum: params.phoneNum,
           firstname: params.firstName,
           lastname: params.lastName,

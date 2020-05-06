@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/entities/user/user.dart';
 import 'package:dartz/dartz.dart';
 
 /// A repository for handling everything related to verifying and authenticating user

@@ -1,7 +1,7 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
+import 'package:cotor/domain/entities/user/user.dart';
 import 'package:dartz/dartz.dart';
 
 /// A repository for all the things that users can do within the app

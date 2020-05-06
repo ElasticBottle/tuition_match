@@ -1,7 +1,7 @@
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/repositories/auth_service_repo.dart';
+import 'package:cotor/domain/usecases/user/user_info/create_user_document.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 

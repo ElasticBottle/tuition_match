@@ -1,6 +1,6 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
 import 'package:cotor/domain/entities/tutor_criteria_params.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
 import 'package:dartz/dartz.dart';
 
 /// A repository for retrieving and displaying data relating to allowing users to find Profiles

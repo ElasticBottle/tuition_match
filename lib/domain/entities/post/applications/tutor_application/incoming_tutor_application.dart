@@ -1,11 +1,9 @@
 import 'package:cotor/domain/entities/post/applications/base_application/application_dates.dart';
 import 'package:cotor/domain/entities/post/applications/base_application/application_status.dart';
-import 'package:cotor/domain/entities/post/tutor_profile/details/details_tutor.dart';
-import 'package:cotor/domain/entities/post/tutor_profile/identity/indentity_tutors.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
 
 abstract class IncomingTutorApplication {
-  IdentityTutor get identity;
-  DetailsTutor get details;
+  TutorProfile get tutorInfo;
   ApplicationDates get dates;
   ApplicationStatus get status;
 }

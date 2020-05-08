@@ -1,12 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 class ClassFormat extends Equatable {
-  const ClassFormat._(this._format);
+  const ClassFormat(String format) : _format = format;
   final String _format;
 
-  static const ClassFormat ONLINE = ClassFormat._('Online');
-  static const ClassFormat PRIVATE = ClassFormat._('Private');
-  static const ClassFormat GROUP = ClassFormat._('Group');
+  String get type => _format;
+
+  @override
+  String toString() => _format;
+
+  @override
+  List<Object> get props => [_format];
+
+  static const ClassFormat ONLINE = ClassFormat('Online');
+  static const ClassFormat PRIVATE = ClassFormat('Private');
+  static const ClassFormat GROUP = ClassFormat('Group');
 
   static List<ClassFormat> get formats => const [
         ONLINE,
@@ -17,7 +25,7 @@ class ClassFormat extends Equatable {
   static List<int> toIndices(List<String> value) {
     return value
         .map(
-          (e) => formats.indexOf(ClassFormat._(e)),
+          (e) => formats.indexOf(ClassFormat(e)),
         )
         .toList();
   }
@@ -25,10 +33,4 @@ class ClassFormat extends Equatable {
   static List<ClassFormat> fromIndices(List<int> classFormatSelection) {
     return classFormatSelection.map((e) => formats[e]).toList();
   }
-
-  @override
-  String toString() => _format;
-
-  @override
-  List<Object> get props => [_format];
 }

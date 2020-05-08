@@ -2,6 +2,4 @@ import 'package:cotor/domain/entities/post/base_post/base_details/date_details.d
 
 abstract class DetailsBase {
   DateDetails get dateDetails;
-  // Level get levels;
-  // SubjectArea get subjects;
 }

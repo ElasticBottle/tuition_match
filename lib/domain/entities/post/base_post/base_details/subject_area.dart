@@ -1,8 +1,19 @@
 import 'package:cotor/domain/entities/post/base_post/base_details/level.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class SubjectArea extends Equatable {
-  const SubjectArea();
+class SubjectArea extends Equatable {
+  const SubjectArea(String subject) : _subject = subject;
+
+  final String _subject;
+
+  String get subject => _subject;
+
+  @override
+  List<Object> get props => [_subject];
+
+  @override
+  String toString() => _subject;
+
   static List<SubjectArea> get pri {
     final List<SubjectArea> toReturn = [];
     toReturn.addAll(Science.pri);
@@ -106,9 +117,7 @@ abstract class SubjectArea extends Equatable {
 }
 
 class Science extends SubjectArea {
-  const Science._(this._science);
-
-  final String _science;
+  const Science._(String science) : super(science);
 
   static const Science SCIENCE = Science._('Science');
 
@@ -156,18 +165,11 @@ class Science extends SubjectArea {
       ];
   static List<Science> get sec => const [CHEM, BIO, PHY];
   static List<Science> get pri => const [SCIENCE];
-
-  @override
-  String toString() => _science;
-
-  @override
-  List<Object> get props => [_science];
 }
 
 class Math extends SubjectArea {
-  const Math._(this._math);
+  const Math._(String math) : super(math);
 
-  final String _math;
   static const Math MATH = Math._('Math');
   static const Math EMATH = Math._('EMath');
   static const Math AMATH = Math._('AMath');
@@ -182,16 +184,11 @@ class Math extends SubjectArea {
   static List<Math> get sec => const [AMATH, EMATH];
   static List<Math> get jc => const [H1MATH, H2MATH, H3MATH, FMATH];
   static List<Math> get ib => const [SLMATH, HLMATH];
-
-  @override
-  String toString() => _math;
-  @override
-  List<Object> get props => [_math];
 }
 
 class Humans extends SubjectArea {
-  const Humans._(this._humans);
-  final String _humans;
+  const Humans._(String humans) : super(humans);
+
   static const Humans HIST = Humans._('Hist');
   static const Humans GEOG = Humans._('Geog');
   static const Humans LIT = Humans._('Lit');
@@ -239,18 +236,11 @@ class Humans extends SubjectArea {
         HLLIT,
         SLLIT,
       ];
-
-  @override
-  String toString() => _humans;
-
-  @override
-  List<Object> get props => [_humans];
 }
 
 class Music extends SubjectArea {
-  const Music._(this._music);
+  const Music._(String music) : super(music);
 
-  final String _music;
   static const Music PIANO = Music._('Piano');
   static const Music VIOLIN = Music._('Violin');
   static const Music GUITAR = Music._('Guitar');
@@ -262,31 +252,21 @@ class Music extends SubjectArea {
         GUITAR,
         DRUMS,
       ];
-
-  @override
-  String toString() => _music;
-  @override
-  List<Object> get props => [_music];
 }
 
 class Sports extends SubjectArea {
-  const Sports._(this._sport);
-  final String _sport;
+  const Sports._(String sport) : super(sport);
+
   static const Sports BADMINTON = Sports._('Badminton');
 
   static List<Sports> get all => const [
         BADMINTON,
       ];
-
-  @override
-  String toString() => _sport;
-  @override
-  List<Object> get props => [_sport];
 }
 
 class Languages extends SubjectArea {
-  const Languages._(this._lang);
-  final String _lang;
+  const Languages._(String lang) : super(lang);
+
   static const Languages ENG = Languages._('English');
   static const Languages CHI = Languages._('Chinese');
   static const Languages MALAY = Languages._('Malay');
@@ -308,9 +288,4 @@ class Languages extends SubjectArea {
         SPANISH,
         FRENCH,
       ];
-
-  @override
-  String toString() => _lang;
-  @override
-  List<Object> get props => [_lang];
 }

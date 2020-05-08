@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Location extends Equatable {
+class Location extends Equatable {
   const Location({String location}) : _location = location;
 
   final String _location;
+
+  String get loc => _location;
+
   @override
   List<Object> get props => [_location];
 

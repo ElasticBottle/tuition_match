@@ -1,8 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-abstract class SellingPoints extends Equatable {
+class SellingPoints extends Equatable {
   const SellingPoints({String sellingPt}) : _sellingPt = sellingPt;
+
   final String _sellingPt;
+
+  String get pointers => _sellingPt;
 
   @override
   List<Object> get props => [_sellingPt];

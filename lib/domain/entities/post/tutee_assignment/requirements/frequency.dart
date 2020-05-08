@@ -1,8 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Frequency extends Equatable {
+class Frequency extends Equatable {
   const Frequency({String freq}) : _freq = freq;
+
   final String _freq;
+
+  String get freq => _freq;
 
   @override
   List<Object> get props => [_freq];

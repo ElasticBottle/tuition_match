@@ -1,10 +1,10 @@
-import 'package:equatable/equatable.dart';
-
-abstract class Timing extends Equatable {
+class Timing {
   const Timing({String timing}) : _timing = timing;
 
   final String _timing;
-  @override
+
+  String get time => _timing;
+
   List<Object> get props => [_timing];
 
   @override

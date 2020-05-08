@@ -7,5 +7,5 @@ abstract class RequirementsBase {
   Location get location;
   Timing get timing;
   Price get price;
-  ClassFormat get classFormat;
+  List<ClassFormat> get classFormat;
 }

@@ -1,11 +1,21 @@
 import 'package:equatable/equatable.dart';
 
 class RateTypes extends Equatable {
-  const RateTypes._(this._type);
+  const RateTypes(String type) : _type = type;
+
   final String _type;
-  static const RateTypes HOURLY = RateTypes._('Hourly');
-  static const RateTypes WEEKLY = RateTypes._('Weekly');
-  static const RateTypes MONTHLY = RateTypes._('Monthly');
+
+  String get type => _type;
+
+  @override
+  String toString() => _type;
+
+  @override
+  List<Object> get props => [_type];
+
+  static const RateTypes HOURLY = RateTypes('Hourly');
+  static const RateTypes WEEKLY = RateTypes('Weekly');
+  static const RateTypes MONTHLY = RateTypes('Monthly');
 
   static List<RateTypes> get types => const [
         HOURLY,
@@ -14,13 +24,10 @@ class RateTypes extends Equatable {
       ];
 
   static int toIndex(String rateType) {
-    return types.indexOf(RateTypes._(rateType));
+    return types.indexOf(RateTypes(rateType));
   }
 
   static RateTypes fromIndex(int rateTypeSelction) {
     return types[rateTypeSelction];
   }
-
-  @override
-  List<Object> get props => [_type];
 }

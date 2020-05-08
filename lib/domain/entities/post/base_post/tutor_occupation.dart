@@ -1,11 +1,21 @@
 import 'package:equatable/equatable.dart';
 
 class TutorOccupation extends Equatable {
-  const TutorOccupation._(this._occupation);
+  const TutorOccupation(String occupation) : _occupation = occupation;
+
   final String _occupation;
-  static const TutorOccupation PART_TIME = TutorOccupation._('Part Time');
-  static const TutorOccupation FULL_TIME = TutorOccupation._('Full Time');
-  static const TutorOccupation MOE = TutorOccupation._('MOE');
+
+  String get occupation => _occupation;
+
+  @override
+  List<Object> get props => [_occupation];
+
+  @override
+  String toString() => _occupation;
+
+  static const TutorOccupation PART_TIME = TutorOccupation('Part Time');
+  static const TutorOccupation FULL_TIME = TutorOccupation('Full Time');
+  static const TutorOccupation MOE = TutorOccupation('MOE');
 
   static List<TutorOccupation> get occupations => const [
         PART_TIME,
@@ -14,7 +24,7 @@ class TutorOccupation extends Equatable {
       ];
 
   static int toIndex(String value) {
-    return TutorOccupation.occupations.indexOf(TutorOccupation._(value));
+    return TutorOccupation.occupations.indexOf(TutorOccupation(value));
   }
 
   static TutorOccupation fromIndex(int tutorOccupation) {
@@ -24,7 +34,7 @@ class TutorOccupation extends Equatable {
   static List<int> toIndices(List<String> value) {
     return value
         .map(
-          (e) => occupations.indexOf(TutorOccupation._(e)),
+          (e) => occupations.indexOf(TutorOccupation(e)),
         )
         .toList();
   }
@@ -32,7 +42,4 @@ class TutorOccupation extends Equatable {
   static List<TutorOccupation> fromIndices(List<int> value) {
     return value.map((e) => occupations[e]).toList();
   }
-
-  @override
-  List<Object> get props => [_occupation];
 }

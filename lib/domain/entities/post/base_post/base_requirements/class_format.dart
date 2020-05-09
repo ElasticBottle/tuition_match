@@ -6,6 +6,10 @@ class ClassFormat extends Equatable {
 
   String get type => _format;
 
+  int toIndex() {
+    return formats.indexOf(this);
+  }
+
   @override
   String toString() => _format;
 

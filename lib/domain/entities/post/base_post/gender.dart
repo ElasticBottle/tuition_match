@@ -7,6 +7,10 @@ class Gender extends Equatable {
 
   String get gender => _gender;
 
+  int toIndex() {
+    return genders.indexOf(this);
+  }
+
   @override
   String toString() => _gender;
 
@@ -30,9 +34,9 @@ class Gender extends Equatable {
     return value.map((e) => genders[e]).toList();
   }
 
-  static int toIndex(String value) {
-    return genders.indexOf(Gender(value));
-  }
+  // static int toIndex(String value) {
+  //   return genders.indexOf(Gender(value));
+  // }
 
   static Gender fromIndex(int genderSelection) {
     return genders[genderSelection];

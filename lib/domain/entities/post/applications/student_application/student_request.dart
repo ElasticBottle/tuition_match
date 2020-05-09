@@ -3,8 +3,8 @@ import 'package:cotor/domain/entities/post/applications/base_application/applica
 import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
 import 'package:equatable/equatable.dart';
 
-class IncomingStudentApplication extends Equatable {
-  const IncomingStudentApplication({
+class StudentRequest extends Equatable {
+  const StudentRequest({
     TuteeAssignment tuteeInfo,
     ApplicationStatus applicationStatus,
     ApplicationDates applicationDates,

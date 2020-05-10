@@ -10,11 +10,6 @@ import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
-import 'package:cotor/domain/entities/class_format.dart';
-import 'package:cotor/domain/entities/gender.dart';
-import 'package:cotor/domain/entities/level.dart';
-import 'package:cotor/domain/entities/rate_types.dart';
-import 'package:cotor/domain/entities/tutor_occupation.dart';
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +135,7 @@ class EditTutorPageState extends State<EditTutorPage> {
                               color: ColorsAndFonts.primaryColor,
                               textColor: ColorsAndFonts.backgroundColor,
                               child: Text(
-                                Strings.addAssignment,
+                                Strings.addAssignmentButtonText,
                                 style: TextStyle(
                                   fontFamily: ColorsAndFonts.primaryFont,
                                   fontWeight: FontWeight.normal,
@@ -173,7 +168,7 @@ class EditTutorPageState extends State<EditTutorPage> {
           activeBgColor: ColorsAndFonts.primaryColor,
           activeTextColor: ColorsAndFonts.backgroundColor,
           inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: Gender.genders,
+          labels: state.genderLabels,
           icons: [FontAwesomeIcons.mars, FontAwesomeIcons.venus],
           onPressed: (int index) {
             editProfileBloc.add(
@@ -190,7 +185,7 @@ class EditTutorPageState extends State<EditTutorPage> {
           activeBgColor: ColorsAndFonts.primaryColor,
           activeTextColor: ColorsAndFonts.backgroundColor,
           inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: ClassFormat.formats,
+          labels: state.classFormatLabels,
           onPressed: (int index) {
             editProfileBloc.add(HandleToggleButtonClick(
                 fieldName: CLASS_FORMATS, index: index));
@@ -200,7 +195,7 @@ class EditTutorPageState extends State<EditTutorPage> {
         ),
         MultiFilterSelect(
           placeholder: 'Levels',
-          allItems: Level.all
+          allItems: state.levelsLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
                   value: e,
@@ -220,7 +215,7 @@ class EditTutorPageState extends State<EditTutorPage> {
         SizedBox(height: 15.0),
         MultiFilterSelect(
           placeholder: state.subjectHint,
-          allItems: state.subjectsToDisplay
+          allItems: state.subjectsLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
                   value: e,
@@ -239,7 +234,7 @@ class EditTutorPageState extends State<EditTutorPage> {
         SizedBox(height: 15.0),
         MultiFilterSelect(
           placeholder: 'Tutor Occupation',
-          allItems: TutorOccupation.occupations
+          allItems: state.tutorOccupationLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
                   value: e,
@@ -265,7 +260,7 @@ class EditTutorPageState extends State<EditTutorPage> {
           activeBgColor: ColorsAndFonts.primaryColor,
           activeTextColor: ColorsAndFonts.backgroundColor,
           inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: RateTypes.types,
+          labels: state.rateTypeLabels,
           onPressed: (int index) {
             editProfileBloc.add(
                 HandleToggleButtonClick(fieldName: RATE_TYPE, index: index));
@@ -286,7 +281,7 @@ class EditTutorPageState extends State<EditTutorPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              Strings.rate,
+              Strings.rateLabel,
               style: TextStyle(
                 color: ColorsAndFonts.primaryColor,
                 fontFamily: ColorsAndFonts.primaryFont,
@@ -299,15 +294,16 @@ class EditTutorPageState extends State<EditTutorPage> {
                 Expanded(
                   flex: 9,
                   child: CustomTextField(
-                    labelText: Strings.rateMin,
+                    labelText: Strings.rateMinLabel,
                     initialText: state.initialRateMin,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
-                    errorText: state.isRateMinValid ? null : Strings.rateError,
+                    errorText:
+                        state.isRateMinValid ? null : Strings.errorRateInvalid,
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) {
                       editProfileBloc
-                          .add(HandleRates(fieldName: RATEMIN, value: value));
+                          .add(HandleRates(fieldName: MIN_RATE, value: value));
                     },
                   ),
                 ),
@@ -316,15 +312,16 @@ class EditTutorPageState extends State<EditTutorPage> {
                 Expanded(
                   flex: 10,
                   child: CustomTextField(
-                    labelText: Strings.rateMax,
+                    labelText: Strings.rateMaxLabel,
                     initialText: state.initialRateMax,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
-                    errorText: state.isRateMaxValid ? null : Strings.rateError,
+                    errorText:
+                        state.isRateMaxValid ? null : Strings.errorRateInvalid,
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) {
                       editProfileBloc
-                          .add(HandleRates(fieldName: RATEMAX, value: value));
+                          .add(HandleRates(fieldName: MAX_RATE, value: value));
                     },
                   ),
                 ),
@@ -332,14 +329,12 @@ class EditTutorPageState extends State<EditTutorPage> {
             ),
             CustomTextField(
               labelText: Strings.timing,
-              helpText: Strings.timingHelperText,
+              helpText: Strings.timingHint,
               maxLines: SpacingsAndHeights.timingMaxLines,
               textInputAction: TextInputAction.newline,
               // onFieldSubmitted: _handleSubmitted,
               initialText: state.initialTiming,
-              errorText: state.isTimingValid
-                  ? null
-                  : Strings.invalidFieldCannotBeEmpty,
+              errorText: state.isTimingValid ? null : Strings.errorFieldEmpty,
               prefixIcon: Icon(Icons.watch),
               onChanged: (String value) {
                 editProfileBloc
@@ -347,28 +342,25 @@ class EditTutorPageState extends State<EditTutorPage> {
               },
             ),
             CustomTextField(
-              labelText: Strings.location,
-              helpText: Strings.locationHelperText,
+              labelText: Strings.locationLabel,
+              helpText: Strings.locationHint,
               maxLines: SpacingsAndHeights.locationMaxLines,
               textInputAction: TextInputAction.newline,
               prefixIcon: Icon(Icons.location_on),
               initialText: state.initiallocation,
-              errorText: state.isLocationValid
-                  ? null
-                  : Strings.invalidFieldCannotBeEmpty,
+              errorText: state.isLocationValid ? null : Strings.errorFieldEmpty,
               onChanged: (String value) {
                 editProfileBloc
                     .add(HandleTextField(fieldName: LOCATION, value: value));
               },
             ),
             CustomTextField(
-              labelText: Strings.qualifications,
-              helpText: Strings.freqHelperText,
+              labelText: Strings.qualificationsLabel,
+              helpText: Strings.freqHintLabel,
               textInputAction: TextInputAction.newline,
               onFieldSubmitted: _handleSubmitted,
-              errorText: state.isQualificationValid
-                  ? null
-                  : Strings.invalidFieldCannotBeEmpty,
+              errorText:
+                  state.isQualificationValid ? null : Strings.errorFieldEmpty,
               initialText: state.initialQualification,
               prefixIcon: Padding(
                 padding: EdgeInsets.fromLTRB(10.0, 10.0, 0, 0),
@@ -380,15 +372,14 @@ class EditTutorPageState extends State<EditTutorPage> {
               },
             ),
             CustomTextField(
-              labelText: Strings.sellingPoints,
-              helpText: Strings.additionalRemarksHelperText,
+              labelText: Strings.sellingPointsLabel,
+              helpText: Strings.additionalRemarksHint,
               maxLines: SpacingsAndHeights.addRemarksMaxLines,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _focusScopeNode.unfocus(),
               prefixIcon: Icon(Icons.speaker_notes),
-              errorText: state.isSellingPointValid
-                  ? null
-                  : Strings.invalidFieldCannotBeEmpty,
+              errorText:
+                  state.isSellingPointValid ? null : Strings.errorFieldEmpty,
               initialText: state.initialSellingPoint,
               onChanged: (String value) {
                 editProfileBloc.add(

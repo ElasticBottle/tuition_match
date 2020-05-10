@@ -7,14 +7,14 @@ abstract class EditTutorProfileEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialiseProfileFields extends EditTutorProfileEvent {
-  const InitialiseProfileFields({
+class EditTutorProfileBlocInitialise extends EditTutorProfileEvent {
+  const EditTutorProfileBlocInitialise({
     this.tutorProfile,
     this.userDetails,
     this.isCacheProfile = false,
   });
-  final TutorProfileModel tutorProfile;
-  final UserModel userDetails;
+  final TutorProfile tutorProfile;
+  final User userDetails;
   final bool isCacheProfile;
 
   @override
@@ -25,53 +25,16 @@ class InitialiseProfileFields extends EditTutorProfileEvent {
       'InitialiseProfileFields(tutorProfile: $tutorProfile, userDetails: $userDetails, isCacheProfile: $isCacheProfile)';
 }
 
-// class CheckRatesAreValid extends EditTutorProfileEvent {
-//   const CheckRatesAreValid({
-//     @required this.fieldName,
-//     @required this.toCheck,
-//   });
-//   final String toCheck;
-//   final String fieldName;
-
-//   @override
-//   List<Object> get props => [toCheck, fieldName];
-
-//   @override
-//   String toString() =>
-//       'CheckRatesAreValid(toCheck: $toCheck, fieldName: $fieldName)';
-// }
-
-// class CheckTextFieldNotEmpty extends EditTutorProfileEvent {
-//   const CheckTextFieldNotEmpty({
-//     @required this.fieldName,
-//     @required this.toCheck,
-//   });
-//   final String toCheck;
-//   final String fieldName;
-//   @override
-//   List<Object> get props => [toCheck, fieldName];
-
-//   @override
-//   String toString() =>
-//       'CheckTextFieldNotEmpty(toCheck: $toCheck, fieldName: $fieldName)';
-// }
-
-// class CheckDropDownNotEmpty extends EditTutorProfileEvent {
-//   const CheckDropDownNotEmpty({@required this.fieldName});
-//   final String fieldName;
-
-//   @override
-//   List<Object> get props => [fieldName];
-
-//   @override
-//   String toString() => 'CheckDropDownNotEmpty(fieldName: $fieldName)';
-// }
-
-/// [HandleToggleButtonClick] should be called before [CheckDropDownNotEmpty] or [SaveField].
-/// Updates state fields with the latest toggled value(s)
+/// [HandleToggleButtonClick] updates state fields with the latest toggled value(s)
+/// Checks if the field is valid.
+/// Results in an error state to be yielded if the field is empty
+/// Fields are saved if valid. Removed if not
 /// To be used by nonTextFields.
 class HandleToggleButtonClick extends EditTutorProfileEvent {
-  const HandleToggleButtonClick({this.index, this.fieldName});
+  const HandleToggleButtonClick({
+    this.index,
+    this.fieldName,
+  });
   final dynamic index;
   final String fieldName;
 
@@ -106,17 +69,6 @@ class HandleRates extends EditTutorProfileEvent {
   @override
   String toString() => 'HandleRates(value: $value, fieldName : $fieldName)';
 }
-// class SaveField extends EditTutorProfileEvent {
-//   const SaveField({this.key, this.value});
-//   final String key;
-//   final dynamic value;
-
-//   @override
-//   List<Object> get props => [key, value];
-
-//   @override
-//   String toString() => 'SaveField(key: $key, value: $value)';
-// }
 
 class SubmitForm extends EditTutorProfileEvent {}
 

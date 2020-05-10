@@ -2,7 +2,12 @@ part of 'edit_tutor_profile_bloc.dart';
 
 class EditTutorProfileState extends Equatable {
   const EditTutorProfileState({
-    this.subjectsToDisplay,
+    this.tutorOccupationLabels,
+    this.rateTypeLabels,
+    this.genderLabels,
+    this.classFormatLabels,
+    this.levelsLabels,
+    this.subjectsLabels,
     this.subjectHint,
     this.initialRateMin,
     this.initialRateMax,
@@ -38,12 +43,18 @@ class EditTutorProfileState extends Equatable {
 
   factory EditTutorProfileState.initial() {
     return EditTutorProfileState(
-      subjectsToDisplay: [],
+      rateTypeLabels: RateTypes.types.map((e) => e.toString()).toList(),
+      genderLabels: Gender.genders.map((e) => e.toString()).toList(),
+      classFormatLabels: ClassFormat.formats.map((e) => e.toString()).toList(),
+      tutorOccupationLabels:
+          TutorOccupation.occupations.map((e) => e.toString()).toList(),
+      levelsLabels: Level.all.map((e) => e.toString()).toList(),
+      subjectsLabels: const [],
       subjectHint: 'Please select a level first',
       genderSelection: 0,
-      classFormatSelection: [1],
-      levelsTaught: [],
-      subjectsTaught: [],
+      classFormatSelection: const [1],
+      levelsTaught: const [],
+      subjectsTaught: const [],
       tutorOccupation: null,
       rateTypeSelction: 0,
       initialRateMin: '0',
@@ -72,7 +83,13 @@ class EditTutorProfileState extends Equatable {
       successMessage: null,
     );
   }
-  final List<String> subjectsToDisplay;
+
+  final List<String> tutorOccupationLabels;
+  final List<String> rateTypeLabels;
+  final List<String> genderLabels;
+  final List<String> classFormatLabels;
+  final List<String> levelsLabels;
+  final List<String> subjectsLabels;
   final String subjectHint;
   final String initialRateMin;
   final String initialRateMax;
@@ -151,7 +168,12 @@ class EditTutorProfileState extends Equatable {
   }
 
   EditTutorProfileState update({
-    List<String> subjectsToDisplay,
+    List<String> tutorOccupationLabels,
+    List<String> rateTypeLabels,
+    List<String> genderLabels,
+    List<String> classFormatLabels,
+    List<String> levelsLabels,
+    List<String> subjectsLabels,
     String subjectHint,
     String initialRateMin,
     String initialRateMax,
@@ -180,7 +202,7 @@ class EditTutorProfileState extends Equatable {
     bool isTutorOccupationValid,
   }) {
     return copyWith(
-      subjectsToDisplay: subjectsToDisplay,
+      subjectsLabels: subjectsLabels,
       subjectHint: subjectHint,
       initialRateMin: initialRateMin,
       initialRateMax: initialRateMax,
@@ -216,7 +238,12 @@ class EditTutorProfileState extends Equatable {
   }
 
   EditTutorProfileState copyWith({
-    List<String> subjectsToDisplay,
+    List<String> tutorOccupationLabels,
+    List<String> rateTypeLabels,
+    List<String> genderLabels,
+    List<String> classFormatLabels,
+    List<String> levelsLabels,
+    List<String> subjectsLabels,
     String subjectHint,
     String initialRateMin,
     String initialRateMax,
@@ -250,7 +277,7 @@ class EditTutorProfileState extends Equatable {
     String successMessage,
   }) {
     return EditTutorProfileState(
-      subjectsToDisplay: subjectsToDisplay ?? this.subjectsToDisplay,
+      subjectsLabels: subjectsLabels ?? this.subjectsLabels,
       subjectHint: subjectHint ?? this.subjectHint,
       initialRateMin: initialRateMin ?? this.initialRateMin,
       initialRateMax: initialRateMax ?? this.initialRateMax,
@@ -290,7 +317,12 @@ class EditTutorProfileState extends Equatable {
 
   @override
   List<Object> get props => [
-        subjectsToDisplay,
+        tutorOccupationLabels,
+        rateTypeLabels,
+        genderLabels,
+        classFormatLabels,
+        levelsLabels,
+        subjectsLabels,
         subjectHint,
         initialRateMin,
         initialRateMax,
@@ -327,7 +359,12 @@ class EditTutorProfileState extends Equatable {
   @override
   String toString() {
     return '''EditTutorProfileState(
-      subjectsToDisplay: $subjectsToDisplay,
+      tutorOccupationLabels: $tutorOccupationLabels,
+      rateTypeLabels: $rateTypeLabels,
+      genderLabels: $genderLabels,
+      classFormatLabels: $classFormatLabels,
+      levelsLabels: $levelsLabels,
+      subjectsToDisplay: $subjectsLabels,
       subjectHint : $subjectHint,
       initialRateMin: $initialRateMin, 
       initialRateMax: $initialRateMax, 

@@ -1,11 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/profile.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_cached_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_next_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_tutor_list.dart';
-import 'package:cotor/features/models/tutor_profile_model.dart';
 import 'package:cotor/features/tutor_profile_list/bloc/tutor_profile_list_bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,7 +90,7 @@ void main() {
         'emits [Loading, TutorProfilesLoaded.normal] when successful and there\'re profiles',
         build: () async {
           when(getTutorProfileList(any)).thenAnswer(
-            (_) async => Right(<TutorProfile>[TutorProfileModel()]),
+            (_) async => Right(<TutorProfile>[TutorProfile()]),
           );
           return profilesBloc;
         },
@@ -103,7 +102,7 @@ void main() {
         expect: <TutorProfileListState>[
           Loading(),
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[TutorProfileModel()],
+            profiles: const <TutorProfile>[TutorProfile()],
           )
         ],
       );
@@ -179,7 +178,7 @@ void main() {
       void _setUpMockGetTutorProfileListCall() {
         when(getTutorProfileList(any)).thenAnswer(
           (_) async => Right(<TutorProfile>[
-            TutorProfileModel(),
+            TutorProfile(),
           ]),
         );
       }
@@ -187,10 +186,10 @@ void main() {
       final List<TutorProfileListState> initialPlusLoading =
           <TutorProfileListState>[
         TutorProfilesLoaded.normal(
-          profiles: <TutorProfileModel>[TutorProfileModel()],
+          profiles: const <TutorProfile>[TutorProfile()],
         ),
         TutorProfilesLoaded.normal(
-          profiles: <TutorProfileModel>[TutorProfileModel()],
+          profiles: const <TutorProfile>[TutorProfile()],
         ).copyWith(
           isFetching: true,
         ),
@@ -203,7 +202,7 @@ void main() {
           _setUpMockGetTutorProfileListCall();
           profilesBloc.add(GetTutorProfileList());
           when(getNextProfileList(any)).thenAnswer((_) async => Right(
-                <TutorProfile>[TutorProfileModel()],
+                <TutorProfile>[TutorProfile()],
               ));
           return profilesBloc;
         },
@@ -214,9 +213,9 @@ void main() {
         expect: <TutorProfileListState>[
           ...initialPlusLoading,
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[
-              TutorProfileModel(),
-              TutorProfileModel(),
+            profiles: const <TutorProfile>[
+              TutorProfile(),
+              TutorProfile(),
             ],
           )
         ],
@@ -239,7 +238,7 @@ void main() {
         expect: <TutorProfileListState>[
           ...initialPlusLoading,
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[TutorProfileModel()],
+            profiles: const <TutorProfile>[TutorProfile()],
           ).copyWith(isEnd: true)
         ],
       );
@@ -261,7 +260,7 @@ void main() {
         expect: <TutorProfileListState>[
           ...initialPlusLoading,
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[TutorProfileModel()],
+            profiles: const <TutorProfile>[TutorProfile()],
           ).copyWith(isGetNextListError: true)
         ],
       );
@@ -283,7 +282,7 @@ void main() {
         expect: <TutorProfileListState>[
           ...initialPlusLoading,
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[TutorProfileModel()],
+            profiles: const <TutorProfile>[TutorProfile()],
           ).copyWith(isGetNextListError: true)
         ],
       );
@@ -294,7 +293,7 @@ void main() {
         'emits [Loading, TutorProfilesLoaded(asssignments: assigmentList, isCachedList: true,)] when there\'s cached profiles',
         build: () async {
           when(getCachedProfileList(any)).thenAnswer(
-            (_) async => Right(<TutorProfile>[TutorProfileModel()]),
+            (_) async => Right(<TutorProfile>[TutorProfile()]),
           );
           return profilesBloc;
         },
@@ -306,7 +305,7 @@ void main() {
         expect: <TutorProfileListState>[
           Loading(),
           TutorProfilesLoaded.normal(
-            profiles: <TutorProfileModel>[TutorProfileModel()],
+            profiles: const <TutorProfile>[TutorProfile()],
           ).copyWith(isCachedList: true)
         ],
       );

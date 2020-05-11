@@ -1,11 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
+import 'package:cotor/domain/entities/post/tutee_assignment/assignment.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_cached_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_next_tutee_assignment_list.dart';
 import 'package:cotor/domain/usecases/tutee_assignments/get_tutee_assignment_list.dart';
-import 'package:cotor/features/models/tutee_assignment_model.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assignments_bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,7 +91,7 @@ void main() {
         'emits [Loading, AssignmentLoaded.normal] when successful and there\'s assignments',
         build: () async {
           when(getAssignmentList(any)).thenAnswer(
-            (_) async => Right(<TuteeAssignment>[TuteeAssignmentModel()]),
+            (_) async => Right(<TuteeAssignment>[TuteeAssignment()]),
           );
           return assignmentsBloc;
         },
@@ -104,7 +103,7 @@ void main() {
         expect: <AssignmentsState>[
           Loading(),
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+            assignments: const <TuteeAssignment>[TuteeAssignment()],
           )
         ],
       );
@@ -177,17 +176,17 @@ void main() {
       void _setUpMockGetAssignmentListCall() {
         when(getAssignmentList(any)).thenAnswer(
           (_) async => Right(<TuteeAssignment>[
-            TuteeAssignmentModel(),
+            TuteeAssignment(),
           ]),
         );
       }
 
       final List<AssignmentsState> initialPlusLoading = <AssignmentsState>[
         AssignmentLoaded.normal(
-          assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+          assignments: const <TuteeAssignment>[TuteeAssignment()],
         ),
         AssignmentLoaded.normal(
-          assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+          assignments: const <TuteeAssignment>[TuteeAssignment()],
         ).copyWith(
           isFetching: true,
         ),
@@ -199,7 +198,7 @@ void main() {
           _setUpMockGetAssignmentListCall();
           assignmentsBloc.add(GetAssignmentList());
           when(getNextAssignmentList(any)).thenAnswer((_) async => Right(
-                <TuteeAssignment>[TuteeAssignmentModel()],
+                <TuteeAssignment>[TuteeAssignment()],
               ));
           return assignmentsBloc;
         },
@@ -210,9 +209,9 @@ void main() {
         expect: <AssignmentsState>[
           ...initialPlusLoading,
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[
-              TuteeAssignmentModel(),
-              TuteeAssignmentModel(),
+            assignments: const <TuteeAssignment>[
+              TuteeAssignment(),
+              TuteeAssignment(),
             ],
           )
         ],
@@ -234,7 +233,7 @@ void main() {
         expect: <AssignmentsState>[
           ...initialPlusLoading,
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+            assignments: const <TuteeAssignment>[TuteeAssignment()],
           ).copyWith(isEnd: true)
         ],
       );
@@ -255,7 +254,7 @@ void main() {
         expect: <AssignmentsState>[
           ...initialPlusLoading,
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+            assignments: const <TuteeAssignment>[TuteeAssignment()],
           ).copyWith(isGetNextListError: true)
         ],
       );
@@ -276,7 +275,7 @@ void main() {
         expect: <AssignmentsState>[
           ...initialPlusLoading,
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+            assignments: const <TuteeAssignment>[TuteeAssignment()],
           ).copyWith(isGetNextListError: true)
         ],
       );
@@ -286,7 +285,7 @@ void main() {
         'emits [Loading, AssignmentLoaded(asssignments: assigmentList, isCachedList: true,)] when there\'s cached assignments',
         build: () async {
           when(getCachedAssignmentList(any)).thenAnswer(
-            (_) async => Right(<TuteeAssignment>[TuteeAssignmentModel()]),
+            (_) async => Right(<TuteeAssignment>[TuteeAssignment()]),
           );
           return assignmentsBloc;
         },
@@ -298,7 +297,7 @@ void main() {
         expect: <AssignmentsState>[
           Loading(),
           AssignmentLoaded.normal(
-            assignments: <TuteeAssignmentModel>[TuteeAssignmentModel()],
+            assignments: const <TuteeAssignment>[TuteeAssignment()],
           ).copyWith(isCachedList: true)
         ],
       );

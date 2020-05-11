@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/data/models/user_entity.dart';
+import 'package:cotor/data/models/user/user_entity.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_in_with_email.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_in_with_goolge.dart';
 import 'package:cotor/features/auth_service/login/bloc/login_bloc.dart';

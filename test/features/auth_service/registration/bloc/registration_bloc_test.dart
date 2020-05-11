@@ -3,7 +3,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
-import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
+import 'package:cotor/domain/usecases/user/user_info/create_user_document.dart';
 import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +28,8 @@ class MockMinLengthStringValidator extends Mock
 
 class MockPhoneNumValidator extends Mock implements PhoneNumValidator {}
 
+class MockCountryCodeValidator extends Mock implements CountryCodeValidator {}
+
 void main() {
   group('Registration Bloc', () {
     RegistrationBloc registrationBloc;
@@ -38,6 +40,7 @@ void main() {
     EmailRegistrationRegexValidator emailRegistrationRegexValidator;
     MinLengthStringValidator minLengthStringValidator;
     PhoneNumValidator phoneNumValidator;
+    CountryCodeValidator countryCodeValidator;
 
     setUp(() {
       createAccountWithEmail = MockCreateAccountWithEmail();
@@ -47,6 +50,7 @@ void main() {
       emailRegistrationRegexValidator = MockEmailRegistrationRegexValidator();
       minLengthStringValidator = MockMinLengthStringValidator();
       phoneNumValidator = MockPhoneNumValidator();
+      countryCodeValidator = MockCountryCodeValidator();
       registrationBloc = RegistrationBloc(
         createUserDocument: createUserDocument,
         createAccountWithEmail: createAccountWithEmail,
@@ -389,6 +393,63 @@ void main() {
       );
     });
 
+    group('CountryCode Changed', () {
+      void _getCountryCodeValidator() {
+        when(validators.countryCodeValidator).thenReturn(countryCodeValidator);
+      }
+
+      void _verifyInteractions() {
+        verify(validators.countryCodeValidator).called(1);
+        verify(countryCodeValidator.isValid(any)).called(1);
+        verifyNoMoreInteractions(validators);
+        verifyNoMoreInteractions(countryCodeValidator);
+      }
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl(isContryCodeError:false)] when country code is valid.',
+        build: () async {
+          _getCountryCodeValidator();
+          when(countryCodeValidator.isValid(any))
+              .thenAnswer((realInvocation) => true);
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(CountryCodeChanged(countryCode: '+65'));
+        },
+        skip: 0,
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.empty().copyWith(
+            isCountryCodeError: false,
+          )
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+
+      blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
+        'should return [RegistrationStateImpl(isContryCodeError:true)] when countryCode is not valid',
+        build: () async {
+          _getCountryCodeValidator();
+          when(countryCodeValidator.isValid(any))
+              .thenAnswer((realInvocation) => false);
+          return registrationBloc;
+        },
+        act: (bloc) async {
+          bloc.add(CountryCodeChanged(countryCode: '+1'));
+        },
+        wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
+        expect: <RegistrationState>[
+          RegistrationStateImpl.empty().copyWith(
+            isCountryCodeError: true,
+          )
+        ],
+        verify: (bloc) async {
+          _verifyInteractions();
+        },
+      );
+    });
     group('Submitted (register With Email and Password)', () {
       void _verifyInteractions() {
         verify(createAccountWithEmail(
@@ -411,6 +472,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -439,6 +501,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -466,6 +529,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -493,6 +557,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -525,6 +590,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -538,7 +604,7 @@ void main() {
       );
 
       blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
-        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: [AuthErrorMsg])] when error registering user',
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: [Strings.noUserFailureErrorMsg])] when there is no user signed in when creating document',
         build: () async {
           when(createUserDocument(any)).thenAnswer(
             (realInvocation) async => Left(NoUserFailure()),
@@ -550,6 +616,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -575,6 +642,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),
@@ -588,7 +656,7 @@ void main() {
       );
 
       blocTest<RegistrationBloc, RegistrationEvent, RegistrationState>(
-        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: Stirngs.networkFailureErrorMsg)] when no internet connection',
+        'should return [RegistrationStateImpl.submitting(), RegistrationStateImpl.failure(failureMessage: Strings.networkFailureErrorMsg)] when no internet connection',
         build: () async {
           when(createUserDocument(any)).thenAnswer(
             (realInvocation) async => Left(NetworkFailure()),
@@ -600,6 +668,7 @@ void main() {
             firstName: 'john',
             lastName: 'mary',
             phoneNum: '98765432',
+            countryCode: '+65',
           ));
         },
         wait: Duration(milliseconds: REGISTRATION_BLOC_DEBOUNCE_TIME),

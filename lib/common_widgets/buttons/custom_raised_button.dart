@@ -50,7 +50,7 @@ class CustomRaisedButton extends StatelessWidget {
             Radius.circular(borderRadius),
           ),
         ), // height / 2
-        color: color ?? Theme.of(context).colorScheme.onBackground,
+        color: color ?? Theme.of(context).colorScheme.primary,
         disabledColor: disabledColor,
         textColor: textColor ?? Theme.of(context).textTheme.button.color,
         onPressed: onPressed,

@@ -1,5 +1,4 @@
 import 'package:cotor/common_widgets/information_display/avatar.dart';
-import 'package:cotor/domain/entities/name.dart';
 import 'package:flutter/material.dart';
 
 class UserDetailCard extends StatelessWidget {
@@ -9,14 +8,12 @@ class UserDetailCard extends StatelessWidget {
       this.badge,
       this.photoUrl,
       this.heroTagForPhoto,
-      this.timeSinceAdded = '',
       this.radius = 20})
       : super(key: key);
   final String heroTagForPhoto;
   final String photoUrl;
-  final Name name;
+  final String name;
   final Widget badge;
-  final String timeSinceAdded;
   final double radius;
 
   @override
@@ -30,7 +27,7 @@ class UserDetailCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            name.toString(),
+            name,
             // style: TextStyle(
             //   color: ColorsAndFonts.primaryColor,
             //   fontFamily: ColorsAndFonts.primaryFont,

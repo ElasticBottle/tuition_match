@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/entities/user/user.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';

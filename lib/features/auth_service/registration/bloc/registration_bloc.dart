@@ -5,7 +5,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
 import 'package:cotor/domain/usecases/auth_service/create_account_with_email.dart';
-import 'package:cotor/domain/usecases/auth_service/create_user_document.dart';
+import 'package:cotor/domain/usecases/user/user_info/create_user_document.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +60,8 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       yield* _mapLastNameChangedToState(event.lastName);
     } else if (event is PhoneNumChanged) {
       yield* _mapPhoneNumChangedToState(event.phoneNum);
+    } else if (event is CountryCodeChanged) {
+      yield* _mapCountryCodeChangedToState(event.countryCode);
     } else if (event is Submitted) {
       yield* _mapFormSubmittedToState(
         email: event.email,
@@ -67,12 +69,14 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
         firstName: event.firstName,
         lastName: event.lastName,
         phoneNum: event.phoneNum,
+        countryCode: event.countryCode,
       );
     } else if (event is ExternalSignUpSubmission) {
       yield* _mapExternalSignUpSubmissionToState(
         firstName: event.firstName,
         lastName: event.lastName,
         phoneNum: event.phoneNum,
+        countryCode: event.countryCode,
       );
     }
   }
@@ -147,6 +151,21 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     }
   }
 
+  Stream<RegistrationState> _mapCountryCodeChangedToState(
+      String countryCode) async* {
+    final bool isValidCountryCode =
+        validator.countryCodeValidator.isValid(countryCode);
+    if (isValidCountryCode) {
+      yield state.update(
+        isCountryCodeError: false,
+      );
+    } else {
+      yield state.update(
+        isCountryCodeError: true,
+      );
+    }
+  }
+
   Stream<RegistrationState> _mapFormSubmittedToState({
     String email,
     String password,
@@ -154,6 +173,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     String firstName,
     String lastName,
     String phoneNum,
+    String countryCode,
   }) async* {
     yield RegistrationStateImpl.submitting();
     final Either<Failure, bool> result =
@@ -163,6 +183,7 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
       firstName: firstName,
       lastName: lastName,
       phoneNum: phoneNum,
+      countryCode: countryCode,
     ));
     yield* result.fold(
       (Failure failure) async* {
@@ -174,14 +195,19 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     );
   }
 
-  Stream<RegistrationState> _mapExternalSignUpSubmissionToState(
-      {String firstName, String lastName, String phoneNum}) async* {
+  Stream<RegistrationState> _mapExternalSignUpSubmissionToState({
+    String firstName,
+    String lastName,
+    String phoneNum,
+    String countryCode,
+  }) async* {
     yield RegistrationStateImpl.submitting();
     final Either<Failure, bool> result =
         await createUserDocument(CreateUserDocumentParams(
       firstName: firstName,
       lastName: lastName,
       phoneNum: phoneNum,
+      countryCode: countryCode,
     ));
     yield* result.fold(
       (Failure failure) async* {

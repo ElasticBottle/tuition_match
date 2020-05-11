@@ -62,6 +62,17 @@ class PhoneNumChanged extends RegistrationEvent {
   String toString() => 'PhoneNumChanged { phoneNum: $phoneNum }';
 }
 
+class CountryCodeChanged extends RegistrationEvent {
+  const CountryCodeChanged({@required this.countryCode});
+  final String countryCode;
+
+  @override
+  List<Object> get props => [countryCode];
+
+  @override
+  String toString() => 'CountryCodeChanged { countryCode: $countryCode }';
+}
+
 class Submitted extends RegistrationEvent {
   const Submitted({
     @required this.firstName,
@@ -69,20 +80,23 @@ class Submitted extends RegistrationEvent {
     @required this.email,
     @required this.password,
     @required this.phoneNum,
+    @required this.countryCode,
   });
   final String email;
   final String password;
   final String phoneNum;
+  final String countryCode;
 
   final String firstName;
   final String lastName;
 
   @override
-  List<Object> get props => [email, password, firstName, lastName, phoneNum];
+  List<Object> get props =>
+      [email, password, firstName, lastName, phoneNum, countryCode];
 
   @override
   String toString() {
-    return 'Submitted(email: $email, password: $password, phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
+    return 'Submitted(email: $email, password: $password, phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName,countryCode: $countryCode)';
   }
 }
 
@@ -91,15 +105,17 @@ class ExternalSignUpSubmission extends RegistrationEvent {
     @required this.firstName,
     @required this.lastName,
     @required this.phoneNum,
+    @required this.countryCode,
   });
+  final String countryCode;
   final String phoneNum;
   final String firstName;
   final String lastName;
 
   @override
-  List<Object> get props => [firstName, lastName, phoneNum];
+  List<Object> get props => [firstName, lastName, phoneNum, countryCode];
 
   @override
   String toString() =>
-      'ExternalSignInSubmission(phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
+      'ExternalSignInSubmission(countryCode: $countryCode, phoneNum: $phoneNum, firstName: $firstName, lastName: $lastName)';
 }

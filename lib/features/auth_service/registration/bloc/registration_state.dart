@@ -6,6 +6,7 @@ abstract class RegistrationState extends Equatable {
   bool get isFirstNameError;
   bool get isLastNameError;
   bool get isPhoneNumError;
+  bool get isCountryCodeError;
   bool get isSubmitting;
   bool get isFailure;
   bool get isSuccess;
@@ -19,6 +20,7 @@ abstract class RegistrationState extends Equatable {
     bool isFirstNameError,
     bool isLastNameError,
     bool isPhoneNumError,
+    bool isCountryCodeError,
   });
   RegistrationState copyWith({
     bool isEmailError,
@@ -26,6 +28,7 @@ abstract class RegistrationState extends Equatable {
     bool isFirstNameError,
     bool isLastNameError,
     bool isPhoneNumError,
+    bool isCountryCodeError,
     bool isSubmitting,
     bool isFailure,
     bool isSuccess,
@@ -40,6 +43,7 @@ class RegistrationStateImpl extends RegistrationState {
     bool isFirstNameError,
     bool isLastNameError,
     bool isPhoneNumError,
+    bool isCountryCodeError,
     bool isSubmitting,
     bool isSuccess,
     bool isFailure,
@@ -49,6 +53,7 @@ class RegistrationStateImpl extends RegistrationState {
         _isFirstNameError = isFirstNameError,
         _isLastNameError = isLastNameError,
         _isPhoneNumError = isPhoneNumError,
+        _isCountryCodeError = isCountryCodeError,
         _isSubmitting = isSubmitting,
         _isSuccess = isSuccess,
         _isFailure = isFailure,
@@ -61,6 +66,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: false,
       isLastNameError: false,
       isPhoneNumError: false,
+      isCountryCodeError: false,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
@@ -75,6 +81,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: false,
       isLastNameError: false,
       isPhoneNumError: false,
+      isCountryCodeError: false,
       isSubmitting: true,
       isSuccess: false,
       isFailure: false,
@@ -89,6 +96,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: false,
       isLastNameError: false,
       isPhoneNumError: false,
+      isCountryCodeError: false,
       isSubmitting: false,
       isSuccess: false,
       isFailure: true,
@@ -103,6 +111,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: false,
       isLastNameError: false,
       isPhoneNumError: false,
+      isCountryCodeError: false,
       isSubmitting: false,
       isSuccess: true,
       isFailure: false,
@@ -115,6 +124,7 @@ class RegistrationStateImpl extends RegistrationState {
   final bool _isFirstNameError;
   final bool _isLastNameError;
   final bool _isPhoneNumError;
+  final bool _isCountryCodeError;
   final bool _isSubmitting;
   final bool _isSuccess;
   final bool _isFailure;
@@ -130,6 +140,8 @@ class RegistrationStateImpl extends RegistrationState {
   bool get isLastNameError => _isLastNameError;
   @override
   bool get isPhoneNumError => _isPhoneNumError;
+  @override
+  bool get isCountryCodeError => _isCountryCodeError;
   @override
   bool get isSubmitting => _isSubmitting;
   @override
@@ -154,6 +166,7 @@ class RegistrationStateImpl extends RegistrationState {
     bool isFirstNameError,
     bool isLastNameError,
     bool isPhoneNumError,
+    bool isCountryCodeError,
   }) {
     return copyWith(
       isEmailError: isEmailError,
@@ -161,6 +174,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: isFirstNameError,
       isLastNameError: isLastNameError,
       isPhoneNumError: isPhoneNumError,
+      isCountryCodeError: isCountryCodeError,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
@@ -175,6 +189,7 @@ class RegistrationStateImpl extends RegistrationState {
     bool isFirstNameError,
     bool isLastNameError,
     bool isPhoneNumError,
+    bool isCountryCodeError,
     bool isSubmitting,
     bool isSuccess,
     bool isFailure,
@@ -186,6 +201,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: isFirstNameError ?? this.isFirstNameError,
       isLastNameError: isLastNameError ?? this.isLastNameError,
       isPhoneNumError: isPhoneNumError ?? this.isPhoneNumError,
+      isCountryCodeError: isCountryCodeError ?? this.isCountryCodeError,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSuccess: isSuccess ?? this.isSuccess,
       isFailure: isFailure ?? this.isFailure,
@@ -200,6 +216,7 @@ class RegistrationStateImpl extends RegistrationState {
         isFirstNameError,
         isLastNameError,
         isPhoneNumError,
+        isCountryCodeError,
         isSubmitting,
         isSuccess,
         isFailure,
@@ -214,6 +231,7 @@ class RegistrationStateImpl extends RegistrationState {
       isFirstNameError: $isFirstNameError,
       isLastNameError: $isLastNameError,
       isPhoneNumError: $isPhoneNumError,
+      isCountryCodeError: $isCountryCodeError,
       isSubmitting: $isSubmitting,
       isSuccess: $isSuccess,
       isFailure: $isFailure,

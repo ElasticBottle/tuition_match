@@ -1,4 +1,3 @@
-import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:flutter/material.dart';
 
@@ -6,20 +5,24 @@ enum LoadState {
   normal,
   loading,
   allLoaded,
+  customMessage,
 }
 
-class PaginatedSliverList<T> extends StatelessWidget {
+class PaginatedSliverList extends StatelessWidget {
   const PaginatedSliverList({
     Key key,
     @required this.displayItems,
     @required this.builder,
     this.loadState = LoadState.normal,
+    this.endMsg = '',
   })  : assert(displayItems != null),
+        assert(builder != null),
         super(key: key);
 
-  final List<T> displayItems;
-  final Function(BuildContext context, T details) builder;
+  final List displayItems;
+  final Function(BuildContext context, dynamic details) builder;
   final LoadState loadState;
+  final String endMsg;
   @override
   Widget build(BuildContext context) {
     return SliverList(
@@ -37,6 +40,12 @@ class PaginatedSliverList<T> extends StatelessWidget {
               case LoadState.allLoaded:
                 return EndTile(loadState: LoadState.allLoaded);
                 break;
+              case LoadState.customMessage:
+                return EndTile(
+                  loadState: LoadState.customMessage,
+                  endMsg: endMsg,
+                );
+                break;
             }
           }
           return builder(context, displayItems[index]);
@@ -48,8 +57,12 @@ class PaginatedSliverList<T> extends StatelessWidget {
 }
 
 class EndTile extends StatelessWidget {
-  const EndTile({this.loadState = LoadState.normal});
+  const EndTile({
+    this.loadState = LoadState.normal,
+    this.endMsg = '',
+  });
   final LoadState loadState;
+  final String endMsg;
   @override
   Widget build(BuildContext context) {
     Widget child;
@@ -66,10 +79,18 @@ class EndTile extends StatelessWidget {
         child = Center(
           child: Text(
             Strings.allItemLoaded,
-            style: TextStyle(
-              color: ColorsAndFonts.primaryColor,
-              fontFamily: ColorsAndFonts.primaryFont,
-            ),
+            // style: TextStyle(
+            //   color: ColorsAndFonts.primaryColor,
+            //   fontFamily: ColorsAndFonts.primaryFont,
+            // ),
+          ),
+        );
+        break;
+      case LoadState.customMessage:
+        child = Center(
+          child: Text(
+            endMsg,
+            style: Theme.of(context).textTheme.bodyText1,
           ),
         );
         break;

@@ -10,7 +10,10 @@ class RegistrationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        elevation: 0,
+      ),
       body: Center(
         child: BlocProvider<RegistrationBloc>(
           create: (context) => sl<RegistrationBloc>(),

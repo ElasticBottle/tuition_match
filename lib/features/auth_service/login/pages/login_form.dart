@@ -1,7 +1,6 @@
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
-import 'package:cotor/constants/custom_color_and_fonts.dart';
-import 'package:cotor/constants/spacings_and_heights.dart';
+import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/features/auth_service/login/bloc/login_bloc.dart';
 import 'package:cotor/features/auth_service/widgets/social_sign_in_button.dart';
@@ -19,13 +18,13 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  LoginBloc _loginBloc;
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   static const Key googleButtonKey = Key('google');
+
+  LoginBloc _loginBloc;
 
   void _handleSubmitted(String value) {
     _focusScopeNode.nextFocus();
@@ -51,116 +50,137 @@ class _LoginFormState extends State<LoginForm> {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Icon(Icons.error), Text(state.failureMessage)],
+              CustomSnackBar(
+                toDisplay: Text(
+                  state.failureMessage,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText2
+                      .apply(color: Theme.of(context).colorScheme.onError),
                 ),
-                action: SnackBarAction(
-                  label: Strings.dismiss,
-                  onPressed: () {
-                    Scaffold.of(context).hideCurrentSnackBar();
-                  },
-                ),
-                backgroundColor: Colors.red,
-              ),
+              ).show(context),
             );
         }
       },
       builder: (context, state) {
         return Padding(
           padding: EdgeInsets.all(20.0),
-          child: ListView(
-            children: <Widget>[
-              FocusScope(
-                node: _focusScopeNode,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      CustomTextField(
-                        controller: _emailController,
-                        labelText: Strings.emailLabel,
-                        textInputAction: TextInputAction.next,
-                        onFieldSubmitted: _handleSubmitted,
-                        errorText:
-                            state.isEmailError ? Strings.errorEmailEmpty : null,
-                      ),
-                      CustomTextField(
-                        controller: _passwordController,
-                        labelText: Strings.passwordLabel,
-                        textInputAction: TextInputAction.send,
-                        onFieldSubmitted: (_) {
-                          if (isLoginButtonEnabled(state)) {
-                            _onFormSubmitted();
-                          }
-                        },
-                        errorText: state.isPasswordError
-                            ? Strings.errorPasswordEmpty
-                            : null,
-                        isObscureText: true,
-                        isShowObscuretextToggle: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(Routes.forgotPasswordPage);
-                },
-                child: Text(Strings.forgotPasswordButtonText),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: CustomRaisedButton(
-                  onPressed: () async {
-                    if (isLoginButtonEnabled(state)) {
-                      _onFormSubmitted();
-                    }
-                  },
-                  loading: state.isSubmitting,
-                  color: ColorsAndFonts.primaryColor,
-                  child: Text(
-                    Strings.signInButtonText,
-                    style: TextStyle(
-                      color: ColorsAndFonts.backgroundColor,
-                      fontFamily: ColorsAndFonts.primaryFont,
-                      fontWeight: FontWeight.normal,
-                      fontSize: ColorsAndFonts.AddAssignmntSubmitButtonFontSize,
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      'Welcome\nBack!',
+                      style: Theme.of(context).textTheme.headline3,
                     ),
                   ),
-                ),
-              ),
-              SizedBox(
-                  height: SpacingsAndHeights.addAssignmentPageFieldSpacing),
-              SocialSignInButton(
-                key: googleButtonKey,
-                assetName: 'assets/sign_in/go-logo.png',
-                text: Strings.signInWithGoogleButtonText,
-                onPressed: state.isSubmitting
-                    ? null
-                    : () {
-                        BlocProvider.of<LoginBloc>(context).add(
-                          LoginWithGooglePressed(),
-                        );
+                  SizedBox(height: 50),
+                  FocusScope(
+                    node: _focusScopeNode,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          CustomTextField(
+                            controller: _emailController,
+                            labelText: Strings.emailLabel,
+                            hintText: Strings.emailHint,
+                            textInputAction: TextInputAction.next,
+                            textInputType: TextInputType.emailAddress,
+                            onFieldSubmitted: _handleSubmitted,
+                            errorText: state.isEmailError
+                                ? Strings.errorEmailEmpty
+                                : null,
+                          ),
+                          CustomTextField(
+                            paddding: EdgeInsets.zero,
+                            controller: _passwordController,
+                            labelText: Strings.passwordLabel,
+                            hintText: Strings.passwordHint,
+                            textInputAction: TextInputAction.send,
+                            onFieldSubmitted: (_) {
+                              if (isLoginButtonEnabled(state)) {
+                                _onFormSubmitted();
+                              }
+                            },
+                            errorText: state.isPasswordError
+                                ? Strings.errorPasswordEmpty
+                                : null,
+                            isObscureText: true,
+                            isShowObscuretextToggle: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(Routes.forgotPasswordPage);
+                    },
+                    child: Text(Strings.forgotPasswordButtonText),
+                  ),
+                  SizedBox(height: 15.0),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: CustomRaisedButton(
+                      onPressed: () async {
+                        if (isLoginButtonEnabled(state)) {
+                          _onFormSubmitted();
+                        }
                       },
-                color: Colors.white,
+                      loading: state.isSubmitting,
+                      color: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        Strings.signInButtonText,
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .apply(fontSizeFactor: 1.3),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: SocialSignInButton(
+                      key: googleButtonKey,
+                      assetName: 'assets/sign_in/go-logo.png',
+                      text: Text(
+                        Strings.signInWithGoogleButtonText,
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .apply(fontSizeFactor: 1.3),
+                      ),
+                      onPressed: state.isSubmitting
+                          ? null
+                          : () {
+                              BlocProvider.of<LoginBloc>(context).add(
+                                LoginWithGooglePressed(),
+                              );
+                            },
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  FlatButton(
+                    child: Text(
+                      Strings.createAnAccountButtonText,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(Routes.registrationPage);
+                    },
+                  ),
+                  // GoogleLoginButton(),
+                  // CreateAccountButton(userRepository: _userRepository),
+                ],
               ),
-              FlatButton(
-                child: Text(
-                  Strings.createAnAccountButtonText,
-                ),
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true)
-                      .pushNamed(Routes.registrationPage);
-                },
-              ),
-              // GoogleLoginButton(),
-              // CreateAccountButton(userRepository: _userRepository),
-            ],
+            ),
           ),
         );
       },

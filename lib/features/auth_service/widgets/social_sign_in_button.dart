@@ -5,9 +5,8 @@ class SocialSignInButton extends CustomRaisedButton {
   SocialSignInButton({
     Key key,
     String assetName,
-    String text,
+    Text text,
     Color color,
-    Color textColor,
     VoidCallback onPressed,
   }) : super(
           key: key,
@@ -15,10 +14,7 @@ class SocialSignInButton extends CustomRaisedButton {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Image.asset(assetName),
-              Text(
-                text,
-                style: TextStyle(color: textColor, fontSize: 15.0),
-              ),
+              text,
               Opacity(
                 opacity: 0.0,
                 child: Image.asset(assetName),

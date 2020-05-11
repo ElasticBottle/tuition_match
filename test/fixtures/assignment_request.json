@@ -1,0 +1,147 @@
+{
+    "tutors": {
+        "deleted": {},
+        "declined": {},
+        "accepted": {}
+    },
+    "applyingTutors": {
+        "pending": {},
+        "incoming": {
+            "uid1234567890": {
+                "tutorInfo": {
+                    "tutorIdentity": {
+                        "name": {
+                            "firstName": "John",
+                            "lastName": "Tan"
+                        },
+                        "photoUrl": "https://i.picsum.photos/id/866/200/200.jpg",
+                        "gender": "Male",
+                        "uid": "unique_string"
+                    },
+                    "tutorDetails": {
+                        "dates": {
+                            "dateCreate": "some timestamp",
+                            "dateMod": "some other timestamp"
+                        },
+                        "lvlsTaught": {
+                            "pri6": 1,
+                            "pri5": 1
+                        },
+                        "sbjctsTaught": {
+                            "Math": 1,
+                            "Science": 1
+                        },
+                        "tutorOcc": "Part-Time",
+                        "qualificatns": "Top scorer",
+                        "sellingPts": "Three previous tutess, all scored failing grades"
+                    },
+                    "requirements": {
+                        "timing": "Anytime weekdays after 2pm",
+                        "loc": "Anywhere in the East, prefereably near Ang Mo Kio",
+                        "pricing": {
+                            "min": 10.0,
+                            "max": 30.0,
+                            "proposed": 0.0,
+                            "type": "hourly"
+                        },
+                        "formats": {
+                            "online": 1,
+                            "private": 1
+                        }
+                    },
+                    "stats": {
+                        "nLiked": 13,
+                        "nRequest": 7,
+                        "pastStudents": 2,
+                        "currentStudents": 2,
+                        "pendingStudents": 1,
+                        "incomingStudents": 1,
+                        "patience": 5,
+                        "engagement": 5,
+                        "clarity": 4,
+                        "rating": 4.8,
+                        "recentReviews": {
+                            "assignmentId1": {
+                                "reviewerInfo": {
+                                    "name": {
+                                        "firstName": "Mary",
+                                        "lastName": "Antoniette"
+                                    },
+                                    "photoUrl": "https://randomuser.me/api/portraits/women/60.jpg",
+                                    "sbjcts": {
+                                        "Science": 1
+                                    },
+                                    "startingLvl": {
+                                        "pri6": 1
+                                    }
+                                },
+                                "score": {
+                                    "patience": 5,
+                                    "engagement": 5,
+                                    "clarity": 4
+                                },
+                                "info": {
+                                    "dates": {
+                                        "startDate": "Initial date",
+                                        "dateAdd": "date of review"
+                                    },
+                                    "durationTaught": "8m 3w (startDate - dateAdd)",
+                                    "majorExam": "PSLE",
+                                    "gradeJump": {
+                                        "initial": "band4",
+                                        "final": "band2"
+                                    },
+                                    "testimonial": "Teacher was a super fun and interesting tutor! Made lessons interesting with many games."
+                                }
+                            },
+                            "assignmentId2": {
+                                "reviewerInfo": {
+                                    "name": {
+                                        "firstName": "Ah Gao",
+                                        "lastName": "Tan"
+                                    },
+                                    "photoUrl": "https://randomuser.me/api/portraits/men/58.jpg",
+                                    "sbjcts": {
+                                        "Math": 1,
+                                        "Science": 1
+                                    },
+                                    "startingLvl": {
+                                        "pri5": 1
+                                    }
+                                },
+                                "score": {
+                                    "patience": 5,
+                                    "engagement": 5,
+                                    "clarity": 5
+                                },
+                                "info": {
+                                    "dates": {
+                                        "startDate": "Initial date",
+                                        "dateAdd": "date of review"
+                                    },
+                                    "durationTaught": "1y 8m 3w (startDate - dateAdd)",
+                                    "majorExam": "PSLE",
+                                    "gradeJump": {
+                                        "initial": "band3",
+                                        "final": "band2"
+                                    },
+                                    "testimonial": "Teacher was cool! We made fratal diagrams."
+                                }
+                            }
+                        }
+                    }
+                },
+                "status": "Incoming",
+                "dates": {
+                    "req": "date requested",
+                    "accepted": "Date Tutor makes final confirmation",
+                    "end": "date lessons ends // reviews added"
+                }
+            }
+        }
+    },
+    "appliedTutors": {
+        "applied": {},
+        "pendingAcceptance": {}
+    }
+}

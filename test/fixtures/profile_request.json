@@ -1,0 +1,116 @@
+{
+    "assignmentId1": {
+        "assignmentInfo": {
+            "tuteeIdentity": {
+                "name": {
+                    "firstName": "Mary",
+                    "lastName": "Antoniette"
+                },
+                "photoUrl": "https://randomuser.me/api/portraits/women/60.jpg",
+                "uid": "unique_string"
+            },
+            "tuteeDetails": {
+                "dates": {
+                    "dateCreate": "some timestamp",
+                    "dateMod": "some other timestamp"
+                },
+                "lvls": {
+                    "pri6": 1
+                },
+                "sbjcts": {
+                    "Science": 1
+                },
+                "addRemarks": "Mary loves a good teacher. Needs someone who is willing to be a tutor",
+                "gradeJump": {
+                    "initial": "band4",
+                    "final": "band2"
+                }
+            },
+            "tuteeRequirements": {
+                "timing": "Anytime weekdays after 2pm",
+                "freq": "1x a week",
+                "loc": "Anywhere in the East, prefereably near Ang Mo Kio",
+                "pricing": {
+                    "min": 0.0,
+                    "max": 0.0,
+                    "proposed": 20.0,
+                    "type": "hourly"
+                },
+                "formats": {
+                    "online": 1,
+                    "private": 1
+                },
+                "tutorGender": {
+                    "Male": 1
+                },
+                "tutorOccs": {
+                    "MOE": 1,
+                    "Part-Time": 1
+                }
+            }
+        },
+        "status": "Done",
+        "dates": {
+            "req": "date requested",
+            "start": "Date Tutee makes final confirmation",
+            "end": "date lessons ends // review added"
+        }
+    },
+    "assignmentId2": {
+        "assignmentInfo": {
+            "tuteeIdentity": {
+                "name": {
+                    "firstName": "Mary",
+                    "lastName": "Antoniette"
+                },
+                "photoUrl": "https://randomuser.me/api/portraits/women/30.jpg",
+                "uid": "unique_string"
+            },
+            "tuteeDetails": {
+                "dates": {
+                    "dateCreate": "some timestamp",
+                    "dateMod": "some other timestamp"
+                },
+                "lvls": {
+                    "pri6": 1
+                },
+                "sbjcts": {
+                    "Science": 1
+                },
+                "addRemarks": "Mary loves a good teacher. Needs someone who is willing to be a tutor",
+                "gradeJump": {
+                    "initial": "band4",
+                    "final": "band2"
+                }
+            },
+            "tuteeRequirements": {
+                "timing": "Anytime weekdays after 2pm",
+                "freq": "1x a week",
+                "loc": "Anywhere in the East, prefereably near Ang Mo Kio",
+                "pricing": {
+                    "min": 0.0,
+                    "max": 0.0,
+                    "proposed": 20.0,
+                    "type": "hourly"
+                },
+                "formats": {
+                    "online": 1,
+                    "private": 1
+                },
+                "tutorGender": {
+                    "Male": 1
+                },
+                "tutorOccs": {
+                    "MOE": 1,
+                    "Part-Time": 1
+                }
+            }
+        },
+        "status": "Done",
+        "dates": {
+            "req": "date requested",
+            "start": "Date Tutee makes final confirmation",
+            "end": "date lessons ends // review added"
+        }
+    }
+}

@@ -1,0 +1,50 @@
+[
+    {
+        "level": 2,
+        "subject": {
+            "level": 2,
+            "subjectArea": "science"
+        },
+        "timing": "timing",
+        "location": "location",
+        "rateMin": 60.0,
+        "rateMax": 80.0,
+        "gender": 1,
+        "freq": "freq",
+        "tutorOccupation": 0,
+        "format": 1,
+        "additionalRemarks": "addtionalRemarks",
+        "applied": 1,
+        "liked": 2,
+        "status": 0,
+        "username": "username",
+        "tuteeName": {
+            "firstName": "john",
+            "lastName": "doe"
+        }
+    },
+    {
+        "level": 3,
+        "subject": {
+            "level": 3,
+            "subjectArea": "science"
+        },
+        "timing": "timing",
+        "location": "location",
+        "rateMin": 50.0,
+        "rateMax": 70.0,
+        "gender": 1,
+        "freq": "freq",
+        "tutorOccupation": 0,
+        "format": 1,
+        "additionalRemarks": "addtionalRemarks",
+        "applied": 1,
+        "liked": 3,
+        "status": 0,
+        "username": "username",
+        "tuteeName": {
+            "firstName": "john",
+            "lastName": "doe"
+        }
+    }
+]

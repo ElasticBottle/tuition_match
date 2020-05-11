@@ -1,0 +1,24 @@
+{
+    "Liked": {
+        "uid123456789": "date diked",
+        "uid1234567890": "date diked"
+    },
+    "declinedBy": {
+        "uid1234": "date declined"
+    },
+    "acceptedBy": {
+        "uid08342": "date accepted"
+    },
+    "inboundReq": {
+        "uid0198324": "date req"
+    },
+    "outboundReq": {
+        "uid238423": "date req"
+    },
+    "numbers": {
+        "toRev": 2,
+        "awaitC": 3,
+        "awaitR": 2,
+        "toC": 3
+    }
+}

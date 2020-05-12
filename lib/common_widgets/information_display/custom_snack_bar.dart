@@ -8,7 +8,7 @@ class CustomSnackBar extends SnackBar {
     Key key,
     @required this.toDisplay,
     this.prefix,
-    this.delay = 2,
+    this.delay = 3,
     this.color,
     this.actionText = 'Dismiss',
     this.actionTextColor,

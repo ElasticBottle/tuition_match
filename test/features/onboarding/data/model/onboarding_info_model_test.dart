@@ -3,7 +3,7 @@ import 'package:cotor/features/onboarding/domain/entities/onboard_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../fixtures/fixture_reader.dart';
+import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
   final tOnboardingInfoModel = OnboardInfoModel(

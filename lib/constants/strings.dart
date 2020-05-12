@@ -19,13 +19,13 @@ class Strings {
   static const String noUserFailureErrorMsg =
       'There is currently no user to create profile for.';
   static const String serverFailureErrorMsg =
-      'Sorry, Our Server is having problems processing the request (||^_^), retrieving last fetched list';
+      'Sorry, Our Server is having problems processing the request (||^_^)';
   static const String networkFailureErrorMsg =
-      'No internet access, please check your connection, retrieving last fetched list';
+      'No internet access, please check your connection';
   static const String cacheFailureErrorMsg =
       'No last fetched list, please try again when you\'re online!';
-  static const String cannotSaveNameAndPhoneNumber =
-      'An error occured trying to process the application';
+  static const String sendEmailFailureErrorMsg =
+      'Too many requests! please wait again before requesting';
   static const String unknownFailureErrorMsg =
       'Something went wrong and we don\'t know why, drop us a message at jeffhols18@gami.com and we\'ll get you sorted right away.';
 
@@ -33,38 +33,57 @@ class Strings {
   //  __ _ _  _| |_| |_    __| |_ _  _ / _|/ _|
   // / _` | || |  _| ' \  (_-<  _| || |  _|  _|
   // \__,_|\_,_|\__|_||_| /__/\__|\_,_|_| |_|
+
   // Logout
   static const String logout = 'Logout';
   static const String logoutAreYouSure =
       'Are you sure that you want to logout?';
   static const String logoutFailed = 'Logout failed';
 
-  //  __                                 _   _   _        _                    _                __ _     _    _
-  // / _|___ _ _ _ __  ___  __ _ _ _  __| | | |_| |_  ___(_)_ _  __ ____ _ _ _(_)___ _  _ ___  / _(_)___| |__| |___
-  //|  _/ _ \ '_| '  \(_-< / _` | ' \/ _` | |  _| ' \/ -_) | '_| \ V / _` | '_| / _ \ || (_-< |  _| / -_) / _` (_-<
-  //|_| \___/_| |_|_|_/__/ \__,_|_||_\__,_|  \__|_||_\___|_|_|    \_/\__,_|_| |_\___/\_,_/__/ |_| |_\___|_\__,_/__/
+  //  __                                 _    __ _     _    _
+  // / _|___ _ _ _ __  ___  __ _ _ _  __| |  / _(_)___| |__| |___
+  //|  _/ _ \ '_| '  \(_-< / _` | ' \/ _` | |  _| / -_) / _` (_-<
+  //|_| \___/_| |_|_|_/__/ \__,_|_||_\__,_| |_| |_\___|_\__,_/__/
 
   /// Used for the labelling, hinting, informing, and describing of text fields
   /// Naming Convention:
-  /// ERROR = Prefaced with 'error'
-  /// LABELS = Ends with 'Label'
-  /// HINTS = Ends with 'Hint'
-  /// ADDITIONAL INFO ABOVE = Ends with 'Info'
-  /// ADDITIONAL INFO BELOW = Ends with 'Desc'
+  /// FORM TITLE = Ends with 'Title'
+  /// FROM SUBTITLE = Ends with 'Subtitle
+  /// FIELD ERROR = Prefaced with 'error'
+  /// FEILD LABELS = Ends with 'Label'
+  /// FIELD HINTS = Ends with 'Hint'
+  /// FIELD ADDITIONAL INFO ABOVE = Ends with 'Info'
+  /// FIELD ADDITIONAL INFO BELOW = Ends with 'Desc'
   /// BUTTON TEXT = Ends with 'ButtonText'
 
   //Generic form errors
   static const String errorFieldEmpty = 'Field cannot be empty';
   static const String errorCheckBoxEmpty = 'Please select at least one option';
-  static const String errorRateInvalid = 'Pleaes enter a proper number';
+  static const String errorNumberInvalid = 'Pleaes enter a proper number';
+
+// Registration Errors
   static const String errorPhoneNumInvalid =
       'Please enter a real phone number so you can connect with students/tutors!';
+  static const String errorCountryCodeInvalid =
+      'Currently only support SG and Msia numbers';
+  static const String errorEmailInvalid = 'Email is invalid';
+  static const String errorPasswordTooShort = 'Password is too short';
 
   // Auth form common fields
   static const String emailLabel = 'Email';
+  static const String emailHint = 'test@test.com';
   static const String passwordLabel = 'Password';
+  static const String passwordHint = 'Password (8+ characters)';
+  static const String firstNameLabel = 'First Name';
+  static const String firstNameHint = 'E.g. John';
+  static const String lastNameLabel = 'Last Name';
+  static const String lastNameHint = 'E.g. Tan';
   static const String phoneNumLabel = 'Phone Number';
-  static const String phoneNumHint = '+65 87654321';
+  static const String phoneNumHint = 'E.g. 87654321';
+  static const String phoneNumDesc =
+      'Only provided with your consent to make arrangements';
+  static const String countryCodeHint = '+65';
+  static const String initialCountryCode = '+65';
 
   // Login page form
   static const String signInButtonText = 'Sign In';
@@ -75,18 +94,15 @@ class Strings {
   static const String errorPasswordEmpty = 'Password can\'t be empty';
 
   // registration page
-  static const String emailHint = 'test@test.com';
-  static const String errorEmailInvalid = 'Email is invalid';
-  static const String passwordHint = 'Password (8+ characters)';
-  static const String errorPasswordTooShort = 'Password is too short';
-  static const String firstNameLabel = 'First Name';
-  static const String lastNameLabel = 'Last Name';
+  static const String registrationTitle = 'Join Now';
+  static const String registrationSubtitle =
+      'And be part of our vibrant community!';
   static const String registerButtonText = 'Register';
 
   // First time google sign in page
+  static const String firstTimeSignInTitle = 'First Time Sign-In';
+  static const String firstTimeSignInSubtitle = 'Just settling you in';
   static const String saveDetailsButtonText = 'Save Details';
-  static const String phoneNumDesc =
-      'Only provided with your consent to make arrangements';
 
   // Tutor and Tutee commons Fields
   static const String levelLabel = 'Level';
@@ -125,6 +141,29 @@ class Strings {
   static const String tutorPreferredLocationInfo =
       'Tutor\'s Preferred Location';
   static const String requestTutorButtonText = 'Request Tutor';
+
+  // ___       __       ___
+  //|_ _|_ _  / _|___  | _ \__ _ __ _ ___ ___
+  // | || ' \|  _/ _ \ |  _/ _` / _` / -_|_-<
+  //|___|_||_|_| \___/ |_| \__,_\__, \___/__/
+  //                            |___/
+  /// Holds the text for pages meant to inform or direct (No internet, verify email page etc.)
+  /// Naming Convention:
+  /// TITLE = Refer to [FORM TITLE] under [Form and fields]
+  /// SUBTITLE = refer to [FORM SUBTITLE] under [Form and fields]
+  /// PAGE WORDS = starts with paragraph point, ends with 'para'
+  /// PAGE ERROR = refer to [FIELD  ERROR] under [Form and fields]
+  /// BUTTON TEXT = refer to [BUTTON TEXT] under [Form and fields]
+
+  // Verify email page
+  static const String verifyEmailTitle = 'Almost\nThere';
+  static const String verifyEmailSubtitle =
+      'Check your email now and follow the instructions to verify it.';
+  static const String cannotFindEmailPara =
+      'Can\'t find the email? Check your spam, or';
+  static const String verifiedEmailButtonText = 'I\'ve verified my email';
+  static const String resendEmailVerificationButtonText =
+      'Resend Email Verification';
 
   //.____    .__          __    __________
   //|    |   |__| _______/  |_  \______   \_____     ____   ____   ______

@@ -7,6 +7,15 @@ class VerifyEmailState extends Equatable {
     this.isSigningOut,
     this.error,
   });
+
+  factory VerifyEmailState.initial() {
+    return VerifyEmailState(
+      isSending: false,
+      isSent: false,
+      isSigningOut: false,
+      error: null,
+    );
+  }
   factory VerifyEmailState.error(String error) {
     return VerifyEmailState(
       isSending: false,

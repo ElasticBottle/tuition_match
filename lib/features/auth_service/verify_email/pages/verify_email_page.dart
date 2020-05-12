@@ -1,4 +1,6 @@
+import 'dart:math' as math;
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
+import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/verify_email/bloc/verify_email_bloc.dart';
@@ -10,19 +12,32 @@ class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Verify your email'),
-      ),
-      body: BlocProvider(
-        create: (context) => sl<VerifyEmailBloc>(),
-        child: RefreshIndicator(
+    return BlocProvider(
+      create: (context) => sl<VerifyEmailBloc>(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
+          elevation: 0,
+          leading: IconButton(
+            icon: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationY(math.pi),
+                child: Icon(Icons.exit_to_app)),
+            onPressed: () =>
+                BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
+          ),
+        ),
+        body: RefreshIndicator(
             onRefresh: () async {
               BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
             },
-            child: SingleChildScrollView(
-              child: VerifyEmailPageBody(),
-              physics: const AlwaysScrollableScrollPhysics(),
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: VerifyEmailPageBody(),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                ),
+              ),
             )),
       ),
     );
@@ -39,51 +54,65 @@ class VerifyEmailPageBody extends StatelessWidget {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                SnackBar(
-                  content: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text(state.error), Icon(Icons.error)],
+                CustomSnackBar(
+                  toDisplay: Text(
+                    state.error,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2
+                        .apply(color: Theme.of(context).colorScheme.onError),
                   ),
-                  action: SnackBarAction(
-                    label: Strings.dismiss,
-                    onPressed: () {
-                      Scaffold.of(context).hideCurrentSnackBar();
-                    },
-                  ),
-                  backgroundColor: Colors.red,
-                ),
+                ).show(context),
               );
           }
         },
         builder: (BuildContext context, VerifyEmailState state) {
-          return Column(
-            children: <Widget>[
-              Icon(
-                Icons.perm_identity,
-                size: 50,
-              ),
-              Text(
-                '''Please check the email that you used to register for a confirmation email!
-                  Once verified, give it five seconds for everything to sync and pull to refresh!''',
-              ),
-              CustomRaisedButton(
-                child: Text(
-                  'Resend Email Verification',
+          return Padding(
+            padding: const EdgeInsets.all(35.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  Strings.verifyEmailTitle,
+                  style: Theme.of(context).textTheme.headline4,
                 ),
-                loading: state.isSending,
-                onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
-                    .add(SendVerificationEmail()),
-              ),
-              FlatButton(
-                onPressed: () =>
-                    BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
-                child: state.isSigningOut
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : Text('Log out'),
-              ),
-            ],
+                SizedBox(height: 10.0),
+                Text(Strings.verifyEmailSubtitle),
+                SizedBox(height: 50.0),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: CustomRaisedButton(
+                    child: Text(
+                      Strings.verifiedEmailButtonText,
+                      style: Theme.of(context)
+                          .textTheme
+                          .button
+                          .apply(fontSizeFactor: 1.3),
+                    ),
+                    onPressed: () => BlocProvider.of<AuthServiceBloc>(context)
+                        .add(LoggedIn()),
+                  ),
+                ),
+                SizedBox(height: 50.0),
+                Text(Strings.cannotFindEmailPara),
+                FlatButton(
+                  padding: EdgeInsets.zero,
+                  child: state.isSending
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 15.0),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : Text(
+                          Strings.resendEmailVerificationButtonText,
+                          style: Theme.of(context).textTheme.button,
+                        ),
+                  onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
+                      .add(SendVerificationEmail()),
+                ),
+              ],
+            ),
           );
         },
       ),

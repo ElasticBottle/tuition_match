@@ -22,6 +22,8 @@ class NetworkFailure extends Failure {}
 
 class NoUserFailure extends Failure {}
 
+class SendEmailFailure extends Failure {}
+
 class AuthenticationFailure extends Failure {
   const AuthenticationFailure({@required this.message});
   final String message;

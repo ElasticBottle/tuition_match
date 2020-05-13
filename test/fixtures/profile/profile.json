@@ -1,0 +1,48 @@
+{
+    "identity": {
+        "pUrl": "https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+        "name": {
+            "f": "John",
+            "l": "Tan"
+        },
+        "accType": ".b",
+        "isOpn": true,
+        "gender": "m",
+        "uid": "12345"
+    },
+    "details": {
+        "date": {
+            "create": "158936-09-04 00:00:00.000",
+            "mod": "158936-09-04 00:00:00.000"
+        },
+        "lvlTeach": [
+            "Pri6",
+            "Pri5"
+        ],
+        "sbjTeach": [
+            "Science",
+            "Math"
+        ],
+        "occ": "Part Time",
+        "quali": "Top scorer",
+        "sellPts": "Three previous tutess, all scored failing grades"
+    },
+    "requirements": {
+        "time": "Anytime weekdays after 2pm",
+        "loc": "Anywhere in the East, prefereably near Ang Mo Kio",
+        "rates": {
+            "min": 10.0,
+            "max": 30.0,
+            "prop": 0.0,
+            "type": "Hr"
+        },
+        "frmt": [
+            "Online",
+            "Private"
+        ]
+    },
+    "stats": {
+        "like": 5,
+        "request": 3
+    }
+}

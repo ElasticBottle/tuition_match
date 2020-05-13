@@ -1,0 +1,14 @@
+{
+    "time": "Anytime weekdays after 2pm",
+    "loc": "Anywhere in the East, prefereably near Ang Mo Kio",
+    "rates": {
+        "min": 10.0,
+        "max": 30.0,
+        "prop": 0.0,
+        "type": "Hr"
+    },
+    "frmt": [
+        "Online",
+        "Private"
+    ]
+}

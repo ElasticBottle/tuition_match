@@ -1,0 +1,17 @@
+{
+    "date": {
+        "create": "2020-05-13 23:07:24.000",
+        "mod": "2020-05-13 23:07:24.000"
+    },
+    "lvlTeach": [
+        "Pri6",
+        "Pri5"
+    ],
+    "sbjTeach": [
+        "Science",
+        "Math"
+    ],
+    "occ": "Part Time",
+    "quali": "Top scorer",
+    "sellPts": "Three previous tutess, all scored failing grades"
+}

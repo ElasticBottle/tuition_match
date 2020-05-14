@@ -55,11 +55,13 @@ class DateDetailsEntity extends DateDetails implements EntityBase<DateDetails> {
     };
   }
 
-  Map<String, dynamic> toFirebaseMap({bool isNew}) {
+  Map<String, dynamic> toFirebaseMap({bool isNew, bool freeze = false}) {
     return <String, dynamic>{
       DATE_CREATED:
           isNew ? FieldValue.serverTimestamp() : Timestamp.fromDate(dateAdded),
-      DATE_MODIFIED: FieldValue.serverTimestamp(),
+      DATE_MODIFIED: freeze
+          ? Timestamp.fromDate(dateModified)
+          : FieldValue.serverTimestamp(),
     };
   }
 }

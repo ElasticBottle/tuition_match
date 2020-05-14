@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/data/models/post/tutor_profile/requirements/requirements_tutor_entity.dart';
 
 import 'package:cotor/domain/entities/post/tutor_profile/profile.dart';
@@ -42,7 +40,6 @@ void main() {
         () async {
           final Map<String, dynamic> jsonMap =
               json.decode(fixture('profile/profile_requirements.json'));
-          jsonMap[UID] = '12345';
 
           // act
           final result = RequirementsTutorEntity.fromJson(jsonMap);
@@ -85,7 +82,6 @@ void main() {
         () async {
           final Map<String, dynamic> jsonMap = json
               .decode(fixture('profile/profile_requirements_firebase.json'));
-          jsonMap[UID] = '12345';
 
           // act
           final result = RequirementsTutorEntity.fromFirebaseMap(jsonMap);

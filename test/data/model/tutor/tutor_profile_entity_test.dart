@@ -70,7 +70,7 @@ void main() {
           'pUrl':
               'https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
           'name': {'f': 'John', 'l': 'Tan'},
-          'accType': '.b',
+          'accType': '.t',
           'isOpn': true,
           'gender': 'm'
         },
@@ -78,7 +78,7 @@ void main() {
           'date': {'create': timestamp, 'mod': timestamp},
           'lvlTeach': {'Pri6': 1, 'Pri5': 1},
           'sbjTeach': {'Science': 1, 'Math': 1},
-          'occ': 'Part Time',
+          'occ': 'PT',
           'quali': 'Top scorer',
           'sellPts': 'Three previous tutess, all scored failing grades'
         },
@@ -86,7 +86,7 @@ void main() {
           'time': 'Anytime weekdays after 2pm',
           'loc': 'Anywhere in the East, prefereably near Ang Mo Kio',
           'rates': {'min': 10.0, 'max': 30.0, 'prop': 0.0, 'type': 'Hr'},
-          'frmt': {'Online': 1, 'Private': 1}
+          'frmt': {'On': 1, 'Pr': 1}
         },
         'stats': {'like': 5, 'request': 3}
       };
@@ -124,7 +124,7 @@ void main() {
               'pUrl':
                   'https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
               'name': {'f': 'John', 'l': 'Tan'},
-              'accType': '.b',
+              'accType': '.t',
               'isOpn': true,
               'gender': 'm'
             },
@@ -135,7 +135,7 @@ void main() {
               },
               'lvlTeach': {'Pri6': 1, 'Pri5': 1},
               'sbjTeach': {'Science': 1, 'Math': 1},
-              'occ': 'Part Time',
+              'occ': 'PT',
               'quali': 'Top scorer',
               'sellPts': 'Three previous tutess, all scored failing grades'
             },
@@ -143,13 +143,13 @@ void main() {
               'time': 'Anytime weekdays after 2pm',
               'loc': 'Anywhere in the East, prefereably near Ang Mo Kio',
               'rates': {'min': 10.0, 'max': 30.0, 'prop': 0.0, 'type': 'Hr'},
-              'frmt': {'Online': 1, 'Private': 1}
+              'frmt': {'On': 1, 'Pr': 1}
             },
             'stats': {'like': FieldValue, 'request': FieldValue}
           };
           // act
           final Map<String, dynamic> result = ReferenceProfile.testProfileEntity
-              .toDoucmentSnapshot(isNew: false);
+              .toDocumentSnapshot(isNew: false);
 
           // assert
           expect(result, expectedDocumentSnapshot);
@@ -163,7 +163,7 @@ void main() {
               'pUrl':
                   'https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
               'name': {'f': 'John', 'l': 'Tan'},
-              'accType': '.b',
+              'accType': '.t',
               'isOpn': true,
               'gender': 'm'
             },
@@ -174,7 +174,7 @@ void main() {
               },
               'lvlTeach': {'Pri6': 1, 'Pri5': 1},
               'sbjTeach': {'Science': 1, 'Math': 1},
-              'occ': 'Part Time',
+              'occ': 'PT',
               'quali': 'Top scorer',
               'sellPts': 'Three previous tutess, all scored failing grades'
             },
@@ -182,13 +182,13 @@ void main() {
               'time': 'Anytime weekdays after 2pm',
               'loc': 'Anywhere in the East, prefereably near Ang Mo Kio',
               'rates': {'min': 10.0, 'max': 30.0, 'prop': 0.0, 'type': 'Hr'},
-              'frmt': {'Online': 1, 'Private': 1}
+              'frmt': {'On': 1, 'Pr': 1}
             },
             'stats': {'like': 0, 'request': 0}
           };
           // act
           final Map<String, dynamic> result = ReferenceProfile.testProfileEntity
-              .toDoucmentSnapshot(isNew: true);
+              .toDocumentSnapshot(isNew: true);
 
           // assert
           expect(result, expectedDocumentSnapshot);

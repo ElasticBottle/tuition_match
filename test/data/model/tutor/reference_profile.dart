@@ -31,7 +31,7 @@ class ReferenceProfile {
         'https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
     isOpen: true,
     gender: Gender.MALE,
-    accountType: AccountType.BASIC,
+    accountType: AccountType.TUTOR,
     uid: '12345',
   );
 
@@ -45,7 +45,7 @@ class ReferenceProfile {
         'https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50',
     isOpen: true,
     gender: GenderEntity.fromDomainEntity(Gender.MALE),
-    accountType: AccountTypeEntity.fromDomainEntity(AccountType.BASIC),
+    accountType: AccountTypeEntity.fromDomainEntity(AccountType.TUTOR),
     uid: '12345',
   );
 

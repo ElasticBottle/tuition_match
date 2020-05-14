@@ -96,7 +96,7 @@ class TutorProfileEntity extends TutorProfile
     };
   }
 
-  Map<String, dynamic> toDoucmentSnapshot({bool isNew}) {
+  Map<String, dynamic> toDocumentSnapshot({bool isNew}) {
     return <String, dynamic>{
       IDENTITY: identity.toFirebaseMap(),
       DETAILS: details.toFirebaseMap(isNew: isNew),

@@ -5,15 +5,15 @@
             "f": "John",
             "l": "Tan"
         },
-        "accType": ".b",
+        "accType": ".t",
         "isOpn": true,
         "gender": "m",
         "uid": "12345"
     },
     "details": {
         "date": {
-            "create": "158936-09-04 00:00:00.000",
-            "mod": "158936-09-04 00:00:00.000"
+            "create": "2020-05-13 23:07:24.000",
+            "mod": "2020-05-13 23:07:24.000"
         },
         "lvlTeach": [
             "Pri6",
@@ -23,7 +23,7 @@
             "Science",
             "Math"
         ],
-        "occ": "Part Time",
+        "occ": "PT",
         "quali": "Top scorer",
         "sellPts": "Three previous tutess, all scored failing grades"
     },
@@ -37,8 +37,8 @@
             "type": "Hr"
         },
         "frmt": [
-            "Online",
-            "Private"
+            "On",
+            "Pr"
         ]
     },
     "stats": {

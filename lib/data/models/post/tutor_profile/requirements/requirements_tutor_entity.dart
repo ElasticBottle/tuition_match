@@ -27,7 +27,7 @@ class RequirementsTutorEntity extends RequirementsTutor
           .entries
           .map<ClassFormatEntity>(
             (MapEntry<String, dynamic> e) =>
-                ClassFormatEntity.fromString(e.key),
+                ClassFormatEntity.fromShortString(e.key),
           )
           .toList(),
       timing: TimingEntity.fromString(json[TIMING]),
@@ -43,7 +43,7 @@ class RequirementsTutorEntity extends RequirementsTutor
       classFormat: json[CLASS_FORMATS]
           .cast<String>()
           .map<ClassFormatEntity>(
-            (String e) => ClassFormatEntity.fromString(e),
+            (String e) => ClassFormatEntity.fromShortString(e),
           )
           .toList(),
       timing: TimingEntity.fromString(json[TIMING]),
@@ -91,9 +91,9 @@ class RequirementsTutorEntity extends RequirementsTutor
 
   Map<String, dynamic> toFirebaseMap() {
     return <String, dynamic>{
-      CLASS_FORMATS: Map.fromIterable(
+      CLASS_FORMATS: Map<String, dynamic>.fromIterable(
         classFormat,
-        key: (dynamic element) => element.toString(),
+        key: (dynamic element) => element.toShortString(),
         value: (dynamic element) => 1,
       ),
       TIMING: timing.toString(),
@@ -104,7 +104,7 @@ class RequirementsTutorEntity extends RequirementsTutor
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      CLASS_FORMATS: classFormat.map((e) => e.toString()).toList(),
+      CLASS_FORMATS: classFormat.map((e) => e.toShortString()).toList(),
       TIMING: timing.toString(),
       LOCATION: location.toString(),
       PRICE: price.toJson(),

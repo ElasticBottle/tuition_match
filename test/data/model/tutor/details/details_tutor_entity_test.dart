@@ -13,7 +13,7 @@ void main() {
 
     group('fromDomainEntity', () {
       test(
-          'should return DetailsTutorEntity when passed with valid UserIdentity',
+          'should return DetailsTutorEntity when passed with valid DetailsTutor',
           () {
         // act
         final result = DetailsTutorEntity.fromDomainEntity(

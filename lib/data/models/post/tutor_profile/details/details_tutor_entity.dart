@@ -38,16 +38,18 @@ class DetailsTutorEntity extends DetailsTutor
     }
     return DetailsTutorEntity(
       dateDetails: DateDetailsEntity.fromJson(json[DATE_DETAILS]),
-      levelsTaught:
-          json[LEVELS_TAUGHT].cast<String>().map<LevelEntity>((String e) {
-        return LevelEntity.fromShortString(e);
-      }).toList(),
+      levelsTaught: json[LEVELS_TAUGHT]
+          .cast<String>()
+          .map<LevelEntity>((String e) => LevelEntity.fromShortString(e))
+          .toList(),
       subjectsTaught: json[SUBJECTS_TAUGHT]
           .cast<String>()
-          .map<SubjectAreaEntity>((String e) => SubjectAreaEntity.fromString(e))
+          .map<SubjectAreaEntity>(
+              (String e) => SubjectAreaEntity.fromShortString(e))
           .toList(),
       qualification: QualificationsEntity.fromString(json[QUALIFICATIONS]),
-      tutorOccupation: TutorOccupationEntity.fromString(json[TUTOR_OCCUPATION]),
+      tutorOccupation:
+          TutorOccupationEntity.fromShortString(json[TUTOR_OCCUPATION]),
       sellingPoints: SellingPointsEntity.fromString(json[SELLING_POINTS]),
     );
   }
@@ -66,10 +68,11 @@ class DetailsTutorEntity extends DetailsTutor
       subjectsTaught: json[SUBJECTS_TAUGHT]
           .entries
           .map<SubjectAreaEntity>((MapEntry<String, dynamic> e) =>
-              SubjectAreaEntity.fromString(e.key))
+              SubjectAreaEntity.fromShortString(e.key))
           .toList(),
       qualification: QualificationsEntity.fromString(json[QUALIFICATIONS]),
-      tutorOccupation: TutorOccupationEntity.fromString(json[TUTOR_OCCUPATION]),
+      tutorOccupation:
+          TutorOccupationEntity.fromShortString(json[TUTOR_OCCUPATION]),
       sellingPoints: SellingPointsEntity.fromString(json[SELLING_POINTS]),
     );
   }
@@ -132,15 +135,14 @@ class DetailsTutorEntity extends DetailsTutor
     return <String, dynamic>{
       DATE_DETAILS: dateDetails.toJson(),
       LEVELS_TAUGHT: levelsTaught.map((e) => e.toShortString()).toList(),
-      SUBJECTS_TAUGHT: subjectsTaught.map((e) => e.toString()).toList(),
-      TUTOR_OCCUPATION: occupation.toString(),
+      SUBJECTS_TAUGHT: subjectsTaught.map((e) => e.toShortString()).toList(),
+      TUTOR_OCCUPATION: occupation.toShortString(),
       QUALIFICATIONS: qualification.toString(),
       SELLING_POINTS: sellingPoints.toString()
     };
   }
 
   Map<String, dynamic> toFirebaseMap({bool isNew}) {
-    // TODO(ElasticBottle): verify that it actually works
     return <String, dynamic>{
       DATE_DETAILS: dateDetails.toFirebaseMap(isNew: isNew),
       LEVELS_TAUGHT: Map<String, dynamic>.fromIterable(
@@ -150,10 +152,10 @@ class DetailsTutorEntity extends DetailsTutor
       ),
       SUBJECTS_TAUGHT: Map<String, dynamic>.fromIterable(
         subjectsTaught,
-        key: (dynamic element) => element.toString(),
+        key: (dynamic element) => element.toShortString(),
         value: (dynamic element) => 1,
       ),
-      TUTOR_OCCUPATION: occupation.toString(),
+      TUTOR_OCCUPATION: occupation.toShortString(),
       QUALIFICATIONS: qualification.toString(),
       SELLING_POINTS: sellingPoints.toString()
     };

@@ -12,6 +12,9 @@ class StatsSimpleEntity extends StatsSimple implements EntityBase<StatsSimple> {
           requestCount: requestCount,
         );
   factory StatsSimpleEntity.fromJson(Map<String, dynamic> json) {
+    if (json == null || json.isEmpty) {
+      return null;
+    }
     return StatsSimpleEntity(
       likeCount: json[LIKE_COUNT],
       requestCount: json[REQUEST_COUNT],

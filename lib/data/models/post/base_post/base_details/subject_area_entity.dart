@@ -4,7 +4,7 @@ import 'package:cotor/domain/entities/post/base_post/base_details/subject_area.d
 class SubjectAreaEntity extends SubjectArea implements EntityBase<SubjectArea> {
   const SubjectAreaEntity(String subject) : super(subject);
 
-  factory SubjectAreaEntity.fromString(String subject) {
+  factory SubjectAreaEntity.fromShortString(String subject) {
     return SubjectAreaEntity(subject);
   }
 

@@ -1,0 +1,59 @@
+{
+    "assignmentId1": {
+        "identity": {
+            "pUrl": "https://secure.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+            "name": {
+                "f": "John",
+                "l": "Tan"
+            },
+            "uid": "12345",
+            "accType": ".s",
+            "isPblc": true,
+            "isOpn": true
+        },
+        "details": {
+            "date": {
+                "create": "TOCHANGE",
+                "mod": "TOCHANGE"
+            },
+            "lvl": {
+                "Pri6": 1
+            },
+            "subj": {
+                "Science": 1
+            },
+            "grade": {
+                "start": "Bnd3",
+                "end": null
+            },
+            "addRmrks": "needs someone who is pateint and can focus on dull stuff"
+        },
+        "requirements": {
+            "time": "Anytime weekdays after 2pm",
+            "loc": "Singapore 123456, Jurong East Ave Blk 6",
+            "rates": {
+                "min": 0.0,
+                "max": 0.0,
+                "prop": 20.0,
+                "type": "Hr"
+            },
+            "frmt": {
+                "On": 1,
+                "Pr": 1
+            },
+            "freq": "1x a week",
+            "gender": {
+                "m": 1
+            },
+            "occs": {
+                "FT": 1,
+                "PT": 1,
+                "MOE": 1
+            }
+        },
+        "stats": {
+            "like": 5,
+            "request": 3
+        }
+    }
+}

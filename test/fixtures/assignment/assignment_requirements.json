@@ -1,0 +1,23 @@
+{
+    "time": "Anytime weekdays after 2pm",
+    "loc": "Singapore 123456, Jurong East Ave Blk 6",
+    "rates": {
+        "min": 0.0,
+        "max": 0.0,
+        "prop": 20.0,
+        "type": "Hr"
+    },
+    "frmt": [
+        "On",
+        "Pr"
+    ],
+    "freq": "1x a week",
+    "gender": [
+        "m"
+    ],
+    "occs": [
+        "FT",
+        "PT",
+        "MOE"
+    ]
+}

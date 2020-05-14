@@ -22,7 +22,7 @@
             "Science": 1,
             "Math": 1
         },
-        "occ": "Part Time",
+        "occ": "PT",
         "quali": "Top scorer",
         "sellPts": "Three previous tutess, all scored failing grades"
     },
@@ -36,8 +36,8 @@
             "type": "Hr"
         },
         "frmt": {
-            "Online": 1,
-            "Private": 1
+            "On": 1,
+            "Pr": 1
         }
     },
     "stats": {

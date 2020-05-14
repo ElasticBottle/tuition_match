@@ -1,22 +1,21 @@
 import 'package:cotor/domain/entities/post/applications/base_application/application_dates.dart';
 import 'package:cotor/domain/entities/post/applications/base_application/application_status.dart';
-import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
 import 'package:equatable/equatable.dart';
 
-class StudentRequest extends Equatable {
-  const StudentRequest({
-    TuteeAssignment tuteeInfo,
+class Application<T> extends Equatable {
+  const Application({
+    T application,
     ApplicationStatus applicationStatus,
     ApplicationDates applicationDates,
-  })  : _tuteeInfo = tuteeInfo,
+  })  : _application = application,
         _applicationStatus = applicationStatus,
         _applicationDates = applicationDates;
 
-  final TuteeAssignment _tuteeInfo;
+  final T _application;
   final ApplicationStatus _applicationStatus;
   final ApplicationDates _applicationDates;
 
-  TuteeAssignment get tuteeInfo => _tuteeInfo;
+  T get application => _application;
 
   ApplicationStatus get status => _applicationStatus;
 
@@ -26,13 +25,13 @@ class StudentRequest extends Equatable {
   List<Object> get props => [
         _applicationDates,
         _applicationStatus,
-        tuteeInfo,
+        application,
       ];
 
   @override
-  String toString() => '''IncomingStudentApplication(
+  String toString() => '''Application(
+      application: $application,
       applicationDates: $dates,
       applicationStatus: $status,
-      tuteeInfo: $tuteeInfo,
     ) ''';
 }

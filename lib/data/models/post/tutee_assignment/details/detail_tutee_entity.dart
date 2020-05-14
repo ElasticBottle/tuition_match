@@ -127,9 +127,9 @@ class DetailsTuteeEntity extends DetailsTutee
     };
   }
 
-  Map<String, dynamic> toFirebaseMap({bool isNew}) {
+  Map<String, dynamic> toFirebaseMap({bool isNew, bool freeze = false}) {
     return <String, dynamic>{
-      DATE_DETAILS: dateDetails.toFirebaseMap(isNew: isNew),
+      DATE_DETAILS: dateDetails.toFirebaseMap(isNew: isNew, freeze: freeze),
       GRADE_RECORDS: gradeRecords.toJson(),
       LEVELS: Map<String, dynamic>.fromIterable(
         levels,

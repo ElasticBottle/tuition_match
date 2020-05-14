@@ -96,10 +96,10 @@ class TuteeAssignmentEntity extends TuteeAssignment
     };
   }
 
-  Map<String, dynamic> toDocumentSnapshot({bool isNew}) {
+  Map<String, dynamic> toDocumentSnapshot({bool isNew, bool freeze = false}) {
     return <String, dynamic>{
       IDENTITY: identity.toFirebaseMap(),
-      DETAILS: details.toFirebaseMap(isNew: isNew),
+      DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
       REQUIREMENTS: requirements.toFirebaseMap(),
       STATS_SIMPLE: stats.toFirebaseMap(isNew: isNew),
     };

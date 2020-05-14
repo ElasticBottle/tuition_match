@@ -142,9 +142,9 @@ class DetailsTutorEntity extends DetailsTutor
     };
   }
 
-  Map<String, dynamic> toFirebaseMap({bool isNew}) {
+  Map<String, dynamic> toFirebaseMap({bool isNew, bool freeze = false}) {
     return <String, dynamic>{
-      DATE_DETAILS: dateDetails.toFirebaseMap(isNew: isNew),
+      DATE_DETAILS: dateDetails.toFirebaseMap(isNew: isNew, freeze: freeze),
       LEVELS_TAUGHT: Map<String, dynamic>.fromIterable(
         levelsTaught,
         key: (dynamic element) => element.toShortString(),

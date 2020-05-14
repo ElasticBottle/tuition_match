@@ -34,10 +34,7 @@ void main() {
             ReferenceApplication.testTuteeApplicationEntity.toDomainEntity();
 
         // assert
-        expect(result.application,
-            ReferenceApplication.testTuteeApplication.application);
-        expect(result.dates, ReferenceApplication.testTuteeApplication.dates);
-        expect(result.status, ReferenceApplication.testTuteeApplication.status);
+        expect(result, ReferenceApplication.testTuteeApplication);
       });
     });
     group('fromJson', () {
@@ -144,6 +141,7 @@ void main() {
         });
       });
       group('toDocumentSnapshot', () {
+        // TODO(EB): make toDocumentSnapshot tests more comprehensive
         test('''Should return a JSON map formatted for storage in firestore
         WITH original [dateAdded] field and [dateModified] since [isNew] is false and [freeze] is true
         AND current time for ['dates']['end'] since [ApplicationDateType] is [end]''',

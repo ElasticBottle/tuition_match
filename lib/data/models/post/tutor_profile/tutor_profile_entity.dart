@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 import 'package:cotor/data/models/entity_base.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/data/models/post/base_post/base_stats/stats_simple_entity.dart';
@@ -57,7 +59,9 @@ class TutorProfileEntity extends TutorProfile
       detailsTutor: DetailsTutorEntity.fromDomainEntity(entity.details),
       requirementsTutor:
           RequirementsTutorEntity.fromDomainEntity(entity.requirements),
-      statsSimple: StatsSimpleEntity.fromDomainEntity(entity.stats),
+      statsSimple: entity.stats != null
+          ? StatsSimpleEntity.fromDomainEntity(entity.stats)
+          : null,
     );
   }
   final DetailsTutorEntity _detailsTutor;
@@ -83,7 +87,7 @@ class TutorProfileEntity extends TutorProfile
       identityTutor: identity.toDomainEntity(),
       detailsTutor: details.toDomainEntity(),
       requirementsTutor: requirements.toDomainEntity(),
-      statsSimple: stats.toDomainEntity(),
+      statsSimple: stats?.toDomainEntity(),
     );
   }
 
@@ -96,12 +100,30 @@ class TutorProfileEntity extends TutorProfile
     };
   }
 
-  Map<String, dynamic> toDocumentSnapshot({bool isNew, bool freeze = false}) {
+  Map<String, dynamic> toDocumentSnapshot(
+      {@required bool isNew, bool freeze = false}) {
     return <String, dynamic>{
       IDENTITY: identity.toFirebaseMap(),
       DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
       REQUIREMENTS: requirements.toFirebaseMap(),
       STATS_SIMPLE: stats.toFirebaseMap(isNew: isNew),
+    };
+  }
+
+  Map<String, dynamic> toApplicationJson() {
+    return <String, dynamic>{
+      IDENTITY: identity.toJson(),
+      DETAILS: details.toJson(),
+      REQUIREMENTS: requirements.toJson(),
+    };
+  }
+
+  Map<String, dynamic> toApplicationMap(
+      {@required bool isNew, @required bool freeze}) {
+    return <String, dynamic>{
+      IDENTITY: identity.toFirebaseMap(),
+      DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
+      REQUIREMENTS: requirements.toFirebaseMap(),
     };
   }
 

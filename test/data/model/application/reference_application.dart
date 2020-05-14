@@ -3,6 +3,7 @@ import 'package:cotor/data/models/post/applications/base_application/application
 import 'package:cotor/data/models/post/applications/tutee_application/tutee_application_entity.dart';
 import 'package:cotor/data/models/post/applications/tutor_application/tutor_application_entity.dart';
 import 'package:cotor/data/models/post/tutee_assignment/tutee_assignment_entity.dart';
+import 'package:cotor/data/models/post/tutor_profile/tutor_profile_entity.dart';
 import 'package:cotor/domain/entities/post/applications/application.dart';
 import 'package:cotor/domain/entities/post/applications/base_application/application_dates.dart';
 import 'package:cotor/domain/entities/post/applications/base_application/application_status.dart';
@@ -52,13 +53,21 @@ class ReferenceApplication {
   );
 
   static final Application testTutorApplication = Application<TutorProfile>(
-    application: ReferenceProfile.testProfile,
+    application: TutorProfile(
+      detailsTutor: ReferenceProfile.testProfile.details,
+      identityTutor: ReferenceProfile.testProfile.identity,
+      requirementsTutor: ReferenceProfile.testProfile.requirements,
+    ),
     applicationDates: testApplicationDates,
     applicationStatus: testApplicationStatus,
   );
   static final TutorApplicationEntity testTutorApplicationEntity =
       TutorApplicationEntity(
-    application: ReferenceProfile.testProfileEntity,
+    application: TutorProfileEntity(
+      detailsTutor: ReferenceProfile.testProfileEntity.details,
+      identityTutor: ReferenceProfile.testProfileEntity.identity,
+      requirementsTutor: ReferenceProfile.testProfileEntity.requirements,
+    ),
     applicationDates: testApplicationDatesEntity,
     applicationStatus: testApplicationStatusEntity,
   );

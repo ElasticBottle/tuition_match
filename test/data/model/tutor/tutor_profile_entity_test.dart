@@ -97,7 +97,7 @@ void main() {
           final TutorProfileEntity result =
               TutorProfileEntity.fromDocumentSnapshot(
             testDocumentSnapshot,
-            '12345',
+            uid: '12345',
           );
 
           // assert
@@ -106,8 +106,8 @@ void main() {
         test('Should return null when snapshot is empty', () {
           // act
           final TutorProfileEntity result =
-              TutorProfileEntity.fromDocumentSnapshot(
-                  const <String, dynamic>{}, '12345');
+              TutorProfileEntity.fromDocumentSnapshot(const <String, dynamic>{},
+                  uid: '12345');
 
           // assert
           expect(result, null);

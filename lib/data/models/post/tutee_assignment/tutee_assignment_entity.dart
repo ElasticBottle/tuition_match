@@ -1,6 +1,7 @@
+import 'package:cotor/data/models/post/post_base._entity.dart';
+import 'package:cotor/domain/entities/post/base_post/post_base.dart';
 import 'package:meta/meta.dart';
 
-import 'package:cotor/data/models/entity_base.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/data/models/post/base_post/base_stats/stats_simple_entity.dart';
 import 'package:cotor/data/models/post/tutee_assignment/details/detail_tutee_entity.dart';
@@ -9,7 +10,7 @@ import 'package:cotor/data/models/post/tutee_assignment/requirements/requirement
 import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
 
 class TuteeAssignmentEntity extends TuteeAssignment
-    implements EntityBase<TuteeAssignment> {
+    implements PostBaseEntity<TuteeAssignment> {
   const TuteeAssignmentEntity({
     DetailsTuteeEntity detailsTutee,
     IdentityTuteeEntity identityTutee,
@@ -26,12 +27,14 @@ class TuteeAssignmentEntity extends TuteeAssignment
           statsSimple: statsSimple,
         );
 
-  factory TuteeAssignmentEntity.fromDocumentSnapshot(
-      Map<String, dynamic> json, String postId) {
+  factory TuteeAssignmentEntity.fromDocumentSnapshot(Map<String, dynamic> json,
+      {String postId = '', bool needId = true}) {
     if (json == null || json.isEmpty) {
       return null;
     }
-    json[IDENTITY][POST_ID] = postId;
+    if (needId) {
+      json[IDENTITY][POST_ID] = postId;
+    }
     return TuteeAssignmentEntity(
       identityTutee: IdentityTuteeEntity.fromJson(json[IDENTITY]),
       detailsTutee: DetailsTuteeEntity.fromFirebaseMap(json[DETAILS]),
@@ -53,7 +56,7 @@ class TuteeAssignmentEntity extends TuteeAssignment
     );
   }
 
-  factory TuteeAssignmentEntity.fromDomainEntity(TuteeAssignment entity) {
+  factory TuteeAssignmentEntity.fromDomainEntity(PostBase entity) {
     return TuteeAssignmentEntity(
       identityTutee: IdentityTuteeEntity.fromDomainEntity(entity.identity),
       detailsTutee: DetailsTuteeEntity.fromDomainEntity(entity.details),
@@ -82,6 +85,12 @@ class TuteeAssignmentEntity extends TuteeAssignment
   StatsSimpleEntity get stats => _statsSimple;
 
   @override
+  bool get isAssignment => true;
+
+  @override
+  bool get isProfile => false;
+
+  @override
   TuteeAssignment toDomainEntity() {
     return TuteeAssignment(
       identityTutee: identity.toDomainEntity(),
@@ -91,6 +100,7 @@ class TuteeAssignmentEntity extends TuteeAssignment
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       IDENTITY: identity.toJson(),
@@ -100,8 +110,13 @@ class TuteeAssignmentEntity extends TuteeAssignment
     };
   }
 
-  Map<String, dynamic> toDocumentSnapshot(
-      {@required bool isNew, @required bool freeze}) {
+  /// [isNew]: Describes if the assignment is being stored for the first time
+  /// [freeze]: To prevent the datemodified from being set to a current server time
+  @override
+  Map<String, dynamic> toDocumentSnapshot({
+    @required bool isNew,
+    bool freeze = false,
+  }) {
     return <String, dynamic>{
       IDENTITY: identity.toFirebaseMap(),
       DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
@@ -110,6 +125,7 @@ class TuteeAssignmentEntity extends TuteeAssignment
     };
   }
 
+  @override
   Map<String, dynamic> toApplicationJson() {
     return <String, dynamic>{
       IDENTITY: identity.toJson(),
@@ -118,10 +134,11 @@ class TuteeAssignmentEntity extends TuteeAssignment
     };
   }
 
+  @override
   Map<String, dynamic> toApplicationMap(
       {@required bool isNew, @required bool freeze}) {
     return <String, dynamic>{
-      IDENTITY: identity.toFirebaseMap(),
+      IDENTITY: identity.toJson(),
       DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
       REQUIREMENTS: requirements.toFirebaseMap(),
     };

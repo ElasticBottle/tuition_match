@@ -1,6 +1,7 @@
+import 'package:cotor/data/models/post/post_base._entity.dart';
+import 'package:cotor/domain/entities/post/base_post/post_base.dart';
 import 'package:meta/meta.dart';
 
-import 'package:cotor/data/models/entity_base.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/data/models/post/base_post/base_stats/stats_simple_entity.dart';
 import 'package:cotor/data/models/post/tutor_profile/details/details_tutor_entity.dart';
@@ -9,7 +10,7 @@ import 'package:cotor/data/models/post/tutor_profile/requirements/requirements_t
 import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
 
 class TutorProfileEntity extends TutorProfile
-    implements EntityBase<TutorProfile> {
+    implements PostBaseEntity<TutorProfile> {
   const TutorProfileEntity({
     DetailsTutorEntity detailsTutor,
     IdentityTutorEntity identityTutor,
@@ -26,12 +27,14 @@ class TutorProfileEntity extends TutorProfile
           statsSimple: statsSimple,
         );
 
-  factory TutorProfileEntity.fromDocumentSnapshot(
-      Map<String, dynamic> json, String uid) {
+  factory TutorProfileEntity.fromDocumentSnapshot(Map<String, dynamic> json,
+      {String uid = '', bool needId = true}) {
     if (json == null || json.isEmpty) {
       return null;
     }
-    json[IDENTITY][UID] = uid;
+    if (needId) {
+      json[IDENTITY][UID] = uid;
+    }
     return TutorProfileEntity(
       identityTutor: IdentityTutorEntity.fromJson(json[IDENTITY]),
       detailsTutor: DetailsTutorEntity.fromFirebaseMap(json[DETAILS]),
@@ -53,7 +56,7 @@ class TutorProfileEntity extends TutorProfile
     );
   }
 
-  factory TutorProfileEntity.fromDomainEntity(TutorProfile entity) {
+  factory TutorProfileEntity.fromDomainEntity(PostBase entity) {
     return TutorProfileEntity(
       identityTutor: IdentityTutorEntity.fromDomainEntity(entity.identity),
       detailsTutor: DetailsTutorEntity.fromDomainEntity(entity.details),
@@ -82,6 +85,11 @@ class TutorProfileEntity extends TutorProfile
   StatsSimpleEntity get stats => _statsSimple;
 
   @override
+  bool get isAssignment => false;
+  @override
+  bool get isProfile => true;
+
+  @override
   TutorProfile toDomainEntity() {
     return TutorProfile(
       identityTutor: identity.toDomainEntity(),
@@ -91,6 +99,7 @@ class TutorProfileEntity extends TutorProfile
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       IDENTITY: identity.toJson(),
@@ -100,6 +109,7 @@ class TutorProfileEntity extends TutorProfile
     };
   }
 
+  @override
   Map<String, dynamic> toDocumentSnapshot(
       {@required bool isNew, bool freeze = false}) {
     return <String, dynamic>{
@@ -110,6 +120,7 @@ class TutorProfileEntity extends TutorProfile
     };
   }
 
+  @override
   Map<String, dynamic> toApplicationJson() {
     return <String, dynamic>{
       IDENTITY: identity.toJson(),
@@ -118,10 +129,11 @@ class TutorProfileEntity extends TutorProfile
     };
   }
 
+  @override
   Map<String, dynamic> toApplicationMap(
       {@required bool isNew, @required bool freeze}) {
     return <String, dynamic>{
-      IDENTITY: identity.toFirebaseMap(),
+      IDENTITY: identity.toJson(),
       DETAILS: details.toFirebaseMap(isNew: isNew, freeze: freeze),
       REQUIREMENTS: requirements.toFirebaseMap(),
     };

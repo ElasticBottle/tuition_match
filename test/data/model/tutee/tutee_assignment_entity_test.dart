@@ -103,7 +103,7 @@ void main() {
           final TuteeAssignmentEntity result =
               TuteeAssignmentEntity.fromDocumentSnapshot(
             testDocumentSnapshot,
-            'id12345',
+            postId: 'id12345',
           );
 
           // assert
@@ -113,7 +113,8 @@ void main() {
           // act
           final TuteeAssignmentEntity result =
               TuteeAssignmentEntity.fromDocumentSnapshot(
-                  const <String, dynamic>{}, '12345');
+                  const <String, dynamic>{},
+                  postId: '12345');
 
           // assert
           expect(result, null);

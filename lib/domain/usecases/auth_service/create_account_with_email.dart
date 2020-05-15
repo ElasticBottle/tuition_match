@@ -28,41 +28,42 @@ class CreateAccountWithEmail
   @override
   Future<Either<Failure, bool>> call(
       CreateAccountWithEmailParams params) async {
-    Either<Failure, bool> success = await repo.createAccountWithEmail(
+    final Either<Failure, bool> success = await repo.createAccountWithEmail(
       email: params.email,
       password: params.password,
     );
-    success.fold(
-      (l) => null,
-      (r) async => success = await createUserDocument(CreateUserDocumentParams(
+    return success.fold(
+      (l) => Left<Failure, bool>(l),
+      (r) async => await createUserDocument(CreateUserDocumentParams(
         firstName: params.firstName,
         lastName: params.lastName,
         phoneNum: params.phoneNum,
+        countryCode: params.countryCode,
       )),
     );
-
-    return success;
   }
 }
 
 class CreateAccountWithEmailParams extends Equatable {
-  const CreateAccountWithEmailParams({
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.password,
-    this.phoneNum,
-  });
+  const CreateAccountWithEmailParams(
+      {this.firstName,
+      this.lastName,
+      this.email,
+      this.password,
+      this.phoneNum,
+      this.countryCode});
   final String email;
   final String password;
   final String firstName;
   final String lastName;
   final String phoneNum;
+  final String countryCode;
 
   @override
-  List<Object> get props => [email, password, firstName, lastName, phoneNum];
+  List<Object> get props =>
+      [email, password, firstName, lastName, phoneNum, countryCode];
 
   @override
   String toString() =>
-      'CreateAccoutnParams { email : $email, password: $password ,  firstname: $firstName, lastname: $lastName, phoneNum: $phoneNum}';
+      'CreateAccoutnParams { email : $email, password: $password ,  firstname: $firstName, lastname: $lastName, phoneNum: $phoneNum, countryCode: $countryCode}';
 }

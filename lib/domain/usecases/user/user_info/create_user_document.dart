@@ -31,40 +31,38 @@ class CreateUserDocument extends UseCase<bool, CreateUserDocumentParams> {
     Either<Failure, bool> success;
     final Either<Failure, User> currentUser =
         await authServiceRepo.getCurrentLoggedInUser();
-    currentUser.fold(
-      (l) => success = Left<Failure, bool>(l),
+    return currentUser.fold(
+      (l) {
+        success = Left<Failure, bool>(l);
+        return success;
+      },
       (r) async {
         success = await userRepo.createNewUserDocument(
           uid: r.identity.uid,
           photoUrl: r.identity.photoUrl,
+          countryCode: params.countryCode,
           phoneNum: params.phoneNum,
           firstname: params.firstName,
           lastname: params.lastName,
         );
+        return success;
       },
     );
-    return success;
   }
 }
 
 class CreateUserDocumentParams extends Equatable {
-  const CreateUserDocumentParams({
-    this.firstName,
-    this.lastName,
-    this.phoneNum,
-  });
+  const CreateUserDocumentParams(
+      {this.firstName, this.lastName, this.phoneNum, this.countryCode});
   final String firstName;
   final String lastName;
   final String phoneNum;
+  final String countryCode;
 
   @override
-  List<Object> get props => [
-        firstName,
-        lastName,
-        phoneNum,
-      ];
+  List<Object> get props => [firstName, lastName, phoneNum, countryCode];
 
   @override
   String toString() =>
-      'CreateUserDocumentParams(firstName: $firstName, lastName: $lastName, phoneNum: $phoneNum)';
+      'CreateUserDocumentParams(firstName: $firstName, lastName: $lastName, phoneNum: $phoneNum, countryCode: $countryCode)';
 }

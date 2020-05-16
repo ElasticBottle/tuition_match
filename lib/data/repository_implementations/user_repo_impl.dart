@@ -6,12 +6,15 @@ import 'package:cotor/core/platform/is_network_online.dart';
 import 'package:cotor/core/platform/network_info.dart';
 import 'package:cotor/data/datasources/user/user_local_data_source.dart';
 import 'package:cotor/data/datasources/user/user_remote_data_source.dart';
-import 'package:cotor/data/models/tutee_assignment_entity.dart';
-import 'package:cotor/data/models/tutor_profile_entity.dart';
-import 'package:cotor/data/models/user_entity.dart';
-import 'package:cotor/domain/entities/tutee_assignment.dart';
-import 'package:cotor/domain/entities/tutor_profile.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/data/models/post/applications/application_enttiy.dart';
+import 'package:cotor/data/models/post/tutee_assignment/tutee_assignment_entity.dart';
+import 'package:cotor/data/models/post/tutor_profile/tutor_profile_entity.dart';
+import 'package:cotor/data/models/user/user_entity.dart';
+import 'package:cotor/domain/entities/post/applications/application.dart';
+import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
+import 'package:cotor/domain/entities/user/user.dart';
+import 'package:cotor/domain/entities/user/withheld_info.dart';
 import 'package:cotor/domain/repositories/user_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
@@ -58,17 +61,16 @@ class UserRepoImpl implements UserRepo {
 
   // TODO(ElasticBottle): map retrieved response from datasource to correct object to return
   @override
-  Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(
-      String uid) async {
-    return IsNetworkOnline<Failure, PrivateUserInfo>().call(
+  Future<Either<Failure, WithheldInfo>> getUserContactInfo(String uid) async {
+    return IsNetworkOnline<Failure, WithheldInfo>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, PrivateUserInfo>(
-              await userDs.getUserPrivateInfo(uid));
+          return Right<Failure, WithheldInfo>(
+              await userDs.getUserWithheldInfo(uid));
         } on ServerException {
-          return Left<Failure, PrivateUserInfo>(ServerFailure());
+          return Left<Failure, WithheldInfo>(ServerFailure());
         }
       },
     );
@@ -81,6 +83,7 @@ class UserRepoImpl implements UserRepo {
     String firstname,
     String lastname,
     String phoneNum,
+    String countryCode,
   }) async {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
@@ -93,6 +96,7 @@ class UserRepoImpl implements UserRepo {
             firstname: firstname,
             lastname: lastname,
             phoneNum: phoneNum,
+            countryCode: countryCode,
           );
           return Right<Failure, bool>(true);
         } catch (e) {
@@ -109,24 +113,52 @@ class UserRepoImpl implements UserRepo {
 // |_|_\___\__, |\_,_\___/__/\__/__/
 //            |_|
   @override
-  Future<Either<Failure, bool>> requestTutor(
-      {String uid,
-      TuteeAssignment assignment,
-      bool isNewAssignment,
-      bool toSave}) {
+  Future<Either<Failure, bool>> setApplication({
+    Application application,
+    bool isNewApp,
+    bool toSave,
+  }) {
     return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
         try {
-          return Right<Failure, bool>(
-            await userDs.requestTutor(
-              requestUid: uid,
-              assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
-              isNewAssignment: isNewAssignment,
-              toSave: toSave,
-            ),
-          );
+          // applicant is an assignment looking for tutor
+          if (application.applicationInfo.isAssignment) {
+            return Right<Failure, bool>(
+              await userDs.setApplication(
+                application: ApplicationEntity<
+                    TuteeAssignmentEntity,
+                    TuteeAssignment,
+                    TutorProfileEntity,
+                    TutorProfile>.fromDomainEntity(
+                  application,
+                  creator: ({entity, json}) =>
+                      TuteeAssignmentEntity.fromDomainEntity(entity),
+                  creatorReq: ({entity, json}) =>
+                      TutorProfileEntity.fromDomainEntity(entity),
+                ),
+                isNewApp: isNewApp,
+                toSave: toSave,
+              ),
+            );
+          } else {
+            // applicant is a tutor looking for assingment
+            return Right<Failure, bool>(
+              await userDs.setApplication(
+                application: ApplicationEntity<TutorProfileEntity, TutorProfile,
+                    TuteeAssignmentEntity, TuteeAssignment>.fromDomainEntity(
+                  application,
+                  creator: ({entity, json}) =>
+                      TutorProfileEntity.fromDomainEntity(entity),
+                  creatorReq: ({entity, json}) =>
+                      TuteeAssignmentEntity.fromDomainEntity(entity),
+                ),
+                isNewApp: isNewApp,
+                toSave: toSave,
+              ),
+            );
+          }
         } on ServerException {
           return Left<Failure, bool>(ServerFailure());
         }
@@ -159,9 +191,10 @@ class UserRepoImpl implements UserRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await userDs.setTuteeAssignment(
-                tuteeParams:
-                    TuteeAssignmentEntity.fromDomainEntity(assignment));
+            final bool result = await userDs.setAssignment(
+              assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
+              isNew: true,
+            );
             return Right<Failure, bool>(result);
           } catch (e) {
             return Left<Failure, bool>(ServerFailure());
@@ -177,9 +210,10 @@ class UserRepoImpl implements UserRepo {
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await userDs.updateTuteeAssignment(
-                tuteeParams:
-                    TuteeAssignmentEntity.fromDomainEntity(assignment));
+            final bool result = await userDs.setAssignment(
+              assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
+              isNew: false,
+            );
             return Right<Failure, bool>(result);
           } catch (e) {
             return Left<Failure, bool>(ServerFailure());
@@ -232,8 +266,10 @@ class UserRepoImpl implements UserRepo {
     return await _setTutorProfile(
       profile,
       () {
-        return userDs.setTutorProfile(
-            tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
+        return userDs.setProfile(
+          tutorProfile: TutorProfileEntity.fromDomainEntity(profile),
+          isNew: true,
+        );
       },
     );
   }
@@ -243,8 +279,10 @@ class UserRepoImpl implements UserRepo {
     return await _setTutorProfile(
       profile,
       () {
-        return userDs.updateTutorProfile(
-            tutorProfile: TutorProfileEntity.fromDomainEntity(profile));
+        return userDs.setProfile(
+          tutorProfile: TutorProfileEntity.fromDomainEntity(profile),
+          isNew: false,
+        );
       },
     );
   }

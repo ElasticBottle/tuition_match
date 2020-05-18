@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:cotor/constants/form_field_keys.dart';
+import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/domain/entities/post/base_post/base_details/level.dart';
 import 'package:cotor/domain/entities/post/base_post/base_details/subject_area.dart';
 import 'package:cotor/domain/entities/post/base_post/base_requirements/class_format.dart';
@@ -109,10 +110,9 @@ class EditTutorProfileBloc
           ));
         },
         (r) async* {
-          tutorProfileInfo = _initialiseMapFields(
-              profile, userDetails.identity.accountType.isTutor());
           print('displaying: ' + r.toString());
-          yield state.copyWith(
+          tutorProfileInfo = _initialiseMapFields(r, true);
+          yield state.update(
             genderSelection: r.identity.gender.toIndex(),
             classFormatSelection: r.requirements.classFormat
                 .map<int>((e) => e.toIndex())
@@ -139,7 +139,7 @@ class EditTutorProfileBloc
         },
       );
     } else if (userDetails.identity.accountType.isTutor()) {
-      yield state.copyWith(
+      yield state.update(
         genderSelection: profile.identity.gender.toIndex(),
         classFormatSelection:
             profile.requirements.classFormat.map((e) => e.toIndex()).toList(),
@@ -163,7 +163,7 @@ class EditTutorProfileBloc
         isAcceptingStudent: profile.identity.isOpen,
       );
     } else {
-      yield state.copyWith(
+      yield state.update(
         subjectsLabels: [],
         classFormatSelection: [1],
         levelsTaught: [],
@@ -172,38 +172,41 @@ class EditTutorProfileBloc
     }
   }
 
-  Map<String, dynamic> _initialiseMapFields(
-      TutorProfile profile, bool isTutor) {
-    return !isTutor
+  Map<String, dynamic> _initialiseMapFields(TutorProfile profile, bool isOld) {
+    return !isOld
         ? <String, dynamic>{
-            GENDER: Gender.fromIndex(
+            FormFieldKey.DATE_DETAILS: DateDetails(),
+            FormFieldKey.GENDER: Gender.fromIndex(
                 EditTutorProfileState.initial().genderSelection),
-            CLASS_FORMATS: ClassFormat.fromIndices(
+            FormFieldKey.CLASS_FORMATS: ClassFormat.fromIndices(
               EditTutorProfileState.initial().classFormatSelection,
             ),
-            RATE_TYPE: RateTypes.fromIndex(
+            FormFieldKey.RATE_TYPE: RateTypes.fromIndex(
                 EditTutorProfileState.initial().rateTypeSelction),
-            MAX_RATE:
+            FormFieldKey.MAX_RATE:
                 double.parse(EditTutorProfileState.initial().initialRateMax),
-            MIN_RATE:
+            FormFieldKey.MIN_RATE:
                 double.parse(EditTutorProfileState.initial().initialRateMin),
-            IS_OPEN: EditTutorProfileState.initial().isAcceptingStudent,
+            FormFieldKey.PROPOSED_RATE: 0.0,
+            FormFieldKey.IS_OPEN:
+                EditTutorProfileState.initial().isAcceptingStudent,
           }
         : <String, dynamic>{
-            GENDER: profile.identity.gender,
-            TUTOR_OCCUPATION: profile.details.occupation,
-            LEVELS_TAUGHT: profile.details.levelsTaught,
-            SUBJECTS: profile.details.levelsTaught,
-            CLASS_FORMATS: profile.requirements.classFormat,
-            RATE_TYPE: profile.requirements.price.rateType,
-            MIN_RATE: profile.requirements.price.minRate,
-            MAX_RATE: profile.requirements.price.maxRate,
-            PROPOSED_RATE: profile.requirements.price.proposedRate,
-            TIMING: profile.requirements.timing,
-            LOCATION: profile.requirements.location,
-            QUALIFICATIONS: profile.details.qualification,
-            SELLING_POINTS: profile.details.sellingPoints,
-            IS_OPEN: profile.identity.isOpen,
+            FormFieldKey.DATE_DETAILS: profile.details.dateDetails,
+            FormFieldKey.GENDER: profile.identity.gender,
+            FormFieldKey.TUTOR_OCCUPATION: profile.details.occupation,
+            FormFieldKey.LEVELS_TAUGHT: profile.details.levelsTaught,
+            FormFieldKey.SUBJECTS_TAUGHT: profile.details.subjectsTaught,
+            FormFieldKey.CLASS_FORMATS: profile.requirements.classFormat,
+            FormFieldKey.RATE_TYPE: profile.requirements.price.rateType,
+            FormFieldKey.MIN_RATE: profile.requirements.price.minRate,
+            FormFieldKey.MAX_RATE: profile.requirements.price.maxRate,
+            FormFieldKey.PROPOSED_RATE: profile.requirements.price.proposedRate,
+            FormFieldKey.TIMING: profile.requirements.timing,
+            FormFieldKey.LOCATION: profile.requirements.location,
+            FormFieldKey.QUALIFICATIONS: profile.details.qualification,
+            FormFieldKey.SELLING_POINTS: profile.details.sellingPoints,
+            FormFieldKey.IS_OPEN: profile.identity.isOpen,
           };
   }
 
@@ -225,33 +228,44 @@ class EditTutorProfileBloc
       {String fieldName, String value}) async* {
     final bool isNotEmpty = validator.nonEmptyStringValidator.isValid(value);
     if (isNotEmpty) {
-      tutorProfileInfo.addAll(<String, dynamic>{fieldName: value});
-      yield* _mapFieldToErrorState(fieldName, isValid: true);
+      yield* _mapFieldToErrorState(fieldName, value: value, isValid: true);
     } else {
       tutorProfileInfo.remove(fieldName);
-      yield* _mapFieldToErrorState(fieldName, isValid: false);
+      yield* _mapFieldToErrorState(fieldName, value: value, isValid: false);
     }
   }
 
-  Stream<EditTutorProfileState> _mapFieldToErrorState(String fieldName,
-      {bool isValid}) async* {
+  Stream<EditTutorProfileState> _mapFieldToErrorState(
+    String fieldName, {
+    bool isValid,
+    String value,
+  }) async* {
     switch (fieldName) {
-      case MAX_RATE:
+      case FormFieldKey.MAX_RATE:
         yield state.update(isRateMaxValid: isValid);
         break;
-      case MIN_RATE:
+      case FormFieldKey.MIN_RATE:
         yield state.update(isRateMinValid: isValid);
         break;
-      case TIMING:
+      case FormFieldKey.TIMING:
+        tutorProfileInfo
+            .addAll(<String, dynamic>{fieldName: Timing(timing: value)});
         yield state.update(isTimingValid: isValid);
         break;
-      case LOCATION:
+      case FormFieldKey.LOCATION:
+        tutorProfileInfo
+            .addAll(<String, dynamic>{fieldName: Location(location: value)});
         yield state.update(isLocationValid: isValid);
         break;
-      case QUALIFICATIONS:
+      case FormFieldKey.QUALIFICATIONS:
+        tutorProfileInfo.addAll(<String, dynamic>{
+          fieldName: Qualifications(qualifications: value)
+        });
         yield state.update(isQualificationValid: isValid);
         break;
-      case SELLING_POINTS:
+      case FormFieldKey.SELLING_POINTS:
+        tutorProfileInfo.addAll(
+            <String, dynamic>{fieldName: SellingPoints(sellingPt: value)});
         yield state.update(isSellingPointValid: isValid);
         break;
     }
@@ -259,16 +273,15 @@ class EditTutorProfileBloc
 
   Stream<EditTutorProfileState> _mapHandleToggleButtonClickToState(
       String fieldName, dynamic index) async* {
-    print('just entere' + tutorProfileInfo.toString());
     switch (fieldName) {
-      case GENDER:
+      case FormFieldKey.GENDER:
         yield state.update(
           genderSelection: index,
           isGenderValid: true,
         );
-        tutorProfileInfo[GENDER] = Gender.fromIndex(index);
+        tutorProfileInfo[fieldName] = Gender.fromIndex(index);
         break;
-      case CLASS_FORMATS:
+      case FormFieldKey.CLASS_FORMATS:
         state.classFormatSelection.contains(index)
             ? state.classFormatSelection.remove(index)
             : state.classFormatSelection.add(index);
@@ -282,50 +295,62 @@ class EditTutorProfileBloc
               })
             : tutorProfileInfo.remove(fieldName);
         break;
-      case RATE_TYPE:
+      case FormFieldKey.RATE_TYPE:
         yield state.update(
           rateTypeSelction: index,
           isTypeRateValid: true,
         );
-        tutorProfileInfo[RATE_TYPE] = RateTypes.fromIndex(index);
+        tutorProfileInfo[fieldName] = RateTypes.fromIndex(index);
 
         break;
-      case TUTOR_OCCUPATION:
-        // ! POtentially buggy
-        yield state.update(
-            tutorOccupation: index, isTutorOccupationValid: index != null);
-        tutorProfileInfo.addAll(<String, dynamic>{fieldName: index});
+      case FormFieldKey.TUTOR_OCCUPATION:
+        final bool isValid = index.isNotEmpty;
+        if (isValid) {
+          yield state.update(
+              tutorOccupation: index[0], isTutorOccupationValid: isValid);
+          tutorProfileInfo
+              .addAll(<String, dynamic>{fieldName: TutorOccupation(index[0])});
+        } else {
+          yield state.update(
+              tutorOccupation: '', isTutorOccupationValid: isValid);
+          tutorProfileInfo.remove(fieldName);
+        }
+
         break;
-      case SUBJECTS:
+      case FormFieldKey.SUBJECTS_TAUGHT:
         yield state.update(
           subjectsTaught: index,
           isSelectedSubjectsValid: index.isNotEmpty,
         );
         index.isNotEmpty
             ? tutorProfileInfo.addAll(<String, dynamic>{
-                fieldName: index.map((String e) => SubjectArea(e)).toList()
+                fieldName: index
+                    .map<SubjectArea>((String e) => SubjectArea(e))
+                    .toList()
               })
             : tutorProfileInfo.remove(fieldName);
         break;
-      case LEVELS_TAUGHT:
+      case FormFieldKey.LEVELS_TAUGHT:
         yield state.update(levelsTaught: index);
         final bool valid = index.isNotEmpty;
         if (valid) {
           final List<String> subjectsAvailToTeach =
               SubjectArea.getSubjectsToDisplay(
-                      index.map((String e) => Level(e)))
+                      index.map<Level>((String e) => Level(e)).toList())
                   .map((e) => e.toString())
                   .toList();
           state.subjectsTaught.removeWhere(
               (element) => !subjectsAvailToTeach.contains(element));
+          final List<String> sbjTaught = state.subjectsTaught;
           tutorProfileInfo.addAll(<String, dynamic>{
-            fieldName: index,
-            SUBJECTS: state.subjectsTaught
+            fieldName: index.map<Level>((String e) => Level(e)).toList(),
+            FormFieldKey.SUBJECTS_TAUGHT:
+                sbjTaught.map<SubjectArea>((e) => SubjectArea(e)).toList()
           });
           yield state.update(
             subjectsLabels: subjectsAvailToTeach,
             subjectsTaught: state.subjectsTaught,
-            subjectHint: 'Subjects',
+            subjectHint: Strings.subjectHint,
             isSelectedLevelsTaughtValid: valid,
           );
         } else {
@@ -334,15 +359,16 @@ class EditTutorProfileBloc
             isSelectedLevelsTaughtValid: valid,
             subjectsTaught: [],
             subjectsLabels: [],
-            subjectHint: 'please select a level first',
+            subjectHint: Strings.subjectChooseLevelHint,
           );
         }
         break;
-      case IS_OPEN:
+      case FormFieldKey.IS_OPEN:
         yield state.update(isAcceptingStudent: index);
-        tutorProfileInfo.addAll(<String, dynamic>{fieldName: index});
+        tutorProfileInfo[fieldName] = index;
         break;
     }
+    print('exiting ' + tutorProfileInfo.toString());
   }
 
   Stream<EditTutorProfileState> _mapSubmitFormToState() async* {
@@ -355,31 +381,33 @@ class EditTutorProfileBloc
     }
     final TutorProfile model = TutorProfile(
       identityTutor: IdentityTutor(
-        isVerifiedTutor: userDetails.identity.accountType.isVerTutor(),
-        isOpen: tutorProfileInfo[IS_OPEN],
-        gender: tutorProfileInfo[GENDER],
+        accountType: userDetails.identity.accountType,
+        isOpen: tutorProfileInfo[FormFieldKey.IS_OPEN],
+        gender: tutorProfileInfo[FormFieldKey.GENDER],
         uid: userDetails.identity.uid,
         name: userDetails.identity.name,
         photoUrl: userDetails.identity.photoUrl,
       ),
       detailsTutor: DetailsTutor(
-        levelsTaught: tutorProfileInfo[LEVELS_TAUGHT],
-        subjectsTaught: tutorProfileInfo[SUBJECTS],
-        tutorOccupation: tutorProfileInfo[TUTOR_OCCUPATION],
-        qualification: tutorProfileInfo[QUALIFICATIONS],
-        sellingPoints: tutorProfileInfo[SELLING_POINTS],
+        dateDetails: tutorProfileInfo[FormFieldKey.DATE_DETAILS],
+        levelsTaught: tutorProfileInfo[FormFieldKey.LEVELS_TAUGHT],
+        subjectsTaught: tutorProfileInfo[FormFieldKey.SUBJECTS_TAUGHT],
+        tutorOccupation: tutorProfileInfo[FormFieldKey.TUTOR_OCCUPATION],
+        qualification: tutorProfileInfo[FormFieldKey.QUALIFICATIONS],
+        sellingPoints: tutorProfileInfo[FormFieldKey.SELLING_POINTS],
       ),
       requirementsTutor: RequirementsTutor(
         price: Price(
-          rateType: tutorProfileInfo[RATE_TYPE],
-          proposedRate: tutorProfileInfo[PROPOSED_RATE],
-          maxRate: tutorProfileInfo[MAX_RATE],
-          minRate: tutorProfileInfo[MIN_RATE],
+          rateType: tutorProfileInfo[FormFieldKey.RATE_TYPE],
+          proposedRate: tutorProfileInfo[FormFieldKey.PROPOSED_RATE],
+          maxRate: tutorProfileInfo[FormFieldKey.MAX_RATE],
+          minRate: tutorProfileInfo[FormFieldKey.MIN_RATE],
         ),
-        classFormat: tutorProfileInfo[CLASS_FORMATS],
-        timing: tutorProfileInfo[TIMING],
-        location: tutorProfileInfo[LOCATION],
+        classFormat: tutorProfileInfo[FormFieldKey.CLASS_FORMATS],
+        timing: tutorProfileInfo[FormFieldKey.TIMING],
+        location: tutorProfileInfo[FormFieldKey.LOCATION],
       ),
+      statsSimple: StatsSimple(),
     );
     print(model);
     final Either<Failure, bool> result =
@@ -389,13 +417,9 @@ class EditTutorProfileBloc
     yield* result.fold(
       (l) async* {
         if (l is ServerFailure) {
-          yield state.failure(
-            'We had problems updating our server. You can save your edits and try again later!',
-          );
+          yield state.failure(Strings.serverFailureErrorMsg);
         } else if (l is NetworkFailure) {
-          yield state.failure(
-            'No Internet! Check connection and Try again',
-          );
+          yield state.failure(Strings.networkFailureErrorMsg);
         }
       },
       (r) async* {
@@ -406,16 +430,16 @@ class EditTutorProfileBloc
 
   bool _verifyFields(Map<String, dynamic> tutorProfileInfo) {
     final List<String> fieldsToVerify = [
-      CLASS_FORMATS,
-      LEVELS_TAUGHT,
-      SUBJECTS,
-      TUTOR_OCCUPATION,
-      MIN_RATE,
-      MAX_RATE,
-      LOCATION,
-      TIMING,
-      QUALIFICATIONS,
-      SELLING_POINTS,
+      FormFieldKey.CLASS_FORMATS,
+      FormFieldKey.LEVELS_TAUGHT,
+      FormFieldKey.SUBJECTS_TAUGHT,
+      FormFieldKey.TUTOR_OCCUPATION,
+      FormFieldKey.MIN_RATE,
+      FormFieldKey.MAX_RATE,
+      FormFieldKey.LOCATION,
+      FormFieldKey.TIMING,
+      FormFieldKey.QUALIFICATIONS,
+      FormFieldKey.SELLING_POINTS,
     ];
     for (var key in fieldsToVerify) {
       if (!tutorProfileInfo.containsKey(key)) {
@@ -430,56 +454,45 @@ class EditTutorProfileBloc
     print(tutorProfileInfo);
 
     final TutorProfile model = TutorProfile(
-      identityTutor: IdentityTutor(
-        isVerifiedTutor: userDetails.identity.accountType.isVerTutor(),
-        isOpen: tutorProfileInfo[IS_OPEN],
-        gender: tutorProfileInfo[GENDER],
-        uid: userDetails.identity.uid,
-        name: userDetails.identity.name,
-        photoUrl: userDetails.identity.photoUrl,
-      ),
-      detailsTutor: DetailsTutor(
-        levelsTaught: tutorProfileInfo[LEVELS_TAUGHT],
-        subjectsTaught: tutorProfileInfo[SUBJECTS],
-        tutorOccupation: tutorProfileInfo[TUTOR_OCCUPATION],
-        qualification: tutorProfileInfo[QUALIFICATIONS],
-        sellingPoints: tutorProfileInfo[SELLING_POINTS],
-      ),
-      requirementsTutor: RequirementsTutor(
-        price: Price(
-          rateType: tutorProfileInfo[RATE_TYPE],
-          proposedRate: tutorProfileInfo[PROPOSED_RATE],
-          maxRate: tutorProfileInfo[MAX_RATE],
-          minRate: tutorProfileInfo[MIN_RATE],
+        identityTutor: IdentityTutor(
+          accountType: userDetails.identity.accountType,
+          isOpen: tutorProfileInfo[FormFieldKey.IS_OPEN],
+          gender: tutorProfileInfo[FormFieldKey.GENDER],
+          uid: userDetails.identity.uid,
+          name: userDetails.identity.name,
+          photoUrl: userDetails.identity.photoUrl,
         ),
-        classFormat: tutorProfileInfo[CLASS_FORMATS],
-        timing: tutorProfileInfo[TIMING],
-        location: tutorProfileInfo[LOCATION],
-      ),
-      // uid: userDetails.uid,
-      // gender: tutorProfileInfo[GENDER],
-      // rateType: tutorProfileInfo[RATE_TYPE],
-      // tutorOccupation:
-      //     tutorProfileInfo[TUTOR_OCCUPATION] ?? state.tutorOccupation,
-      // levelsTaught: tutorProfileInfo[LEVELS_TAUGHT] ?? state.levelsTaught,
-      // subjects: tutorProfileInfo[SUBJECTS] ?? state.subjectsTaught,
-      // formats: tutorProfileInfo[CLASS_FORMATS] ??
-      //     ClassFormat.fromIndices(state.classFormatSelection),
-      // rateMax: tutorProfileInfo[MAX_RATE] ?? double.parse(state.initialRateMax),
-      // rateMin: tutorProfileInfo[MIN_RATE:] ?? double.parse(state.initialRateMin),
-      // timing: tutorProfileInfo[TIMING] ?? state.initialTiming,
-      // location: tutorProfileInfo[LOCATION] ?? state.initiallocation,
-      // qualifications:
-      //     tutorProfileInfo[QUALIFICATIONS] ?? state.initialQualification,
-      // sellingPoints:
-      //     tutorProfileInfo[SELLING_POINTS] ?? state.initialSellingPoint,
-      // isPublic: tutorProfileInfo[IS_OPENIS_OPEN],
-      // tutorName: userDetails.name,
-      // photoUrl: userDetails.photoUrl,
-      // isVerifiedTutor: userDetails.isVerifiedTutor,
-    );
+        detailsTutor: DetailsTutor(
+          dateDetails: tutorProfileInfo[FormFieldKey.DATE_DETAILS],
+          levelsTaught:
+              tutorProfileInfo[FormFieldKey.LEVELS_TAUGHT] ?? <Level>[],
+          subjectsTaught:
+              tutorProfileInfo[FormFieldKey.SUBJECTS_TAUGHT] ?? <SubjectArea>[],
+          tutorOccupation: tutorProfileInfo[FormFieldKey.TUTOR_OCCUPATION] ??
+              TutorOccupation(''),
+          qualification: tutorProfileInfo[FormFieldKey.QUALIFICATIONS] ??
+              Qualifications(qualifications: ''),
+          sellingPoints: tutorProfileInfo[FormFieldKey.SELLING_POINTS] ??
+              SellingPoints(sellingPt: ''),
+        ),
+        requirementsTutor: RequirementsTutor(
+          price: Price(
+            rateType: tutorProfileInfo[FormFieldKey.RATE_TYPE],
+            proposedRate: tutorProfileInfo[FormFieldKey.PROPOSED_RATE],
+            maxRate: tutorProfileInfo[FormFieldKey.MAX_RATE] ??
+                EditTutorProfileState.initial().initialRateMax,
+            minRate: tutorProfileInfo[FormFieldKey.MIN_RATE] ??
+                EditTutorProfileState.initial().initialRateMin,
+          ),
+          classFormat:
+              tutorProfileInfo[FormFieldKey.CLASS_FORMATS] ?? <ClassFormat>[],
+          timing: tutorProfileInfo[FormFieldKey.TIMING] ?? Timing(timing: ''),
+          location:
+              tutorProfileInfo[FormFieldKey.LOCATION] ?? Location(location: ''),
+        ),
+        statsSimple: StatsSimple());
     print('model to be cahcehd: ' + model.toString());
-    print(tutorProfileInfo[RATE_TYPE]);
+    print(tutorProfileInfo[FormFieldKey.RATE_TYPE]);
     await cacheTutorProfile(model);
     yield state.copyWith();
   }

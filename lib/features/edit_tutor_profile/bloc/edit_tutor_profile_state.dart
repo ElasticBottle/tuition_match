@@ -49,13 +49,13 @@ class EditTutorProfileState extends Equatable {
       tutorOccupationLabels:
           TutorOccupation.occupations.map((e) => e.toString()).toList(),
       levelsLabels: Level.all.map((e) => e.toString()).toList(),
-      subjectsLabels: const [],
+      subjectsLabels: List<String>.from(<String>[], growable: true),
       subjectHint: 'Please select a level first',
       genderSelection: 0,
-      classFormatSelection: const [1],
-      levelsTaught: const [],
-      subjectsTaught: const [],
-      tutorOccupation: null,
+      classFormatSelection: List<int>.from(<int>[1], growable: true),
+      levelsTaught: List<String>.from(<String>[], growable: true),
+      subjectsTaught: List<String>.from(<String>[], growable: true),
+      tutorOccupation: '',
       rateTypeSelction: 0,
       initialRateMin: '0',
       initialRateMax: '100',
@@ -202,6 +202,11 @@ class EditTutorProfileState extends Equatable {
     bool isTutorOccupationValid,
   }) {
     return copyWith(
+      tutorOccupationLabels: tutorOccupationLabels,
+      rateTypeLabels: rateTypeLabels,
+      genderLabels: genderLabels,
+      classFormatLabels: classFormatLabels,
+      levelsLabels: levelsLabels,
       subjectsLabels: subjectsLabels,
       subjectHint: subjectHint,
       initialRateMin: initialRateMin,
@@ -277,6 +282,12 @@ class EditTutorProfileState extends Equatable {
     String successMessage,
   }) {
     return EditTutorProfileState(
+      tutorOccupationLabels:
+          tutorOccupationLabels ?? this.tutorOccupationLabels,
+      rateTypeLabels: rateTypeLabels ?? this.rateTypeLabels,
+      genderLabels: genderLabels ?? this.genderLabels,
+      classFormatLabels: classFormatLabels ?? this.classFormatLabels,
+      levelsLabels: levelsLabels ?? this.levelsLabels,
       subjectsLabels: subjectsLabels ?? this.subjectsLabels,
       subjectHint: subjectHint ?? this.subjectHint,
       initialRateMin: initialRateMin ?? this.initialRateMin,

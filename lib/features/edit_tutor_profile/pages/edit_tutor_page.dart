@@ -1,22 +1,21 @@
 import 'dart:math' as math;
 
-import 'package:cotor/common_widgets/bars/custom_sliver_app_bar.dart';
+import 'package:cotor/common_widgets/bars/custom_app_bar.dart';
 import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/buttons/toggle_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
+import 'package:cotor/common_widgets/information_capture/multi_filter_select/multi_filter_select_export.dart';
 import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/common_widgets/platform_alert_dialog.dart';
 import 'package:cotor/constants/custom_color_and_fonts.dart';
+import 'package:cotor/constants/form_field_keys.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:multiple_select/Item.dart';
-import 'package:multiple_select/multi_filter_select.dart';
 
 class EditTutorPage extends StatefulWidget {
   @override
@@ -78,10 +77,8 @@ class EditTutorPageState extends State<EditTutorPage> {
           onWillPop: _confirmExit,
           child: CustomScrollView(
             slivers: <Widget>[
-              CustomSliverAppbar(
+              CustomAppBar(
                 title: Strings.editTutorProfile,
-                isTitleCenter: true,
-                showActions: false,
                 leading: IconButton(
                   icon: Transform(
                     alignment: Alignment.center,
@@ -101,9 +98,10 @@ class EditTutorPageState extends State<EditTutorPage> {
                       ..hideCurrentSnackBar()
                       ..showSnackBar(
                         CustomSnackBar(
-                          message: state.failureMessage,
-                          isError: true,
-                          delay: 3,
+                          toDisplay: Text(
+                            state.failureMessage,
+                            style: Theme.of(context).textTheme.bodyText2,
+                          ),
                         ).show(context),
                       );
                     userProfileBloc.add(CachedProfileToSet(true));
@@ -117,9 +115,7 @@ class EditTutorPageState extends State<EditTutorPage> {
                 builder: (context, state) {
                   return SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal:
-                              SpacingsAndHeights.addAssignmentPageSidePadding),
+                      padding: EdgeInsets.symmetric(horizontal: 25.0),
                       child: Column(
                         children: <Widget>[
                           _getNonTextFields(state),
@@ -132,19 +128,17 @@ class EditTutorPageState extends State<EditTutorPage> {
                                   ? _formSubmit
                                   : null,
                               loading: state.isSubmitting,
-                              color: ColorsAndFonts.primaryColor,
-                              textColor: ColorsAndFonts.backgroundColor,
                               child: Text(
                                 Strings.addAssignmentButtonText,
-                                style: TextStyle(
-                                  fontFamily: ColorsAndFonts.primaryFont,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: ColorsAndFonts
-                                      .AddAssignmntSubmitButtonFontSize,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .button
+                                    .copyWith(fontWeight: FontWeight.bold)
+                                    .apply(fontSizeFactor: 1.2),
                               ),
                             ),
                           ),
+                          SizedBox(height: 20)
                         ],
                       ),
                     ),
@@ -161,40 +155,39 @@ class EditTutorPageState extends State<EditTutorPage> {
   Widget _getNonTextFields(EditTutorProfileState state) {
     return Column(
       children: <Widget>[
+        SizedBox(height: 30),
         ToggleButton(
-          title: 'Gender',
+          title: Strings.genderLabel,
           errorText: state.isGenderValid ? null : 'Please state your gender',
-          fontFamily: ColorsAndFonts.primaryFont,
-          activeBgColor: ColorsAndFonts.primaryColor,
-          activeTextColor: ColorsAndFonts.backgroundColor,
-          inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: state.genderLabels,
+          allItems: state.genderLabels,
           icons: [FontAwesomeIcons.mars, FontAwesomeIcons.venus],
           onPressed: (int index) {
             editProfileBloc.add(
-              HandleToggleButtonClick(fieldName: GENDER, index: index),
+              HandleToggleButtonClick(
+                  fieldName: FormFieldKey.GENDER, index: index),
             );
           },
           initialLabelIndex: [state.genderSelection],
         ),
+        SizedBox(height: 30),
         ToggleButton(
-          title: 'Class Format',
-          errorText:
-              state.isClassFormatsValid ? null : 'Please select your options',
-          fontFamily: ColorsAndFonts.primaryFont,
-          activeBgColor: ColorsAndFonts.primaryColor,
-          activeTextColor: ColorsAndFonts.backgroundColor,
-          inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: state.classFormatLabels,
+          title: Strings.classFormatLabel,
+          allItems: state.classFormatLabels,
+          errorText: state.isClassFormatsValid ? null : Strings.errorFieldEmpty,
           onPressed: (int index) {
             editProfileBloc.add(HandleToggleButtonClick(
-                fieldName: CLASS_FORMATS, index: index));
+                fieldName: FormFieldKey.CLASS_FORMATS, index: index));
             setState(() {});
           },
           initialLabelIndex: state.classFormatSelection,
         ),
+        SizedBox(height: 30),
         MultiFilterSelect(
-          placeholder: 'Levels',
+          labelText: Strings.levelLabel,
+          errorText: state.isSelectedLevelsTaughtValid
+              ? null
+              : Strings.errorFieldEmpty,
+          hintText: Strings.levelHint,
           allItems: state.levelsLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
@@ -206,15 +199,17 @@ class EditTutorPageState extends State<EditTutorPage> {
               .toList(),
           initValue: state.levelsTaught,
           selectCallback: (List selectedValue) {
-            print(selectedValue.toString());
             setState(() {});
             editProfileBloc.add(HandleToggleButtonClick(
-                fieldName: LEVELS_TAUGHT, index: selectedValue));
+                fieldName: FormFieldKey.LEVELS_TAUGHT, index: selectedValue));
           },
         ),
-        SizedBox(height: 15.0),
+        SizedBox(height: 30.0),
         MultiFilterSelect(
-          placeholder: state.subjectHint,
+          labelText: Strings.subjectsTaughtLabel,
+          hintText: state.subjectHint,
+          errorText:
+              state.isSelectedSubjectsValid ? null : Strings.errorFieldEmpty,
           allItems: state.subjectsLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
@@ -228,12 +223,16 @@ class EditTutorPageState extends State<EditTutorPage> {
           selectCallback: (List selectedValue) {
             print(selectedValue.toString());
             editProfileBloc.add(HandleToggleButtonClick(
-                fieldName: SUBJECTS, index: selectedValue));
+                fieldName: FormFieldKey.SUBJECTS_TAUGHT, index: selectedValue));
           },
         ),
-        SizedBox(height: 15.0),
+        SizedBox(height: 30.0),
         MultiFilterSelect(
-          placeholder: 'Tutor Occupation',
+          isSingleSelect: true,
+          labelText: Strings.tutorOccupationLabel,
+          hintText: Strings.tutorOccupationHint,
+          errorText:
+              state.isTutorOccupationValid ? null : Strings.errorFieldEmpty,
           allItems: state.tutorOccupationLabels
               .map<Item<String, String, String>>(
                 (e) => Item<String, String, String>.build(
@@ -243,30 +242,30 @@ class EditTutorPageState extends State<EditTutorPage> {
                 ),
               )
               .toList(),
+          initValue: state.tutorOccupation.isNotEmpty
+              ? <String>[state.tutorOccupation]
+              : null,
           selectCallback: (List selectedValue) {
-            print(selectedValue.toString());
-            selectedValue.removeWhere((dynamic element) => element == null);
+            // print(selectedValue.toString());
+            // selectedValue.removeWhere((dynamic element) => element == null);
             editProfileBloc.add(HandleToggleButtonClick(
-                fieldName: TUTOR_OCCUPATION, index: selectedValue[0]));
+                fieldName: FormFieldKey.TUTOR_OCCUPATION,
+                index: selectedValue));
+            setState(() {});
           },
-          initValue: <String>[state.tutorOccupation],
         ),
-        SizedBox(height: 15.0),
+        SizedBox(height: 30.0),
         ToggleButton(
           title: 'Rate Type',
-          errorText:
-              state.isTypeRateValid ? null : 'Please select your rate type',
-          fontFamily: ColorsAndFonts.primaryFont,
-          activeBgColor: ColorsAndFonts.primaryColor,
-          activeTextColor: ColorsAndFonts.backgroundColor,
-          inactiveTextColor: ColorsAndFonts.primaryColor,
-          labels: state.rateTypeLabels,
+          errorText: state.isTypeRateValid ? null : Strings.errorFieldEmpty,
+          allItems: state.rateTypeLabels,
           onPressed: (int index) {
-            editProfileBloc.add(
-                HandleToggleButtonClick(fieldName: RATE_TYPE, index: index));
+            editProfileBloc.add(HandleToggleButtonClick(
+                fieldName: FormFieldKey.RATE_TYPE, index: index));
           },
           initialLabelIndex: [state.rateTypeSelction],
         ),
+        SizedBox(height: 30.0),
       ],
     );
   }
@@ -282,12 +281,10 @@ class EditTutorPageState extends State<EditTutorPage> {
           children: <Widget>[
             Text(
               Strings.rateLabel,
-              style: TextStyle(
-                color: ColorsAndFonts.primaryColor,
-                fontFamily: ColorsAndFonts.primaryFont,
-                fontWeight: FontWeight.normal,
-                fontSize: ColorsAndFonts.AddAssignmntRateFontSize,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
             Row(
               children: <Widget>[
@@ -298,17 +295,17 @@ class EditTutorPageState extends State<EditTutorPage> {
                     initialText: state.initialRateMin,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
-                    errorText:
-                        state.isRateMinValid ? null : Strings.errorRateInvalid,
+                    errorText: state.isRateMinValid
+                        ? null
+                        : Strings.errorNumberInvalid,
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) {
-                      editProfileBloc
-                          .add(HandleRates(fieldName: MIN_RATE, value: value));
+                      editProfileBloc.add(HandleRates(
+                          fieldName: FormFieldKey.MIN_RATE, value: value));
                     },
                   ),
                 ),
-                SizedBox(
-                    width: SpacingsAndHeights.addAssignmentPageFieldSpacing),
+                SizedBox(width: 30),
                 Expanded(
                   flex: 10,
                   child: CustomTextField(
@@ -316,47 +313,54 @@ class EditTutorPageState extends State<EditTutorPage> {
                     initialText: state.initialRateMax,
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: _handleSubmitted,
-                    errorText:
-                        state.isRateMaxValid ? null : Strings.errorRateInvalid,
+                    errorText: state.isRateMaxValid
+                        ? null
+                        : Strings.errorNumberInvalid,
                     prefixIcon: Icon(Icons.attach_money),
                     onChanged: (String value) {
-                      editProfileBloc
-                          .add(HandleRates(fieldName: MAX_RATE, value: value));
+                      editProfileBloc.add(HandleRates(
+                          fieldName: FormFieldKey.MAX_RATE, value: value));
                     },
                   ),
                 ),
               ],
             ),
+            SizedBox(height: 30),
             CustomTextField(
-              labelText: Strings.timing,
+              labelText: Strings.timingLabel,
               helpText: Strings.timingHint,
               maxLines: SpacingsAndHeights.timingMaxLines,
+              textInputType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               // onFieldSubmitted: _handleSubmitted,
               initialText: state.initialTiming,
               errorText: state.isTimingValid ? null : Strings.errorFieldEmpty,
               prefixIcon: Icon(Icons.watch),
               onChanged: (String value) {
-                editProfileBloc
-                    .add(HandleTextField(fieldName: TIMING, value: value));
+                editProfileBloc.add(HandleTextField(
+                    fieldName: FormFieldKey.TIMING, value: value));
               },
             ),
+            SizedBox(height: 30),
             CustomTextField(
               labelText: Strings.locationLabel,
               helpText: Strings.locationHint,
               maxLines: SpacingsAndHeights.locationMaxLines,
+              textInputType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               prefixIcon: Icon(Icons.location_on),
               initialText: state.initiallocation,
               errorText: state.isLocationValid ? null : Strings.errorFieldEmpty,
               onChanged: (String value) {
-                editProfileBloc
-                    .add(HandleTextField(fieldName: LOCATION, value: value));
+                editProfileBloc.add(HandleTextField(
+                    fieldName: FormFieldKey.LOCATION, value: value));
               },
             ),
+            SizedBox(height: 30),
             CustomTextField(
               labelText: Strings.qualificationsLabel,
               helpText: Strings.freqHintLabel,
+              textInputType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               onFieldSubmitted: _handleSubmitted,
               errorText:
@@ -367,13 +371,15 @@ class EditTutorPageState extends State<EditTutorPage> {
                 child: FaIcon(FontAwesomeIcons.certificate),
               ),
               onChanged: (String value) {
-                editProfileBloc.add(
-                    HandleTextField(fieldName: QUALIFICATIONS, value: value));
+                editProfileBloc.add(HandleTextField(
+                    fieldName: FormFieldKey.QUALIFICATIONS, value: value));
               },
             ),
+            SizedBox(height: 30),
             CustomTextField(
               labelText: Strings.sellingPointsLabel,
               helpText: Strings.additionalRemarksHint,
+              textInputType: TextInputType.multiline,
               maxLines: SpacingsAndHeights.addRemarksMaxLines,
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _focusScopeNode.unfocus(),
@@ -382,8 +388,8 @@ class EditTutorPageState extends State<EditTutorPage> {
                   state.isSellingPointValid ? null : Strings.errorFieldEmpty,
               initialText: state.initialSellingPoint,
               onChanged: (String value) {
-                editProfileBloc.add(
-                    HandleTextField(fieldName: SELLING_POINTS, value: value));
+                editProfileBloc.add(HandleTextField(
+                    fieldName: FormFieldKey.SELLING_POINTS, value: value));
               },
             ),
           ],
@@ -397,8 +403,8 @@ class EditTutorPageState extends State<EditTutorPage> {
       title: const Text('Accepting Students?'),
       value: state.isAcceptingStudent,
       onChanged: (bool value) {
-        editProfileBloc
-            .add(HandleToggleButtonClick(fieldName: IS_PUBLIC, index: value));
+        editProfileBloc.add(HandleToggleButtonClick(
+            fieldName: FormFieldKey.IS_OPEN, index: value));
         setState(() {});
       },
       secondary: const Icon(FontAwesomeIcons.universalAccess),
@@ -406,7 +412,6 @@ class EditTutorPageState extends State<EditTutorPage> {
   }
 
   void _formSubmit() {
-    // editProfileBloc.add(CheckDropDownNotEmpty(fieldName: TUTOR_OCCUPATION));
     editProfileBloc.add(SubmitForm());
   }
 

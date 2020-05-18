@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:cotor/core/error/exception.dart';
+import 'package:cotor/data/models/post/tutor_profile/tutor_profile_entity.dart';
 import 'package:cotor/data/models/tutor_criteria_params_entity.dart';
-import 'package:cotor/data/models/tutor_profile_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const CACHED_PROFILE_LIST = 'CACHED_PROFILE_LIST';

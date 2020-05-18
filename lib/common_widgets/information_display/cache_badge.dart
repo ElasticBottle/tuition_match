@@ -16,7 +16,7 @@ class CacheBadge extends StatelessWidget {
     return Badge(
         showBadge: hasCacheProfile,
         badgeColor: Colors.orange,
-        badgeContent: Text('x'),
+        badgeContent: Text(''),
         position: BadgePosition(
           right: 5.0,
           top: 2.0,

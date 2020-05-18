@@ -19,6 +19,7 @@ class InfoDisplay extends StatelessWidget {
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.isAnim = false,
+    this.isDetailedView = false,
   })  : assert(icons.length == descriptions.length),
         super(key: key);
   final List<Widget> icons;
@@ -34,22 +35,42 @@ class InfoDisplay extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
   final bool isAnim;
+  final bool isDetailedView;
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = [];
     for (int index = 0; index < icons.length; index++) {
-      final InfoLine line = InfoLine(
-        leading: icons[index],
-        title: title == null ? SizedBox(width: 0) : title[index],
-        info: descriptions[index] ?? Text(''),
-        infoBgColor: infoBgColor,
-        spacingLeadingAndTitle: spacingLeadingAndTitle,
-        spacingTitleAndInfo: spacingTitleAndInfo,
-        mainAxisAlignment: mainAxisAlignment,
-        crossAxisAlignment: crossAxisAlignment,
-        elevation: elevation,
-        padding: padding,
-      );
+      final Widget line = !isDetailedView
+          ? InfoLine(
+              leading: icons[index],
+              title: title == null ? SizedBox(width: 0) : title[index],
+              info: descriptions[index] ?? Text(''),
+              infoBgColor: infoBgColor,
+              spacingLeadingAndTitle: spacingLeadingAndTitle,
+              spacingTitleAndInfo: spacingTitleAndInfo,
+              mainAxisAlignment: mainAxisAlignment,
+              crossAxisAlignment: crossAxisAlignment,
+              elevation: elevation,
+              padding: padding,
+            )
+          : Padding(
+              padding: padding,
+              child: Column(
+                mainAxisAlignment: mainAxisAlignment,
+                crossAxisAlignment: crossAxisAlignment,
+                children: [
+                  Row(
+                    children: [
+                      icons[index],
+                      SizedBox(width: 10),
+                      if (title != null) title[index],
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  descriptions[index]
+                ],
+              ),
+            );
       if (isAnim) {
         children.add(FadeIn(index + 0.5, line));
       } else {

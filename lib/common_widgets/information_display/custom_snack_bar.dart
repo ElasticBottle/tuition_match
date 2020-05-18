@@ -9,9 +9,9 @@ class CustomSnackBar extends SnackBar {
     @required this.toDisplay,
     this.prefix,
     this.delay = 3,
-    this.color,
+    this.bgColor,
     this.actionText = 'Dismiss',
-    this.actionTextColor,
+    this.onBgColor,
   }) : super(key: key, content: const Text(''));
 
   /// The widget use to display in the center of the snackbar
@@ -32,7 +32,7 @@ class CustomSnackBar extends SnackBar {
   /// Background color of the snackbar
   ///
   /// Defaults to [ColorScheme.error]
-  final Color color;
+  final Color bgColor;
 
   /// Action text of the snackBar
   final String actionText;
@@ -40,7 +40,7 @@ class CustomSnackBar extends SnackBar {
   /// Color of [actionText]
   ///
   /// Defaults to [ColorScheme.onError]
-  final Color actionTextColor;
+  final Color onBgColor;
 
   SnackBar show(BuildContext context) {
     return build(context);
@@ -54,7 +54,7 @@ class CustomSnackBar extends SnackBar {
           prefix ??
               Icon(
                 Icons.error,
-                color: Theme.of(context).colorScheme.onError,
+                color: onBgColor ?? Theme.of(context).colorScheme.onError,
               ),
           SizedBox(width: 20.0),
           Expanded(
@@ -64,13 +64,13 @@ class CustomSnackBar extends SnackBar {
       ),
       duration: Duration(seconds: delay),
       action: SnackBarAction(
-        textColor: actionTextColor ?? Theme.of(context).colorScheme.onError,
+        textColor: onBgColor ?? Theme.of(context).colorScheme.onError,
         label: actionText,
         onPressed: () {
           Scaffold.of(context).hideCurrentSnackBar();
         },
       ),
-      backgroundColor: color ?? Theme.of(context).colorScheme.error,
+      backgroundColor: bgColor ?? Theme.of(context).colorScheme.error,
     );
   }
 }

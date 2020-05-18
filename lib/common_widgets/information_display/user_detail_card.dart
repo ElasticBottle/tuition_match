@@ -28,6 +28,10 @@ class UserDetailCard extends StatelessWidget {
         children: <Widget>[
           Text(
             name,
+            style: Theme.of(context)
+                .textTheme
+                .subtitle1
+                .copyWith(fontWeight: FontWeight.bold, letterSpacing: -0.8),
             // style: TextStyle(
             //   color: ColorsAndFonts.primaryColor,
             //   fontFamily: ColorsAndFonts.primaryFont,

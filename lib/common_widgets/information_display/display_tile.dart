@@ -14,7 +14,6 @@ class DisplayTile extends StatelessWidget {
     @required this.onPressed,
     @required this.icons,
     @required this.description,
-    @required this.bottomActionBar,
     this.cardColor,
     this.cardElevation,
     this.cardPadding,
@@ -42,13 +41,10 @@ class DisplayTile extends StatelessWidget {
   /// Tappable preview descriptions
   final List<Widget> description;
 
-  // Bottom Action Bar
-  final Widget bottomActionBar;
-
   // General Details
   final Color cardColor;
   final double cardElevation;
-  final double cardPadding;
+  final EdgeInsets cardPadding;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -58,7 +54,7 @@ class DisplayTile extends StatelessWidget {
       ),
       elevation: cardElevation ?? 5.0,
       child: Padding(
-        padding: EdgeInsets.all(cardPadding ?? 15.0),
+        padding: cardPadding ?? EdgeInsets.all(15.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +74,7 @@ class DisplayTile extends StatelessWidget {
             SizedBox(
               height: 10.0,
             ),
-            bottomActionBar,
+            // bottomActionBar,
           ],
         ),
       ),
@@ -86,17 +82,18 @@ class DisplayTile extends StatelessWidget {
   }
 
   Widget _buildTappableInfoPreview(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: InfoDisplay(
-          infoBgColor: Theme.of(context).colorScheme.surface,
-          spacingBgColor: Theme.of(context).colorScheme.surface,
-          icons: icons,
-          descriptions: description,
-          spacingBetweenFields: 15,
-        ),
+    return RaisedButton(
+      padding: EdgeInsets.zero,
+      elevation: 0,
+      onPressed: onPressed,
+      hoverColor: Theme.of(context).colorScheme.background,
+      splashColor: Theme.of(context).colorScheme.background,
+      child: InfoDisplay(
+        infoBgColor: Theme.of(context).colorScheme.surface,
+        spacingBgColor: Theme.of(context).colorScheme.surface,
+        icons: icons,
+        descriptions: description,
+        spacingBetweenFields: 15,
       ),
     );
   }

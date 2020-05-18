@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+const String male = 'Male';
+const String female = 'Female';
+
 class Gender extends Equatable {
   const Gender(String gender) : _gender = gender;
 
@@ -8,7 +11,7 @@ class Gender extends Equatable {
   String get gender => _gender;
 
   int toIndex() {
-    return genders.indexOf(this);
+    return genders.indexOf(Gender(_gender));
   }
 
   @override
@@ -17,8 +20,8 @@ class Gender extends Equatable {
   @override
   List<Object> get props => [_gender];
 
-  static const Gender MALE = Gender('Male');
-  static const Gender FEMALE = Gender('Female');
+  static const Gender MALE = Gender(male);
+  static const Gender FEMALE = Gender(female);
 
   static List<Gender> get genders => const [MALE, FEMALE];
 

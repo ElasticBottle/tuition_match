@@ -1,11 +1,34 @@
 import 'package:equatable/equatable.dart';
 
 class Level extends Equatable {
-  const Level(this._lvl);
+  const Level(String lvl) : _lvl = lvl;
 
   final String _lvl;
 
   String get level => _lvl;
+
+  int toindex() {
+    return Level.all.indexOf(this);
+  }
+
+  String toShortString() {
+    String toReturn = level;
+    final List<String> result = level.split(' ');
+    if (result[0] == 'Pre-School') {
+      toReturn = 'Pre-Sch';
+    } else if (result[0] == 'Primary') {
+      toReturn = 'Pri';
+      toReturn += result[1];
+    } else if (result[0] == 'Secondary') {
+      toReturn = 'Sec';
+      toReturn += result[1];
+    } else if (result[0] == 'Polytechnic') {
+      toReturn = 'Poly';
+    } else if (result[0] == 'University') {
+      toReturn = 'Uni';
+    }
+    return toReturn;
+  }
 
   @override
   String toString() => _lvl;
@@ -79,14 +102,6 @@ class Level extends Equatable {
         UNI,
         OTHER,
       ];
-
-  static List<int> toIndices(List<String> value) {
-    return value
-        .map(
-          (e) => Level.all.indexOf(Level(e)),
-        )
-        .toList();
-  }
 
   static List<Level> fromIndices(List<int> levels) {
     return levels.map((e) => Level.all[e]).toList();

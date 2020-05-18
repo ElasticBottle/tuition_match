@@ -1,15 +1,17 @@
-import 'package:cotor/domain/entities/post/base_post/base_requirements/rate_types.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+
+import 'package:cotor/domain/entities/post/base_post/base_requirements/rate_types.dart';
 
 class Price extends Equatable {
   const Price({
     double maxRate,
     double minRate,
     double proposedRate,
-    RateTypes rateType,
-  })  : _maxRate = maxRate,
-        _minRate = minRate,
-        _proposedRate = proposedRate,
+    @required RateTypes rateType,
+  })  : _maxRate = maxRate ?? 0.0,
+        _minRate = minRate ?? 0.0,
+        _proposedRate = proposedRate ?? 0.0,
         _rateType = rateType;
 
   final double _maxRate;
@@ -26,7 +28,7 @@ class Price extends Equatable {
 
   @override
   String toString() {
-    return 'PriceEntity(_maxRate: $_maxRate, _minRate: $_minRate, _proposedRate: $_proposedRate, _rateType: $_rateType)';
+    return 'Price(maxRate: $maxRate, minRate: $minRate, proposedRate: $proposedRate, rateType: $rateType)';
   }
 
   @override

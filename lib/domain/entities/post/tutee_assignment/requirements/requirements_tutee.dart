@@ -13,14 +13,14 @@ class RequirementsTutee extends Equatable implements RequirementsBase {
     List<ClassFormat> classFormat,
     Frequency freq,
     Timing timing,
-    Location loc,
+    Location location,
     Price price,
     List<Gender> tutorGenders,
     List<TutorOccupation> tutorOccupations,
   })  : _classFormat = classFormat,
         _freq = freq,
         _timing = timing,
-        _loc = loc,
+        _loc = location,
         _price = price,
         _tutorGenders = tutorGenders,
         _tutorOccupations = tutorOccupations;
@@ -61,4 +61,15 @@ class RequirementsTutee extends Equatable implements RequirementsBase {
         _tutorGenders,
         _tutorOccupations,
       ];
+
+  @override
+  String toString() => '''RequirementsTutee(
+      classFormat: $classFormat,
+      freq: $freq,
+      timing: $timing,
+      loc: $location,
+      price: $price,
+      tutorGenders: $tutorGender,
+      tutorOccupations: $tutorOccupation,
+    }''';
 }

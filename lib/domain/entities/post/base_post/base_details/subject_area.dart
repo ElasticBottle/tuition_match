@@ -1,3 +1,4 @@
+import 'package:cotor/data/models/post/base_post/base_details/level_entity.dart';
 import 'package:cotor/domain/entities/post/base_post/base_details/level.dart';
 import 'package:equatable/equatable.dart';
 
@@ -7,6 +8,10 @@ class SubjectArea extends Equatable {
   final String _subject;
 
   String get subject => _subject;
+
+  String toShortString() {
+    return subject;
+  }
 
   @override
   List<Object> get props => [_subject];
@@ -56,14 +61,14 @@ class SubjectArea extends Equatable {
   static List<SubjectArea> get poly {
     final List<SubjectArea> toReturn = [];
     toReturn.addAll(Music.instruments);
-
+    toReturn.addAll(Sports.all);
     return toReturn;
   }
 
   static List<SubjectArea> get uni {
     final List<SubjectArea> toReturn = [];
     toReturn.addAll(Music.instruments);
-
+    toReturn.addAll(Sports.all);
     return toReturn;
   }
 
@@ -76,9 +81,9 @@ class SubjectArea extends Equatable {
     return toReturn;
   }
 
-  static List<SubjectArea> getSubjectsToDisplay(List<String> levels) {
+  static List<SubjectArea> getSubjectsToDisplay(List<Level> levels) {
     final Set<SubjectArea> toReturn = {};
-    for (String level in levels) {
+    for (Level level in levels) {
       if (Level.pri.contains(level)) {
         toReturn.addAll(pri);
       }
@@ -89,6 +94,7 @@ class SubjectArea extends Equatable {
         toReturn.addAll(jc);
       }
       if (Level.ib.contains(level)) {
+        print('entered corret');
         toReturn.addAll(ib);
       }
       if (Level.uni.contains(level)) {
@@ -97,20 +103,20 @@ class SubjectArea extends Equatable {
       if (Level.poly.contains(level)) {
         toReturn.addAll(poly);
       }
-      if (level == Level.OTHER.toString()) {
+      if (level == Level.OTHER) {
         toReturn.addAll(other);
       }
     }
     return toReturn.toList();
   }
 
-  static List<int> toIndices(List<String> value, List<String> levels) {
+  static List<int> toIndices(List<String> value, List<Level> levels) {
     final List<String> subjects =
         getSubjectsToDisplay(levels).map((e) => e.toString());
     return value.map((e) => subjects.indexOf(e)).toList();
   }
 
-  static List<SubjectArea> fromIndices(List<int> value, List<String> level) {
+  static List<SubjectArea> fromIndices(List<int> value, List<Level> level) {
     final List<SubjectArea> subjects = getSubjectsToDisplay(level);
     return value.map((e) => subjects[e]).toList();
   }

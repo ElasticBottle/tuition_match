@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 
 class StatsSimple extends Equatable {
   const StatsSimple({
-    int likeCount,
-    int requestCount,
+    int likeCount = 0,
+    int requestCount = 0,
   })  : _likeCount = likeCount,
         _requestCount = requestCount;
 

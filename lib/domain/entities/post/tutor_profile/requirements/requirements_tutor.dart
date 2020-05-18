@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 import 'package:cotor/domain/entities/core/requirements_base.dart';
 import 'package:cotor/domain/entities/post/base_post/base_requirements/class_format.dart';
@@ -8,13 +9,13 @@ import 'package:cotor/domain/entities/post/base_post/base_requirements/timing.da
 
 class RequirementsTutor extends Equatable implements RequirementsBase {
   const RequirementsTutor({
-    List<ClassFormat> classFormat,
-    Price price,
-    Timing timing,
-    Location loc,
+    @required List<ClassFormat> classFormat,
+    @required Price price,
+    @required Timing timing,
+    @required Location location,
   })  : _classFormat = classFormat,
         _timing = timing,
-        _loc = loc,
+        _loc = location,
         _price = price;
 
   final List<ClassFormat> _classFormat;

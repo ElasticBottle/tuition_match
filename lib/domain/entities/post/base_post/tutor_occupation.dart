@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+const String partTime = 'Part Time';
+const String fullTime = 'Full Time';
+const String moe = 'MOE';
+
 class TutorOccupation extends Equatable {
   const TutorOccupation(String occupation) : _occupation = occupation;
 
@@ -13,9 +17,9 @@ class TutorOccupation extends Equatable {
   @override
   String toString() => _occupation;
 
-  static const TutorOccupation PART_TIME = TutorOccupation('Part Time');
-  static const TutorOccupation FULL_TIME = TutorOccupation('Full Time');
-  static const TutorOccupation MOE = TutorOccupation('MOE');
+  static const TutorOccupation PART_TIME = TutorOccupation(partTime);
+  static const TutorOccupation FULL_TIME = TutorOccupation(fullTime);
+  static const TutorOccupation MOE = TutorOccupation(moe);
 
   static List<TutorOccupation> get occupations => const [
         PART_TIME,

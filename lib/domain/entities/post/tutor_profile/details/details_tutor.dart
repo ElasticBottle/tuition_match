@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 import 'package:cotor/domain/entities/core/details_base.dart';
 import 'package:cotor/domain/entities/post/base_post/base_details/date_details.dart';
@@ -11,11 +12,11 @@ import 'package:cotor/domain/entities/post/tutor_profile/details/selling_points.
 class DetailsTutor extends Equatable implements DetailsBase {
   const DetailsTutor({
     DateDetails dateDetails,
-    List<Level> levelsTaught,
-    List<SubjectArea> subjectsTaught,
-    TutorOccupation tutorOccupation,
-    Qualifications qualification,
-    SellingPoints sellingPoints,
+    @required List<Level> levelsTaught,
+    @required List<SubjectArea> subjectsTaught,
+    @required TutorOccupation tutorOccupation,
+    @required Qualifications qualification,
+    @required SellingPoints sellingPoints,
   })  : _dateDetails = dateDetails,
         _levelsTaught = levelsTaught,
         _tutorOccupation = tutorOccupation,

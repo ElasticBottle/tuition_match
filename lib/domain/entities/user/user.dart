@@ -7,18 +7,18 @@ import 'package:cotor/domain/entities/user/identity_user.dart';
 class User extends Equatable {
   const User({
     IdentityUser identity,
-    List<TuteeAssignment> assignments,
+    Map<String, TuteeAssignment> assignments,
     TutorProfile profile,
   })  : _identity = identity,
         _assignments = assignments,
         _profile = profile;
 
   final IdentityUser _identity;
-  final List<TuteeAssignment> _assignments;
+  final Map<String, TuteeAssignment> _assignments;
   final TutorProfile _profile;
 
   IdentityUser get identity => _identity;
-  List<TuteeAssignment> get assignments => _assignments;
+  Map<String, TuteeAssignment> get assignments => _assignments;
   TutorProfile get profile => _profile;
 
   @override
@@ -36,8 +36,8 @@ class User extends Equatable {
       )''';
 }
 
-class PrivateUserInfo extends Equatable {
-  const PrivateUserInfo({
+class PrivateInfo extends Equatable {
+  const PrivateInfo({
     this.email,
     this.nric,
     this.documentsUrl,
@@ -45,10 +45,6 @@ class PrivateUserInfo extends Equatable {
   final String email;
   final String nric;
   final List<String> documentsUrl;
-
-  PrivateUserInfo copyWith() {
-    return PrivateUserInfo();
-  }
 
   @override
   List<Object> get props => [

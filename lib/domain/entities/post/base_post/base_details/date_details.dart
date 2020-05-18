@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 class DateDetails extends Equatable {
   const DateDetails({
-    @required DateTime dateAdded,
-    @required DateTime dateModified,
+    DateTime dateAdded,
+    DateTime dateModified,
   })  : _dateAdded = dateAdded,
         _dateModified = dateModified;
 

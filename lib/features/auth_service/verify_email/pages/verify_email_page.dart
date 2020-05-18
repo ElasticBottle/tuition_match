@@ -5,6 +5,7 @@ import 'package:cotor/constants/strings.dart';
 import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/verify_email/bloc/verify_email_bloc.dart';
 import 'package:cotor/injection_container.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,9 +21,13 @@ class VerifyEmailPage extends StatelessWidget {
           elevation: 0,
           leading: IconButton(
             icon: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.rotationY(math.pi),
-                child: Icon(Icons.exit_to_app)),
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(math.pi),
+              child: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
             onPressed: () =>
                 BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
           ),
@@ -65,6 +70,20 @@ class VerifyEmailPageBody extends StatelessWidget {
                 ).show(context),
               );
           }
+          if (state.isSent) {
+            Scaffold.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                CustomSnackBar(
+                  toDisplay: Text(
+                    Strings.verifyEmailSent,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                  bgColor: Theme.of(context).colorScheme.primaryVariant,
+                  onBgColor: Theme.of(context).colorScheme.primary,
+                ).show(context),
+              );
+          }
         },
         builder: (BuildContext context, VerifyEmailState state) {
           return Padding(
@@ -94,23 +113,43 @@ class VerifyEmailPageBody extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 50.0),
-                Text(Strings.cannotFindEmailPara),
-                FlatButton(
-                  padding: EdgeInsets.zero,
-                  child: state.isSending
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 15.0),
-                          child: Center(
-                            child: CircularProgressIndicator(),
+                RichText(
+                    text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: Strings.cannotFindEmailPara,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
+                    TextSpan(
+                      style: Theme.of(context).textTheme.button.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                        )
-                      : Text(
-                          Strings.resendEmailVerificationButtonText,
-                          style: Theme.of(context).textTheme.button,
-                        ),
-                  onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
-                      .add(SendVerificationEmail()),
-                ),
+                      text: ' ' + Strings.resendEmailVerificationButtonText,
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          BlocProvider.of<VerifyEmailBloc>(context)
+                              .add(SendVerificationEmail());
+                        },
+                    ),
+                  ],
+                )),
+                // Text(Strings.cannotFindEmailPara),
+                // FlatButton(
+                //   padding: EdgeInsets.zero,
+                //   child: state.isSending
+                //       ? Padding(
+                //           padding: const EdgeInsets.only(top: 15.0),
+                //           child: Center(
+                //             child: CircularProgressIndicator(),
+                //           ),
+                //         )
+                //       : Text(
+                //           Strings.resendEmailVerificationButtonText,
+                //           style: Theme.of(context).textTheme.button,
+                //         ),
+                //   onPressed: () => BlocProvider.of<VerifyEmailBloc>(context)
+                //       .add(SendVerificationEmail()),
+                // ),
               ],
             ),
           );

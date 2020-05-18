@@ -2,6 +2,7 @@ import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
 import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/constants/strings.dart';
+import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
 import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,7 +54,7 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
     return BlocListener<RegistrationBloc, RegistrationState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          // BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
+          BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
           Scaffold.of(context)

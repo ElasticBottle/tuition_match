@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cotor/constants/strings.dart';
+import 'package:cotor/domain/entities/post/tutor_profile/profile.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_cached_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_next_tutor_list.dart';
 import 'package:cotor/domain/usecases/tutor_profile/get_tutor_list.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
-import 'package:cotor/features/models/tutor_profile_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:cotor/core/error/failures.dart';
@@ -27,7 +27,7 @@ class TutorProfileListBloc
   final GetTutorList getTutorProfileList;
   final GetNextTutorList getNextTutorProfileList;
   final GetCachedTutorList getCachedTutorProfileList;
-  List<TutorProfileModel> profiles = [];
+  List<TutorProfile> profiles = [];
   @override
   TutorProfileListState get initialState => Loading();
 
@@ -72,8 +72,7 @@ class TutorProfileListBloc
       },
       (tutorProfileList) async* {
         if (tutorProfileList.isNotEmpty) {
-          profiles.addAll(tutorProfileList
-              .map((e) => TutorProfileModel.fromDomainEntity(e)));
+          profiles.addAll(tutorProfileList);
           yield TutorProfilesLoaded.normal(
             profiles: profiles,
           );
@@ -95,9 +94,8 @@ class TutorProfileListBloc
         );
       },
       (tutorProfileList) async* {
-        if (tutorProfileList != null) {
-          profiles.addAll(tutorProfileList
-              .map((e) => TutorProfileModel.fromDomainEntity(e)));
+        if (tutorProfileList.isNotEmpty) {
+          profiles.addAll(tutorProfileList);
           yield currentState.update(profiles: profiles);
         } else {
           yield currentState.update(profiles: profiles, isEnd: true);
@@ -117,9 +115,7 @@ class TutorProfileListBloc
         );
       },
       (tutorProfileList) async* {
-        profiles = tutorProfileList
-            .map((e) => TutorProfileModel.fromDomainEntity(e))
-            .toList();
+        profiles = tutorProfileList;
         yield TutorProfilesLoaded(
           profiles: profiles,
           isCachedList: true,

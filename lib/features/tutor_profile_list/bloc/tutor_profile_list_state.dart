@@ -28,7 +28,7 @@ class TutorProfilesLoaded extends TutorProfileListState {
       isGetNextListError: false,
     );
   }
-  factory TutorProfilesLoaded.normal({List<TutorProfileModel> profiles}) {
+  factory TutorProfilesLoaded.normal({List<TutorProfile> profiles}) {
     return TutorProfilesLoaded(
       profiles: [...profiles],
       isFetching: false,
@@ -37,14 +37,14 @@ class TutorProfilesLoaded extends TutorProfileListState {
       isGetNextListError: false,
     );
   }
-  final List<TutorProfileModel> profiles;
+  final List<TutorProfile> profiles;
   final bool isFetching;
   final bool isEnd;
   final bool isCachedList;
   final bool isGetNextListError;
 
   TutorProfilesLoaded update({
-    List<TutorProfileModel> profiles,
+    List<TutorProfile> profiles,
     bool isFetching,
     bool isEnd,
     bool isCachedList,
@@ -59,7 +59,7 @@ class TutorProfilesLoaded extends TutorProfileListState {
   }
 
   TutorProfilesLoaded copyWith({
-    List<TutorProfileModel> profiles,
+    List<TutorProfile> profiles,
     bool isFetching,
     bool isEnd,
     bool isCachedList,

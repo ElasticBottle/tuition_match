@@ -1,5 +1,5 @@
 import 'package:cotor/common_widgets/information_display/app_badge.dart';
-import 'package:cotor/domain/entities/level.dart';
+import 'package:cotor/domain/entities/post/base_post/base_enums.dart';
 import 'package:flutter/material.dart';
 
 const String PRESCHOOL_S = 'Pre-Sch';
@@ -17,40 +17,45 @@ const String SEC5_S = 'Sec 5';
 const String POLY_S = 'Poly';
 const String UNI_S = 'Uni';
 
-class Helper {
-  static String shortenLevel(String level) {
-    switch (level) {
-      case Level.PRESCHOOL:
-        return PRESCHOOL_S;
-      case Level.PRI1:
-        return PRI1_S;
-      case Level.PRI2:
-        return PRI2_S;
-      case Level.PRI3:
-        return PRI3_S;
-      case Level.PRI4:
-        return PRI4_S;
-      case Level.PRI5:
-        return PRI5_S;
-      case Level.PRI6:
-        return PRI6_S;
-      case Level.SEC1:
-        return SEC1_S;
-      case Level.SEC2:
-        return SEC2_S;
-      case Level.SEC3:
-        return SEC3_S;
-      case Level.SEC4:
-        return SEC4_S;
-      case Level.SEC5:
-        return SEC5_S;
-      case Level.POLY:
-        return POLY_S;
-      case Level.UNI:
-        return UNI_S;
-      default:
-        return level;
+class TutorProfileListUtil {
+  static String shortenLevel(Level level) {
+    // TODO(ElasticBottle): finish it up
+    if (level == Level.PRESCHOOL) {
+      return PRESCHOOL_S;
+    } else if (level == Level.PRI1) {
+      return PRI1_S;
+    } else {
+      return level.toString();
     }
+
+    // switch (level) {
+    //   case Level.PRI2:
+    //     return PRI2_S;
+    //   case Level.PRI3:
+    //     return PRI3_S;
+    //   case Level.PRI4:
+    //     return PRI4_S;
+    //   case Level.PRI5:
+    //     return PRI5_S;
+    //   case Level.PRI6:
+    //     return PRI6_S;
+    //   case Level.SEC1:
+    //     return SEC1_S;
+    //   case Level.SEC2:
+    //     return SEC2_S;
+    //   case Level.SEC3:
+    //     return SEC3_S;
+    //   case Level.SEC4:
+    //     return SEC4_S;
+    //   case Level.SEC5:
+    //     return SEC5_S;
+    //   case Level.POLY:
+    //     return POLY_S;
+    //   case Level.UNI:
+    //     return UNI_S;
+    //   default:
+    //     return level.toString();
+    // }
   }
 
   static String shortenSubject(String subject) {

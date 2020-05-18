@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 class AppTheme {
   /// Default constructor
   AppTheme({@required this.isDark});
-
-  Color bg1 = Colors.white;
+  Color textColor = Color.fromARGB(255, 47, 64, 71);
+  Color bg1 = Color.fromARGB(255, 226, 226, 226);
+  Color surface = Color.fromARGB(255, 238, 238, 238);
+  Color primaryVariant = Color.fromARGB(255, 147, 220, 223);
+  Color secondary = Color.fromARGB(255, 240, 84, 91);
   Color accent1 = Colors.grey[900];
   bool isDark;
 
@@ -13,24 +16,34 @@ class AppTheme {
     final TextTheme txtTheme = (isDark
             ? Typography.material2018().white
             : Typography.material2018().black)
-        .apply(fontFamily: 'Quicksand');
+        .apply(
+          fontFamily: 'OpenSans',
+          bodyColor: textColor,
+          displayColor: textColor,
+        )
+        .copyWith(
+          button: TextStyle(
+            color: surface,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+        );
 
-    final Color txtColor = txtTheme.bodyText1.color;
     final ColorScheme colorScheme = ColorScheme(
       // Decide how you want to apply your own custom them, to the MaterialApp
       brightness: isDark ? Brightness.dark : Brightness.light,
-      primary: accent1,
-      primaryVariant: accent1,
-      secondary: accent1,
+      primary: textColor,
+      primaryVariant: primaryVariant,
+      secondary: secondary,
       secondaryVariant: accent1,
       background: bg1,
-      surface: bg1,
-      error: Colors.red.shade400,
-      onBackground: txtColor,
-      onSurface: txtColor,
-      onError: Colors.white,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
+      surface: surface,
+      error: secondary,
+      onBackground: textColor,
+      onSurface: textColor,
+      onError: surface,
+      onPrimary: textColor,
+      onSecondary: surface,
     );
 
     /// Now that we have ColorScheme and TextTheme, we can create the ThemeData

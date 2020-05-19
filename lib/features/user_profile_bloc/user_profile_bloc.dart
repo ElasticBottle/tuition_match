@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/entities/user/user_export.dart';
+import 'package:cotor/domain/usecases/auth_service/get_current_user.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
-import 'package:cotor/domain/usecases/user/get_current_user.dart';
-import 'package:cotor/domain/usecases/user/user_profile_stream.dart';
-import 'package:cotor/features/models/user_model.dart';
+import 'package:cotor/domain/usecases/user/user_info/user_profile_stream.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -49,7 +48,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
         print(failure.toString());
       },
       (User userId) async* {
-        userProfilesubscription = userProfileStream(userId.uid).listen(
+        userProfilesubscription = userProfileStream(userId.identity.uid).listen(
           (User userProfile) {
             add(RefreshUserProfile(user: userProfile));
           },
@@ -62,7 +61,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   }
 
   Stream<UserProfileState> _mapRefreshUserProfileToState(User user) async* {
-    yield state.copyWith(userProfile: UserModel.fromDomainEntity(user));
+    yield state.copyWith(userProfile: user);
   }
 
   Stream<UserProfileState> _mapUpdateProfileSuccessToState(
@@ -70,7 +69,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     yield state.copyWith(
         updateProfileSuccess: true, updateProfileSuccessMsg: message);
     yield state.copyWith(
-        updateProfileSuccess: false, updateProfileSuccessMsg: message);
+        updateProfileSuccess: false, updateProfileSuccessMsg: null);
   }
 
   Stream<UserProfileState> _mapCachedProfileToSet(bool isCache) async* {

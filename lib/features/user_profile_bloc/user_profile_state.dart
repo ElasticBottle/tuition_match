@@ -1,7 +1,7 @@
 part of 'user_profile_bloc.dart';
 
 abstract class UserProfileState extends Equatable {
-  UserModel get userProfile;
+  User get userProfile;
   String get updateProfileSuccessMsg;
   bool get updateProfileSuccess;
   bool get hasCachedProfile;
@@ -16,7 +16,7 @@ abstract class UserProfileState extends Equatable {
 
 class UserProfileStateImpl implements UserProfileState {
   const UserProfileStateImpl({
-    UserModel userProfile,
+    User userProfile,
     String updateProfileSuccessMsg,
     bool updateProfileSuccess,
     bool hasCachedProfile,
@@ -27,20 +27,20 @@ class UserProfileStateImpl implements UserProfileState {
 
   factory UserProfileStateImpl.empty() {
     return UserProfileStateImpl(
-      userProfile: UserModel(),
+      userProfile: User(),
       updateProfileSuccess: false,
       updateProfileSuccessMsg: '',
       hasCachedProfile: false,
     );
   }
 
-  final UserModel _userProfile;
+  final User _userProfile;
   final bool _updateProfileSuccess;
   final String _updateProfileSuccessMsg;
   final bool _hasCachedProfile;
 
   @override
-  UserModel get userProfile => _userProfile;
+  User get userProfile => _userProfile;
   @override
   String get updateProfileSuccessMsg => _updateProfileSuccessMsg;
   @override

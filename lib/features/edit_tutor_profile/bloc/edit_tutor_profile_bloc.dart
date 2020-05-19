@@ -230,8 +230,8 @@ class EditTutorProfileBloc
     if (isNotEmpty) {
       yield* _mapFieldToErrorState(fieldName, value: value, isValid: true);
     } else {
-      tutorProfileInfo.remove(fieldName);
       yield* _mapFieldToErrorState(fieldName, value: value, isValid: false);
+      tutorProfileInfo.remove(fieldName);
     }
   }
 

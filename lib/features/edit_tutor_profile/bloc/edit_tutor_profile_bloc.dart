@@ -206,6 +206,7 @@ class EditTutorProfileBloc
             FormFieldKey.LOCATION: profile.requirements.location,
             FormFieldKey.QUALIFICATIONS: profile.details.qualification,
             FormFieldKey.SELLING_POINTS: profile.details.sellingPoints,
+            FormFieldKey.STATS_SIMPLE: profile.stats,
             FormFieldKey.IS_OPEN: profile.identity.isOpen,
           };
   }
@@ -454,43 +455,43 @@ class EditTutorProfileBloc
     print(tutorProfileInfo);
 
     final TutorProfile model = TutorProfile(
-        identityTutor: IdentityTutor(
-          accountType: userDetails.identity.accountType,
-          isOpen: tutorProfileInfo[FormFieldKey.IS_OPEN],
-          gender: tutorProfileInfo[FormFieldKey.GENDER],
-          uid: userDetails.identity.uid,
-          name: userDetails.identity.name,
-          photoUrl: userDetails.identity.photoUrl,
+      identityTutor: IdentityTutor(
+        accountType: userDetails.identity.accountType,
+        isOpen: tutorProfileInfo[FormFieldKey.IS_OPEN],
+        gender: tutorProfileInfo[FormFieldKey.GENDER],
+        uid: userDetails.identity.uid,
+        name: userDetails.identity.name,
+        photoUrl: userDetails.identity.photoUrl,
+      ),
+      detailsTutor: DetailsTutor(
+        dateDetails: tutorProfileInfo[FormFieldKey.DATE_DETAILS],
+        levelsTaught: tutorProfileInfo[FormFieldKey.LEVELS_TAUGHT] ?? <Level>[],
+        subjectsTaught:
+            tutorProfileInfo[FormFieldKey.SUBJECTS_TAUGHT] ?? <SubjectArea>[],
+        tutorOccupation: tutorProfileInfo[FormFieldKey.TUTOR_OCCUPATION] ??
+            TutorOccupation(''),
+        qualification: tutorProfileInfo[FormFieldKey.QUALIFICATIONS] ??
+            Qualifications(qualifications: ''),
+        sellingPoints: tutorProfileInfo[FormFieldKey.SELLING_POINTS] ??
+            SellingPoints(sellingPt: ''),
+      ),
+      requirementsTutor: RequirementsTutor(
+        price: Price(
+          rateType: tutorProfileInfo[FormFieldKey.RATE_TYPE],
+          proposedRate: tutorProfileInfo[FormFieldKey.PROPOSED_RATE],
+          maxRate: tutorProfileInfo[FormFieldKey.MAX_RATE] ??
+              EditTutorProfileState.initial().initialRateMax,
+          minRate: tutorProfileInfo[FormFieldKey.MIN_RATE] ??
+              EditTutorProfileState.initial().initialRateMin,
         ),
-        detailsTutor: DetailsTutor(
-          dateDetails: tutorProfileInfo[FormFieldKey.DATE_DETAILS],
-          levelsTaught:
-              tutorProfileInfo[FormFieldKey.LEVELS_TAUGHT] ?? <Level>[],
-          subjectsTaught:
-              tutorProfileInfo[FormFieldKey.SUBJECTS_TAUGHT] ?? <SubjectArea>[],
-          tutorOccupation: tutorProfileInfo[FormFieldKey.TUTOR_OCCUPATION] ??
-              TutorOccupation(''),
-          qualification: tutorProfileInfo[FormFieldKey.QUALIFICATIONS] ??
-              Qualifications(qualifications: ''),
-          sellingPoints: tutorProfileInfo[FormFieldKey.SELLING_POINTS] ??
-              SellingPoints(sellingPt: ''),
-        ),
-        requirementsTutor: RequirementsTutor(
-          price: Price(
-            rateType: tutorProfileInfo[FormFieldKey.RATE_TYPE],
-            proposedRate: tutorProfileInfo[FormFieldKey.PROPOSED_RATE],
-            maxRate: tutorProfileInfo[FormFieldKey.MAX_RATE] ??
-                EditTutorProfileState.initial().initialRateMax,
-            minRate: tutorProfileInfo[FormFieldKey.MIN_RATE] ??
-                EditTutorProfileState.initial().initialRateMin,
-          ),
-          classFormat:
-              tutorProfileInfo[FormFieldKey.CLASS_FORMATS] ?? <ClassFormat>[],
-          timing: tutorProfileInfo[FormFieldKey.TIMING] ?? Timing(timing: ''),
-          location:
-              tutorProfileInfo[FormFieldKey.LOCATION] ?? Location(location: ''),
-        ),
-        statsSimple: StatsSimple());
+        classFormat:
+            tutorProfileInfo[FormFieldKey.CLASS_FORMATS] ?? <ClassFormat>[],
+        timing: tutorProfileInfo[FormFieldKey.TIMING] ?? Timing(timing: ''),
+        location:
+            tutorProfileInfo[FormFieldKey.LOCATION] ?? Location(location: ''),
+      ),
+      statsSimple: tutorProfileInfo[FormFieldKey.STATS_SIMPLE] ?? StatsSimple(),
+    );
     print('model to be cahcehd: ' + model.toString());
     print(tutorProfileInfo[FormFieldKey.RATE_TYPE]);
     await cacheTutorProfile(model);

@@ -1,7 +1,7 @@
 import 'package:cotor/common_widgets/information_display/app_badge.dart';
 import 'package:flutter/material.dart';
 
-class Helper {
+class ViewTutorProfileUtil {
   static Widget wrapper(List<Widget> widgets) {
     return Wrap(
       runAlignment: WrapAlignment.start,
@@ -32,15 +32,20 @@ class Helper {
     return badges;
   }
 
-  static String formatPrice({double rateMin, double ratemax, String rateType}) {
-    return '\$$rateMin - \$$rateMin \/$rateType';
+  static String formatPrice({double rateMin, double rateMax, String rateType}) {
+    return '\$${rateMin.toInt()} ~ ${rateMax.toInt()} \/$rateType';
   }
 
   static List<Widget> makeTextTitle(List<String> list, BuildContext context) {
     final List<Widget> toReturn = [];
     for (String title in list) {
-      toReturn.add(
-          Text(title + ': ', style: Theme.of(context).textTheme.subtitle1));
+      toReturn.add(Text(
+        title + ': ',
+        style: Theme.of(context)
+            .textTheme
+            .subtitle1
+            .copyWith(fontWeight: FontWeight.bold),
+      ));
     }
     return toReturn;
   }

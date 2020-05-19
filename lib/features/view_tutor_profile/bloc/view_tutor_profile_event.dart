@@ -4,12 +4,16 @@ abstract class ViewTutorProfileEvent extends Equatable {
   const ViewTutorProfileEvent();
 }
 
-class ViewProfile extends ViewTutorProfileEvent {
-  const ViewProfile({this.profile});
-  final TutorProfileModel profile;
+class InitialiseViewTutorProfile extends ViewTutorProfileEvent {
+  const InitialiseViewTutorProfile(
+      {this.isUser, this.isInNestedScrollView, this.profile});
+  final TutorProfile profile;
+  final bool isUser;
+  final bool isInNestedScrollView;
   @override
-  List<Object> get props => [profile];
+  List<Object> get props => [profile, isUser, isInNestedScrollView];
 
   @override
-  String toString() => 'ViewProfile { profile : $profile}';
+  String toString() =>
+      'ViewProfile(profile: $profile, isUser: $isUser, isInNestedScrollView: $isInNestedScrollView)';
 }

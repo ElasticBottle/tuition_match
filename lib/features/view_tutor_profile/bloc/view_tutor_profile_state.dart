@@ -1,20 +1,46 @@
 part of 'view_tutor_profile_bloc.dart';
 
 abstract class ViewTutorProfileState extends Equatable {
-  TutorProfileModel get profile;
+  TutorProfile get profile;
+  bool get isUser;
+  bool get isInNestedScrollView;
 }
 
 class ViewTutorProfileStateImpl extends ViewTutorProfileState {
-  ViewTutorProfileStateImpl({TutorProfileModel profile}) : _profile = profile;
-
-  final TutorProfileModel _profile;
+  ViewTutorProfileStateImpl(
+      {TutorProfile profile, bool isUser, bool isInNestedScrollView})
+      : _profile = profile,
+        _isUser = isUser,
+        _isNestedScrollView = isInNestedScrollView;
+  factory ViewTutorProfileStateImpl.initial() {
+    return ViewTutorProfileStateImpl(
+      isInNestedScrollView: false,
+      isUser: true,
+      profile: TutorProfile(),
+    );
+  }
+  final TutorProfile _profile;
+  final bool _isUser;
+  final bool _isNestedScrollView;
 
   @override
-  TutorProfileModel get profile => _profile;
+  TutorProfile get profile => _profile;
+  @override
+  bool get isInNestedScrollView => _isNestedScrollView;
+  @override
+  bool get isUser => _isUser;
 
   @override
-  List<Object> get props => [profile];
+  List<Object> get props => [
+        profile,
+        isUser,
+        isInNestedScrollView,
+      ];
 
   @override
-  String toString() => 'ViewProfile { profile : $profile }';
+  String toString() => '''ViewTutorProfileStateImpl(
+    profile: $profile, 
+    isUser: $isUser, 
+    isNestedScrollView: $isInNestedScrollView
+  )''';
 }

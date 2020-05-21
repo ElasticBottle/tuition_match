@@ -50,7 +50,8 @@ class LevelEntity extends Level implements EntityBase<Level> {
   factory LevelEntity.fromDomainEntity(Level level) {
     return LevelEntity(level.level);
   }
-
+  @override
+  List<Object> get props => [level];
   @override
   Level toDomainEntity() {
     return Level(level);

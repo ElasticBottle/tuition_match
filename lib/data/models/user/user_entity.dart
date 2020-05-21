@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cotor/data/models/entity_base.dart';
 import 'package:cotor/data/models/map_key_strings.dart';
 import 'package:cotor/data/models/post/tutee_assignment/tutee_assignment_entity.dart';
@@ -31,14 +30,15 @@ class UserEntity extends User implements EntityBase<User> {
     final Map<String, TuteeAssignmentEntity> userAssignments = {};
     for (MapEntry<String, dynamic> entry in toConvert.entries) {
       userAssignments.addAll({
-        entry.key:
-            TuteeAssignmentEntity.fromDocumentSnapshot(entry.value, entry.key)
+        entry.key: TuteeAssignmentEntity.fromDocumentSnapshot(entry.value,
+            postId: entry.key)
       });
     }
     return UserEntity(
       identity: IdentityUserEntity.fromJson(json[USER_IDENTITY]),
       assignments: userAssignments,
-      profile: TutorProfileEntity.fromDocumentSnapshot(json[USER_PROFILE], uid),
+      profile:
+          TutorProfileEntity.fromDocumentSnapshot(json[USER_PROFILE], uid: uid),
     );
   }
 

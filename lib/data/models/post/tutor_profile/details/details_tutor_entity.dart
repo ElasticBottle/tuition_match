@@ -6,6 +6,7 @@ import 'package:cotor/data/models/post/base_post/base_details/subject_area_entit
 import 'package:cotor/data/models/post/base_post/tutor_occupation_entity.dart';
 import 'package:cotor/data/models/post/tutor_profile/details/qualifications_entity.dart';
 import 'package:cotor/data/models/post/tutor_profile/details/selling_points_entity.dart';
+import 'package:cotor/domain/entities/post/base_post/base_enums.dart';
 import 'package:cotor/domain/entities/post/tutor_profile/details/details_tutor.dart';
 
 class DetailsTutorEntity extends DetailsTutor
@@ -123,8 +124,9 @@ class DetailsTutorEntity extends DetailsTutor
   DetailsTutor toDomainEntity() {
     return DetailsTutor(
       dateDetails: dateDetails.toDomainEntity(),
-      levelsTaught: levelsTaught.map((e) => e.toDomainEntity()).toList(),
-      subjectsTaught: subjectsTaught.map((e) => e.toDomainEntity()).toList(),
+      levelsTaught: levelsTaught.map<Level>((e) => e.toDomainEntity()).toList(),
+      subjectsTaught:
+          subjectsTaught.map<SubjectArea>((e) => e.toDomainEntity()).toList(),
       tutorOccupation: occupation.toDomainEntity(),
       qualification: qualification.toDomainEntity(),
       sellingPoints: sellingPoints.toDomainEntity(),

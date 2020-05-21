@@ -35,10 +35,11 @@ class StatsSimpleEntity extends StatsSimple implements EntityBase<StatsSimple> {
     };
   }
 
-  Map<String, dynamic> toFirebaseMap({bool isNew}) {
+  Map<String, dynamic> toFirebaseMap(
+      {bool isNew = false, int likeIncrement = 0, int requestIncrement = 0}) {
     return <String, dynamic>{
-      LIKE_COUNT: isNew ? 0 : FieldValue,
-      REQUEST_COUNT: isNew ? 0 : FieldValue,
+      LIKE_COUNT: isNew ? 0 : FieldValue.increment(likeIncrement),
+      REQUEST_COUNT: isNew ? 0 : FieldValue.increment(requestIncrement),
     };
   }
 

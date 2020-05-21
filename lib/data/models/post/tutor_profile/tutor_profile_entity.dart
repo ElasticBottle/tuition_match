@@ -105,7 +105,7 @@ class TutorProfileEntity extends TutorProfile
       IDENTITY: identity.toJson(),
       DETAILS: details.toJson(),
       REQUIREMENTS: requirements.toJson(),
-      STATS_SIMPLE: stats.toJson()
+      STATS_SIMPLE: stats?.toJson()
     };
   }
 
@@ -154,8 +154,4 @@ class TutorProfileEntity extends TutorProfile
         requirementsTutor: $requirements,
         stats: $stats
       )''';
-
-  Map<String, dynamic> toNewDocumentSnapshot() {}
-
-  Map<String, dynamic> toExistingDocumentSnapshot(Map<String, dynamic> data) {}
 }

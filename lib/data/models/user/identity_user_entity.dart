@@ -77,9 +77,9 @@ class IdentityUserEntity extends IdentityUser
   @override
   IdentityUser toDomainEntity() {
     return IdentityUser(
-      accountType: accountType.toDomainEntity(),
+      accountType: accountType?.toDomainEntity(),
       isEmailVerified: isEmailVerified,
-      name: name.toDomainEntity(),
+      name: name?.toDomainEntity(),
       photoUrl: photoUrl,
       uid: uid,
     );

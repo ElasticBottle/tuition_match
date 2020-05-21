@@ -158,8 +158,4 @@ class TuteeAssignmentEntity extends TuteeAssignment
       requirementsTutee: $requirements,
       stats: $stats
   )''';
-
-  Map<String, dynamic> toNewDocumentSnapshot() {}
-
-  Map<String, dynamic> toExistingDocumentSnapshot(dynamic data) {}
 }

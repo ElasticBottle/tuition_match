@@ -17,12 +17,13 @@ class DateDetailsEntity extends DateDetails implements EntityBase<DateDetails> {
       return null;
     }
     return DateDetailsEntity(
-      dateAdded: DateTime.parse(json[DATE_CREATED]),
-      dateModified: DateTime.parse(json[DATE_MODIFIED]),
+      dateAdded: DateTime.tryParse(json[DATE_CREATED]),
+      dateModified: DateTime.tryParse(json[DATE_MODIFIED]),
     );
   }
 
   factory DateDetailsEntity.fromFirebaseMap(Map<String, dynamic> json) {
+    print('date detial entity' + json.toString());
     if (json == null || json.isEmpty) {
       return null;
     }
@@ -56,12 +57,13 @@ class DateDetailsEntity extends DateDetails implements EntityBase<DateDetails> {
   }
 
   Map<String, dynamic> toFirebaseMap({bool isNew, bool freeze = false}) {
-    return <String, dynamic>{
+    final Map<String, dynamic> toReturn = <String, dynamic>{
       DATE_CREATED:
           isNew ? FieldValue.serverTimestamp() : Timestamp.fromDate(dateAdded),
       DATE_MODIFIED: freeze
           ? Timestamp.fromDate(dateModified)
           : FieldValue.serverTimestamp(),
     };
+    return toReturn;
   }
 }

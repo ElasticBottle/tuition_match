@@ -40,14 +40,14 @@ class GradeRecordsEntity extends GradeRecords
   @override
   GradeRecords toDomainEntity() {
     return GradeRecords(
-      start: start.toDomainEntity(),
+      start: start?.toDomainEntity(),
       end: end?.toDomainEntity(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      INITIAL_GRADE: start.toShortString(),
+      INITIAL_GRADE: start?.toShortString(),
       FINAL_GRADE: end?.toShortString(),
     };
   }

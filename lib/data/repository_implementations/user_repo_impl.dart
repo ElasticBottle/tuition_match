@@ -11,6 +11,7 @@ import 'package:cotor/data/models/post/tutee_assignment/tutee_assignment_entity.
 import 'package:cotor/data/models/post/tutor_profile/tutor_profile_entity.dart';
 import 'package:cotor/data/models/user/user_entity.dart';
 import 'package:cotor/domain/entities/post/applications/application.dart';
+import 'package:cotor/domain/entities/post/base_post/post_base.dart';
 import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
 import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
 import 'package:cotor/domain/entities/user/user.dart';
@@ -38,7 +39,8 @@ class UserRepoImpl implements UserRepo {
 //
 
   @override
-  Stream<User> userProfileStream(String uid) => userDs.userProfileStream(uid);
+  Stream<User> userProfileStream(String uid) =>
+      userDs.userProfileStream(uid).map((user) => user.toDomainEntity());
 
   @override
   Future<Either<Failure, User>> getUserInfo(String uid) async {
@@ -48,7 +50,8 @@ class UserRepoImpl implements UserRepo {
       ifOnline: () async {
         try {
           final UserEntity result = await userDs.getUserInfo(uid);
-          return Right<Failure, User>(result.toDomainEntity());
+          final User toReturn = result.toDomainEntity();
+          return Right<Failure, User>(toReturn);
         } on ServerException {
           return Left<Failure, User>(ServerFailure());
         } on NoUserException {
@@ -166,6 +169,15 @@ class UserRepoImpl implements UserRepo {
     );
   }
 
+  @override
+  Stream<List<Application<PostBase, PostBase>>> requestStream({
+    String id,
+    bool isProfile,
+  }) {
+    return userDs.requestStream(id: id, isProfile: isProfile).map(
+        (applications) => applications.map((e) => e.toDomainEntity()).toList());
+  }
+
 //  _   _                 _          _                         _
 // | | | |___ ___ _ _    /_\   _____(_)__ _ _ _  _ __  ___ _ _| |_
 // | |_| (_-</ -_) '_|  / _ \ (_-<_-< / _` | ' \| '  \/ -_) ' \  _|
@@ -184,39 +196,39 @@ class UserRepoImpl implements UserRepo {
   }
 
   @override
-  Future<Either<Failure, bool>> setTuteeAssignment(
+  Future<Either<Failure, String>> setTuteeAssignment(
       TuteeAssignment assignment) async {
-    return IsNetworkOnline<Failure, bool>().call(
+    return IsNetworkOnline<Failure, String>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await userDs.setAssignment(
+            final String result = await userDs.setAssignment(
               assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
               isNew: true,
             );
-            return Right<Failure, bool>(result);
+            return Right<Failure, String>(result);
           } catch (e) {
-            return Left<Failure, bool>(ServerFailure());
+            return Left<Failure, String>(ServerFailure());
           }
         });
   }
 
   @override
-  Future<Either<Failure, bool>> updateTuteeAssignment(
+  Future<Either<Failure, String>> updateTuteeAssignment(
       TuteeAssignment assignment) async {
-    return IsNetworkOnline<Failure, bool>().call(
+    return IsNetworkOnline<Failure, String>().call(
         networkInfo: networkInfo,
         ifOffline: NetworkFailure(),
         ifOnline: () async {
           try {
-            final bool result = await userDs.setAssignment(
+            final String result = await userDs.setAssignment(
               assignment: TuteeAssignmentEntity.fromDomainEntity(assignment),
               isNew: false,
             );
-            return Right<Failure, bool>(result);
+            return Right<Failure, String>(result);
           } catch (e) {
-            return Left<Failure, bool>(ServerFailure());
+            return Left<Failure, String>(ServerFailure());
           }
         });
   }
@@ -295,6 +307,7 @@ class UserRepoImpl implements UserRepo {
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
+        print('called despite offlien');
         try {
           final bool result = await databaseCall();
           bool isCacheCleared = false;

@@ -1,7 +1,9 @@
 import 'package:cotor/core/error/failures.dart';
+import 'package:cotor/domain/entities/post/applications/application.dart';
 import 'package:cotor/domain/entities/post/tutee_assignment/tutee_assignment.dart';
 import 'package:cotor/domain/entities/post/tutor_profile/tutor_profile.dart';
 import 'package:cotor/domain/entities/user/user.dart';
+import 'package:cotor/domain/entities/user/withheld_info.dart';
 import 'package:dartz/dartz.dart';
 
 /// A repository for all the things that users can do within the app
@@ -41,10 +43,10 @@ abstract class UserRepo {
   /// gets the private info of the user
   ///
   /// Returns Either:
-  /// * __[PrivateUserInfo]__ upon successful retrieval
+  /// * __[WithheldInfo]__ upon successful retrieval
   /// * __[ServerFailure]__ when there are errors retrieving document
   /// * __[NetworkFailure]__ when called without internet access on user's device
-  Future<Either<Failure, PrivateUserInfo>> getUserPrivateInfo(String uid);
+  Future<Either<Failure, WithheldInfo>> getUserContactInfo(String uid);
 
   /// Creates a new user document
   ///
@@ -57,6 +59,7 @@ abstract class UserRepo {
     String photoUrl,
     String firstname,
     String lastname,
+    String countryCode,
     String phoneNum,
   });
 
@@ -77,12 +80,18 @@ abstract class UserRepo {
   /// * __[true]__ upon successful request
   /// * __[ServerFailure]__ when there are errors processing the request
   /// * __[NetworkFailure]__ when called without internet access on user's device
-  Future<Either<Failure, bool>> requestTutor({
-    String uid,
-    TuteeAssignment assignment,
-    bool isNewAssignment,
+  Future<Either<Failure, bool>> setApplication({
+    Application application,
+    bool isNewApp,
     bool toSave,
   });
+
+  /// Gets [Application] as a stream
+  ///
+  /// Returns a [Stream<Application>] listening to a particular post
+  ///
+  /// Triggers everytime there is a new application for a particular post
+  Stream<List<Application>> requestStream({String id, bool isProfile});
 
 //  _   _                 _          _                         _
 // | | | |___ ___ _ _    /_\   _____(_)__ _ _ _  _ __  ___ _ _| |_
@@ -99,7 +108,8 @@ abstract class UserRepo {
   /// * __[true]__ upon successful creation
   /// * __[ServerFailure]__ when there are errors processing the request
   /// * __[NetworkFailure]__ when called without internet access on user's device
-  Future<Either<Failure, bool>> setTuteeAssignment(TuteeAssignment assignment);
+  Future<Either<Failure, String>> setTuteeAssignment(
+      TuteeAssignment assignment);
 
   /// Updates specified user assignment
   ///
@@ -107,7 +117,7 @@ abstract class UserRepo {
   /// * __[true]__ upon successful update
   /// * __[ServerFailure]__ when there are errors processing the request
   /// * __[NetworkFailure]__ when called without internet access on user's device
-  Future<Either<Failure, bool>> updateTuteeAssignment(
+  Future<Either<Failure, String>> updateTuteeAssignment(
       TuteeAssignment assignment);
 
   /// Deletes specified user assignment

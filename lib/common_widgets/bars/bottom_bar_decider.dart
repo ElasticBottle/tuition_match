@@ -147,7 +147,9 @@ class _BottomBarDeciderState extends State<BottomBarDecider> {
         }
 
         // accepted
-        if (status == ApplicationStatus.ACCEPTED) {}
+        if (status == ApplicationStatus.ACCEPTED) {
+          return BottomActionBarNew.acceptDeny();
+        }
       }
       return BottomActionBarNew.requestWithLike(
         isLiked: likeBloc,

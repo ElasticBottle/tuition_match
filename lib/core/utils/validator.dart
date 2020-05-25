@@ -37,6 +37,10 @@ class PhoneNumValidator extends RegexValidator {
   PhoneNumValidator() : super(regexSource: r'^[8|9][0-9]{7}$');
 }
 
+class CountryCodeValidator extends RegexValidator {
+  CountryCodeValidator() : super(regexSource: r'^(\+?6[0|5])$');
+}
+
 class NonEmptyStringValidator extends StringValidator {
   @override
   bool isValid(String value) {
@@ -77,4 +81,5 @@ class EmailAndPasswordValidators {
   final StringValidator nonEmptyStringValidator = NonEmptyStringValidator();
   final IsDoubleValidator isDoubleValidator = IsDoubleValidator();
   final PhoneNumValidator phoneNumValidator = PhoneNumValidator();
+  final CountryCodeValidator countryCodeValidator = CountryCodeValidator();
 }

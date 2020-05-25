@@ -91,7 +91,7 @@ class ApplicationEntity<T extends PostBaseEntity<U>, U extends PostBase,
   Application toDomainEntity() {
     return Application<U, V>(
       applicationInfo: applicationInfo.toDomainEntity(),
-      requestedInfo: requestedInfo.toDomainEntity(),
+      requestedInfo: requestedInfo?.toDomainEntity(),
       applicationDates: dates.toDomainEntity(),
       applicationStatus: status.toDomainEntity(),
     );

@@ -23,7 +23,6 @@ class DateDetailsEntity extends DateDetails implements EntityBase<DateDetails> {
   }
 
   factory DateDetailsEntity.fromFirebaseMap(Map<String, dynamic> json) {
-    print('date detial entity' + json.toString());
     if (json == null || json.isEmpty) {
       return null;
     }

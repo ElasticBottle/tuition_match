@@ -6,11 +6,11 @@ import 'package:cotor/features/select_profile_image/domain/repo/storage_reposito
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
-class UploadImage extends UseCase<Stream<String>, UploadImageParams> {
+class UploadImage extends UseCase<bool, UploadImageParams> {
   UploadImage({this.storageRepo});
   final StorageRepository storageRepo;
   @override
-  Future<Either<Failure, Stream<String>>> call(UploadImageParams params) async {
+  Future<Either<Failure, bool>> call(UploadImageParams params) async {
     return await storageRepo.uploadImage(params.uid, params.image);
   }
 }

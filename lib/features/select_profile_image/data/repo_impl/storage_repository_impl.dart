@@ -14,13 +14,13 @@ class StorageRepositoryImpl implements StorageRepository {
   final StorageRemoteDataSource storageRemoteDs;
 
   @override
-  Future<Either<Failure, Stream<String>>> uploadImage(String uid, File image) {
-    return IsNetworkOnline<Failure, Stream<String>>().call(
+  Future<Either<Failure, bool>> uploadImage(String uid, File image) {
+    return IsNetworkOnline<Failure, bool>().call(
       networkInfo: networkInfo,
       ifOffline: NetworkFailure(),
       ifOnline: () async {
-        return Right<Failure, Stream<String>>(
-            storageRemoteDs.uploadImage(uid, image));
+        return Right<Failure, bool>(
+            await storageRemoteDs.uploadImage(uid, image));
       },
     );
   }

@@ -14,19 +14,3 @@ class UploadProfileImageStartUpload extends UploadProfileImageEvent {
   @override
   List<Object> get props => [image, uid];
 }
-
-class UploadProfileImageErrorOccurred extends UploadProfileImageEvent {
-  const UploadProfileImageErrorOccurred({this.msg});
-  final String msg;
-
-  @override
-  List<Object> get props => [msg];
-}
-
-class UploadProfileImageProgress extends UploadProfileImageEvent {
-  const UploadProfileImageProgress({this.progress});
-  final String progress;
-
-  @override
-  List<Object> get props => [progress];
-}

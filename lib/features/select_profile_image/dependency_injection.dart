@@ -21,7 +21,8 @@ class SelectProfileImageDependency {
 
     // DataSources
     getIt.registerLazySingleton<StorageRemoteDataSource>(
-      () => StorageRemoteDataSourceImpl(firebaseStorage: getIt()),
+      () =>
+          StorageRemoteDataSourceImpl(firebaseStorage: getIt(), store: getIt()),
     );
   }
 }

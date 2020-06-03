@@ -32,10 +32,6 @@ class UploadProfileImageBloc
   ) async* {
     if (event is UploadProfileImageStartUpload) {
       yield* _mapUploadProfileImageStartUploadToState(event.image, event.uid);
-    } else if (event is UploadProfileImageErrorOccurred) {
-      yield* _mapUploadProfileImageErrorOccurredToState(event.msg);
-    } else if (event is UploadProfileImageProgress) {
-      yield* _mapUploadProfileImageProgressToState(event.progress);
     }
   }
 
@@ -44,40 +40,25 @@ class UploadProfileImageBloc
     uploadStatus?.cancel();
     yield UploadProfileImageLoading();
     if (image != null) {
-      final Either<Failure, Stream<String>> result =
+      final Either<Failure, bool> result =
           await uploadImage(UploadImageParams(image: image, uid: uid));
       yield* result.fold(
         (l) async* {
-          yield UploadProfileImageError(msg: Strings.networkFailureErrorMsg);
+          if (l is NetworkFailure) {
+            yield UploadProfileImageError(msg: Strings.networkFailureErrorMsg);
+          } else {
+            yield UploadProfileImageError(msg: Strings.serverFailureErrorMsg);
+          }
         },
         (r) async* {
-          uploadStatus = r.listen(
-            (event) {
-              add(UploadProfileImageProgress(progress: event));
-            },
-            onError: (Object error) {
-              add(UploadProfileImageErrorOccurred(msg: 'Something went wrong'));
-              uploadStatus?.cancel();
-            },
+          yield UploadProfileImageDone(
+            msg: 'successfully updated profile picture',
           );
         },
       );
     } else {
       yield UploadProfileImageError(
           msg: 'Please choose an new image to upload!');
-    }
-  }
-
-  Stream<UploadProfileImageState> _mapUploadProfileImageErrorOccurredToState(
-      String msg) async* {
-    yield UploadProfileImageError(msg: msg);
-  }
-
-  Stream<UploadProfileImageState> _mapUploadProfileImageProgressToState(
-      String progress) async* {
-    yield UploadProfileImageInProgress();
-    if (progress == '-1') {
-      yield UploadProfileImageDone(msg: 'successfully updated profile picture');
     }
   }
 }

@@ -52,7 +52,7 @@ class _SelectProfileImagePageState extends State<SelectProfileImagePage> {
           quality: 50,
         );
         setState(() {
-          _image = result;
+          _image = croppedFile;
         });
         return result;
       }

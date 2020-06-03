@@ -12,5 +12,5 @@ abstract class StorageRepository {
   ///
   /// Failure is one of:
   /// * __[NetworkFailure]__ when called without internet access on user's device
-  Future<Either<Failure, Stream<String>>> uploadImage(String uid, File image);
+  Future<Either<Failure, bool>> uploadImage(String uid, File image);
 }

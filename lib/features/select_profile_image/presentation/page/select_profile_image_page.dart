@@ -131,7 +131,7 @@ class _SelectProfileImagePageState extends State<SelectProfileImagePage> {
         height: 70,
         child: BlocBuilder<UploadProfileImageBloc, UploadProfileImageState>(
           builder: (context, state) {
-            if (state is UploadProfileImageInProgress) {
+            if (state is UploadProfileImageLoading) {
               return CircularProgressIndicator();
             }
             return Text('Save Profile Picture');

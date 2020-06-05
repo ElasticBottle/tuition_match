@@ -14,13 +14,6 @@ class UploadProfileImageLoading extends UploadProfileImageState {
   List<Object> get props => [];
 }
 
-class UploadProfileImageInProgress extends UploadProfileImageState {
-  const UploadProfileImageInProgress();
-
-  @override
-  List<Object> get props => [];
-}
-
 class UploadProfileImageDone extends UploadProfileImageState {
   const UploadProfileImageDone({this.msg});
   final String msg;

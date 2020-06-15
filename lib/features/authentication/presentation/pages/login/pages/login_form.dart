@@ -1,9 +1,7 @@
-import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
-import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
-import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
+import 'package:cotor/common_widgets/common_widgets.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/login/bloc/login_bloc.dart';
-import 'package:cotor/features/auth_service/widgets/social_sign_in_button.dart';
+import 'package:cotor/features/authentication/presentation/pages/login/bloc/login_bloc.dart';
+import 'package:cotor/features/authentication/presentation/widgets/social_sign_in_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cotor/routing/router.gr.dart';
@@ -20,10 +18,10 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   static const Key googleButtonKey = Key('google');
 
+  BlocTextField _emailField;
+  BlocTextField _passwordField;
   LoginBloc _loginBloc;
 
   void _handleSubmitted(String value) {
@@ -34,12 +32,40 @@ class _LoginFormState extends State<LoginForm> {
     return !state.isEmailError && !state.isPasswordError && !state.isSubmitting;
   }
 
+  bool isPopulated() {
+    return _emailField.value.isNotEmpty && _passwordField.value.isNotEmpty;
+  }
+
   @override
   void initState() {
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _emailController.addListener(_onEmailChanged);
-    _passwordController.addListener(_onPasswordChanged);
+
+    _emailField = BlocTextField(
+      onChange: (value) => _loginBloc.add(EmailChanged(email: value)),
+      labelText: Strings.emailLabel,
+      hintText: Strings.emailHint,
+      textInputAction: TextInputAction.next,
+      textInputType: TextInputType.emailAddress,
+      onFieldSubmitted: _handleSubmitted,
+      errorText: _loginBloc.state.isEmailError ? Strings.errorEmailEmpty : null,
+    );
+    _passwordField = BlocTextField(
+      padding: EdgeInsets.zero,
+      onChange: (value) => _loginBloc.add(PasswordChanged(password: value)),
+      labelText: Strings.passwordLabel,
+      hintText: Strings.passwordHint,
+      textInputAction: TextInputAction.send,
+      onFieldSubmitted: (_) {
+        if (isLoginButtonEnabled(_loginBloc.state) && isPopulated()) {
+          _onFormSubmitted();
+        }
+      },
+      errorText:
+          _loginBloc.state.isPasswordError ? Strings.errorPasswordEmpty : null,
+      isObscureText: true,
+      isShowObscureTextToggle: true,
+    );
   }
 
   @override
@@ -85,43 +111,19 @@ class _LoginFormState extends State<LoginForm> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          CustomTextField(
-                            controller: _emailController,
-                            labelText: Strings.emailLabel,
-                            hintText: Strings.emailHint,
-                            textInputAction: TextInputAction.next,
-                            textInputType: TextInputType.emailAddress,
-                            onFieldSubmitted: _handleSubmitted,
-                            errorText: state.isEmailError
-                                ? Strings.errorEmailEmpty
-                                : null,
-                          ),
-                          CustomTextField(
-                            paddding: EdgeInsets.zero,
-                            controller: _passwordController,
-                            labelText: Strings.passwordLabel,
-                            hintText: Strings.passwordHint,
-                            textInputAction: TextInputAction.send,
-                            onFieldSubmitted: (_) {
-                              if (isLoginButtonEnabled(state)) {
-                                _onFormSubmitted();
-                              }
-                            },
-                            errorText: state.isPasswordError
-                                ? Strings.errorPasswordEmpty
-                                : null,
-                            isObscureText: true,
-                            isShowObscuretextToggle: true,
-                          ),
+                          _emailField,
+                          _passwordField,
                         ],
                       ),
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(Routes.forgotPasswordPage);
-                    },
+                    onPressed: state.isSubmitting
+                        ? null
+                        : () {
+                            Navigator.of(context)
+                                .pushNamed(Routes.forgotPasswordPage);
+                          },
                     child: Text(Strings.forgotPasswordButtonText),
                   ),
                   SizedBox(height: 15.0),
@@ -129,7 +131,7 @@ class _LoginFormState extends State<LoginForm> {
                     width: MediaQuery.of(context).size.width,
                     child: CustomRaisedButton(
                       onPressed: () async {
-                        if (isLoginButtonEnabled(state)) {
+                        if (isLoginButtonEnabled(state) && isPopulated()) {
                           _onFormSubmitted();
                         }
                       },
@@ -172,9 +174,12 @@ class _LoginFormState extends State<LoginForm> {
                     child: Text(
                       Strings.createAnAccountButtonText,
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(Routes.registrationPage);
-                    },
+                    onPressed: state.isSubmitting
+                        ? null
+                        : () {
+                            Navigator.of(context)
+                                .pushNamed(Routes.registrationPage);
+                          },
                   ),
                   // GoogleLoginButton(),
                   // CreateAccountButton(userRepository: _userRepository),
@@ -189,28 +194,14 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
-  }
-
-  void _onEmailChanged() {
-    _loginBloc.add(
-      EmailChanged(email: _emailController.text),
-    );
-  }
-
-  void _onPasswordChanged() {
-    _loginBloc.add(
-      PasswordChanged(password: _passwordController.text),
-    );
   }
 
   void _onFormSubmitted() {
     _loginBloc.add(
       LoginWithCredentialsPressed(
-        email: _emailController.text,
-        password: _passwordController.text,
+        email: _emailField.value,
+        password: _passwordField.value,
       ),
     );
   }

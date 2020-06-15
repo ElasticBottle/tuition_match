@@ -2,12 +2,18 @@ part of 'user_profile_bloc.dart';
 
 abstract class UserProfileEvent extends Equatable {
   const UserProfileEvent();
-
-  @override
-  List<Object> get props => [];
 }
 
-class UserEnterHompage extends UserProfileEvent {}
+class UserEnterHompage extends UserProfileEvent {
+  UserEnterHompage({this.uid});
+  final String uid;
+
+  @override
+  List<Object> get props => [uid];
+
+  @override
+  String toString() => 'UserEnterHompage(uid: $uid)';
+}
 
 class RefreshUserProfile extends UserProfileEvent {
   const RefreshUserProfile({this.user});

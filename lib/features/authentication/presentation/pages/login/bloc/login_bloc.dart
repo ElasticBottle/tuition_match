@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/domain/entities/user/user.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
+import 'package:cotor/features/authentication/domain/entities/authenticated_user.dart';
+import 'package:cotor/features/authentication/domain/usecases/sign_in_with_email.dart';
+import 'package:cotor/features/authentication/domain/usecases/sign_in_with_google.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:bloc/bloc.dart';
-import 'package:cotor/domain/usecases/auth_service/sign_in_with_email.dart';
-import 'package:cotor/domain/usecases/auth_service/sign_in_with_goolge.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -94,12 +94,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     yield LoginFormState.submitting();
-    final Either<Failure, User> result = await signInWithGoogle(NoParams());
+    final Either<Failure, AuthenticatedUser> result =
+        await signInWithGoogle(NoParams());
     yield* result.fold(
       (Failure failure) async* {
         yield LoginFormState.failure(_mapFailureToMessage(failure));
       },
-      (User user) async* {
+      (AuthenticatedUser user) async* {
         yield LoginFormState.success();
       },
     );
@@ -109,7 +110,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       {String email, String password}) async* {
     yield LoginFormState.submitting();
 
-    final Either<Failure, User> result = await signInWithEmail(
+    final Either<Failure, AuthenticatedUser> result = await signInWithEmail(
       SignInWithEmailParams(
         email: email,
         password: password,
@@ -120,7 +121,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       (Failure failure) async* {
         yield LoginFormState.failure(_mapFailureToMessage(failure));
       },
-      (User user) async* {
+      (AuthenticatedUser user) async* {
         yield LoginFormState.success();
       },
     );

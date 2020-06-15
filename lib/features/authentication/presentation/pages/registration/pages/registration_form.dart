@@ -1,9 +1,8 @@
-import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
+import 'package:cotor/common_widgets/common_widgets.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
-import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
-import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
+import 'package:cotor/features/authentication/authentication.dart';
+import 'package:cotor/features/authentication/presentation/pages/registration/bloc/registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -63,7 +62,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
     return BlocConsumer<RegistrationBloc, RegistrationState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
+          BlocProvider.of<AuthenticationBloc>(context).add(LoggedIn());
           Navigator.of(context).pop();
         }
         if (state.isFailure) {
@@ -102,6 +101,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      // TODO(EB): port over to bloc text field
                       CustomTextField(
                         controller: _emailController,
                         labelText: Strings.emailLabel,

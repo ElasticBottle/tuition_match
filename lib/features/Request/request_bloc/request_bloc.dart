@@ -21,12 +21,9 @@ part 'request_state.dart';
 class RequestBloc extends Bloc<RequestEvent, RequestState> {
   RequestBloc({
     @required this.userProfileStream,
-    @required this.getCurrentUser,
     @required this.requestStream,
   })  : assert(userProfileStream != null),
-        assert(getCurrentUser != null),
         assert(requestStream != null);
-  GetCurrentUser getCurrentUser;
   UserProfileStream userProfileStream;
   RequestStream requestStream;
   StreamSubscription userProfileSubscription;
@@ -53,7 +50,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     RequestEvent event,
   ) async* {
     if (event is InitialiseRequestBloc) {
-      yield* _mapInitialiseRequestBlocToState();
+      yield* _mapInitialiseRequestBlocToState(event.uid);
     } else if (event is RequestUserUpdated) {
       yield* _mapRequestUserUpdatedToState(event.user);
     } else if (event is RequestForId) {
@@ -73,23 +70,13 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     }
   }
 
-  Stream<RequestState> _mapInitialiseRequestBlocToState() async* {
-    requestStreams.forEach(_cancelStreams);
-    userProfileSubscription?.cancel();
-    final result = await getCurrentUser(NoParams());
-    yield* result.fold(
-      (l) async* {
-        print(l);
+  Stream<RequestState> _mapInitialiseRequestBlocToState(String uid) async* {
+    userProfileSubscription = userProfileStream(uid).listen(
+      (user) {
+        add(RequestUserUpdated(user));
       },
-      (r) async* {
-        userProfileSubscription = userProfileStream(r.identity.uid).listen(
-          (user) {
-            add(RequestUserUpdated(user));
-          },
-          onError: (dynamic error) {
-            print(error.toString());
-          },
-        );
+      onError: (dynamic error) {
+        print(error.toString());
       },
     );
   }

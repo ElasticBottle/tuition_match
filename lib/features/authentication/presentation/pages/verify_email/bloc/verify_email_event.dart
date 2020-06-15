@@ -8,5 +8,3 @@ abstract class VerifyEmailEvent extends Equatable {
 }
 
 class SendVerificationEmail extends VerifyEmailEvent {}
-
-class LogOut extends VerifyEmailEvent {}

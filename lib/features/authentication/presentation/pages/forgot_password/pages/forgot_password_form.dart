@@ -1,7 +1,7 @@
-import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
+import 'package:cotor/common_widgets/common_widgets.dart';
 import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/forgot_password/bloc/forgot_password_bloc.dart';
+import 'package:cotor/features/authentication/presentation/pages/forgot_password/bloc/forgot_password_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -36,22 +36,26 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     return BlocConsumer<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          Navigator.of(context).pop();
+          Scaffold.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              CustomSnackBar(
+                toDisplay: Text(
+                  Strings.resetPasswordEmailSent,
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                bgColor: Theme.of(context).colorScheme.primaryVariant,
+                onBgColor: Theme.of(context).colorScheme.primary,
+              ).show(context),
+            );
         }
         if (state.isFailure) {
           Scaffold.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(
-              SnackBar(
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(state.failureMessage),
-                    Icon(Icons.error),
-                  ],
-                ),
-                backgroundColor: Colors.red,
-              ),
+              CustomSnackBar(
+                toDisplay: Text(state.failureMessage),
+              ).show(context),
             );
         }
       },
@@ -92,7 +96,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
                   loading: state.isSubmitting,
                   color: Theme.of(context).colorScheme.primary,
                   child: Text(
-                    Strings.registerButtonText,
+                    Strings.sendResetPasswordButtonText,
                     style: Theme.of(context).textTheme.button,
                   ),
                 ),

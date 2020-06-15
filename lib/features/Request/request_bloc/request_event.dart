@@ -2,12 +2,17 @@ part of 'request_bloc.dart';
 
 abstract class RequestEvent extends Equatable {
   const RequestEvent();
-
   @override
   List<Object> get props => [];
 }
 
-class InitialiseRequestBloc extends RequestEvent {}
+class InitialiseRequestBloc extends RequestEvent {
+  const InitialiseRequestBloc({this.uid});
+  final String uid;
+
+  @override
+  List<Object> get props => [uid];
+}
 
 class RequestUserUpdated extends RequestEvent {
   const RequestUserUpdated(this.user);

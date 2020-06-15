@@ -1,9 +1,7 @@
-import 'package:cotor/common_widgets/buttons/custom_raised_button.dart';
-import 'package:cotor/common_widgets/information_capture/custom_text_field.dart';
-import 'package:cotor/common_widgets/information_display/custom_snack_bar.dart';
+import 'package:cotor/common_widgets/common_widgets.dart';
 import 'package:cotor/constants/strings.dart';
-import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
-import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
+import 'package:cotor/features/authentication/authentication.dart';
+import 'package:cotor/features/authentication/presentation/pages/registration/bloc/registration_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,15 +12,13 @@ class FirstTimeGoogleSignInForm extends StatefulWidget {
 }
 
 class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
-  final TextEditingController _phoneNumController = TextEditingController();
-  final TextEditingController _countryCodeController =
-      TextEditingController(text: Strings.initialCountryCode);
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
 
+  BlocTextField _countryCodeField;
+  BlocTextField _phoneNumField;
+  BlocTextField _firstNameField;
+  BlocTextField _lastNameField;
   RegistrationBloc _googleRegistrationBloc;
 
   void _handleSubmitted(String value) {
@@ -30,10 +26,10 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
   }
 
   bool get isPopulated =>
-      _countryCodeController.text.isNotEmpty &&
-      _phoneNumController.text.isNotEmpty &&
-      _firstNameController.text.isNotEmpty &&
-      _lastNameController.text.isNotEmpty;
+      _countryCodeField.value.isNotEmpty &&
+      _phoneNumField.value.isNotEmpty &&
+      _firstNameField.value.isNotEmpty &&
+      _lastNameField.value.isNotEmpty;
 
   bool isRegisterButtonEnabled(RegistrationState state) {
     return state.isFormValid && isPopulated && !state.isSubmitting;
@@ -43,10 +39,44 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
   void initState() {
     super.initState();
     _googleRegistrationBloc = BlocProvider.of<RegistrationBloc>(context);
-    _countryCodeController..addListener(_onCountryCodeChanged);
-    _phoneNumController.addListener(_onPhoneNumChanged);
-    _firstNameController.addListener(_onFirstNameChanged);
-    _lastNameController.addListener(_onLastNameChanged);
+    _countryCodeField = BlocTextField(
+      padding: EdgeInsets.zero,
+      onChange: (String value) =>
+          _googleRegistrationBloc.add(CountryCodeChanged(countryCode: value)),
+      hintText: Strings.countryCodeHint,
+      textInputType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: _handleSubmitted,
+    );
+    _phoneNumField = BlocTextField(
+      padding: EdgeInsets.zero,
+      onChange: (String value) {
+        _googleRegistrationBloc.add(PhoneNumChanged(phoneNum: value));
+      },
+      hintText: Strings.phoneNumHint,
+      textInputType: TextInputType.phone,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: _handleSubmitted,
+    );
+    _firstNameField = BlocTextField(
+      onChange: (String value) =>
+          _googleRegistrationBloc.add(FirstNameChanged(firstName: value)),
+      labelText: Strings.firstNameLabel,
+      hintText: Strings.firstNameHint,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: _handleSubmitted,
+    );
+    _lastNameField = BlocTextField(
+      onChange: (String value) =>
+          _googleRegistrationBloc.add(LastNameChanged(lastName: value)),
+      labelText: Strings.lastNameLabel,
+      hintText: Strings.lastNameHint,
+      textInputAction: TextInputAction.send,
+      onFieldSubmitted: (_) =>
+          isRegisterButtonEnabled(_googleRegistrationBloc.state)
+              ? _onFormSubmitted()
+              : null,
+    );
   }
 
   @override
@@ -54,7 +84,7 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
     return BlocListener<RegistrationBloc, RegistrationState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
+          BlocProvider.of<AuthenticationBloc>(context).add(LoggedIn());
         }
         if (state.isFailure) {
           Scaffold.of(context)
@@ -75,6 +105,14 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
       },
       child: BlocBuilder<RegistrationBloc, RegistrationState>(
         builder: (context, state) {
+          _phoneNumField.error =
+              state.isPhoneNumError ? Strings.errorPhoneNumInvalid : null;
+          _countryCodeField.error =
+              state.isCountryCodeError ? Strings.errorCountryCodeInvalid : null;
+          _firstNameField.error =
+              state.isFirstNameError ? Strings.errorFieldEmpty : null;
+          _lastNameField.error =
+              state.isLastNameError ? Strings.errorFieldEmpty : null;
           return Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 35),
@@ -103,29 +141,8 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
                           children: <Widget>[
                             _phoneNumTextField(state),
                             SizedBox(height: 15.0),
-                            CustomTextField(
-                              controller: _firstNameController,
-                              labelText: Strings.firstNameLabel,
-                              hintText: Strings.firstNameHint,
-                              textInputAction: TextInputAction.next,
-                              onFieldSubmitted: _handleSubmitted,
-                              errorText: state.isFirstNameError
-                                  ? Strings.errorFieldEmpty
-                                  : null,
-                            ),
-                            CustomTextField(
-                              controller: _lastNameController,
-                              labelText: Strings.lastNameLabel,
-                              hintText: Strings.lastNameHint,
-                              textInputAction: TextInputAction.send,
-                              onFieldSubmitted: (_) =>
-                                  isRegisterButtonEnabled(state)
-                                      ? _onFormSubmitted()
-                                      : null,
-                              errorText: state.isLastNameError
-                                  ? Strings.errorFieldEmpty
-                                  : null,
-                            ),
+                            _firstNameField,
+                            _lastNameField,
                           ],
                         ),
                       ),
@@ -171,31 +188,12 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
           children: [
             Expanded(
               flex: 3,
-              child: CustomTextField(
-                paddding: EdgeInsets.zero,
-                controller: _countryCodeController,
-                hintText: Strings.countryCodeHint,
-                textInputType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: _handleSubmitted,
-                errorText: state.isCountryCodeError
-                    ? Strings.errorCountryCodeInvalid
-                    : null,
-              ),
+              child: _countryCodeField,
             ),
             SizedBox(width: 10.0),
             Expanded(
               flex: 7,
-              child: CustomTextField(
-                paddding: EdgeInsets.zero,
-                controller: _phoneNumController,
-                hintText: Strings.phoneNumHint,
-                textInputType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: _handleSubmitted,
-                errorText:
-                    state.isPhoneNumError ? Strings.errorPhoneNumInvalid : null,
-              ),
+              child: _phoneNumField,
             ),
           ],
         ),
@@ -207,44 +205,16 @@ class _FirstTimeGoogleSignInFormState extends State<FirstTimeGoogleSignInForm> {
 
   @override
   void dispose() {
-    _countryCodeController.dispose();
-    _phoneNumController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
     super.dispose();
-  }
-
-  void _onCountryCodeChanged() {
-    _googleRegistrationBloc.add(
-      CountryCodeChanged(countryCode: _countryCodeController.text),
-    );
-  }
-
-  void _onPhoneNumChanged() {
-    _googleRegistrationBloc.add(
-      PhoneNumChanged(phoneNum: _phoneNumController.text),
-    );
-  }
-
-  void _onFirstNameChanged() {
-    _googleRegistrationBloc.add(
-      FirstNameChanged(firstName: _firstNameController.text),
-    );
-  }
-
-  void _onLastNameChanged() {
-    _googleRegistrationBloc.add(
-      LastNameChanged(lastName: _lastNameController.text),
-    );
   }
 
   void _onFormSubmitted() {
     _googleRegistrationBloc.add(
       ExternalSignUpSubmission(
-        countryCode: _countryCodeController.text,
-        phoneNum: _phoneNumController.text,
-        firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
+        countryCode: _countryCodeField.value,
+        phoneNum: _phoneNumField.value,
+        firstName: _firstNameField.value,
+        lastName: _lastNameField.value,
       ),
     );
   }

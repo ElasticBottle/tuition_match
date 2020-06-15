@@ -49,6 +49,7 @@ import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.
 import 'package:cotor/features/auth_service/login/bloc/login_bloc.dart';
 import 'package:cotor/features/auth_service/registration/bloc/registration_bloc.dart';
 import 'package:cotor/features/auth_service/verify_email/bloc/verify_email_bloc.dart';
+import 'package:cotor/features/authentication/authentication.dart';
 import 'package:cotor/features/edit_tutee_assignment/bloc/edit_tutee_assignment_bloc.dart';
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
 import 'package:cotor/features/onboarding/data/datasources/onboard_info_data_source.dart';
@@ -58,7 +59,7 @@ import 'package:cotor/features/onboarding/domain/usecases/get_onboarding_info.da
 import 'package:cotor/features/onboarding/presentation/bloc/bloc.dart';
 import 'package:cotor/features/request_tutor/request_tutor_form/bloc/request_tutor_form_bloc.dart';
 import 'package:cotor/features/request_tutor/select_existing_assignment/bloc/select_existing_assignment_bloc.dart';
-import 'package:cotor/features/select_profile_image/dependency_injection.dart';
+import 'package:cotor/features/select_profile_image/select_profile_image_export.dart';
 import 'package:cotor/features/tutee_assignment_list/bloc/tutee_assignments_bloc.dart';
 import 'package:cotor/features/user_profile/bloc/user_profile_page_bloc.dart';
 import 'package:cotor/features/user_profile_bloc/user_profile_bloc.dart';
@@ -78,6 +79,7 @@ final sl = GetIt.instance;
 Future<void> init() async {
   //! Features
   SelectProfileImageDependency.initialize(sl);
+  AuthenticationDependency.initialise(sl);
 
   // Bloc
   sl.registerFactory<OnboardingBloc>(
@@ -106,45 +108,11 @@ Future<void> init() async {
     () => ViewAssignmentBloc(),
   );
 
-  // Auth service Blocs
-  sl.registerFactory<AuthServiceBloc>(
-    () => AuthServiceBloc(
-      isFirstAppLaunch: sl(),
-      setIsFirstAppLaunchFalse: sl(),
-      getCurrentUser: sl(),
-      userStream: sl(),
-      getUserProfile: sl(),
-      signOut: sl(),
-    ),
-  );
-
-  sl.registerFactory<LoginBloc>(
-    () => LoginBloc(
-      signInWithEmail: sl(),
-      signInWithGoogle: sl(),
-      validator: sl(),
-    ),
-  );
-
-  sl.registerFactory<RegistrationBloc>(
-    () => RegistrationBloc(
-      createUserDocument: sl(),
-      createAccountWithEmail: sl(),
-      validator: sl(),
-    ),
-  );
-
-  sl.registerFactory<VerifyEmailBloc>(
-    () => VerifyEmailBloc(
-      sendEmailVerification: sl(),
-      signOut: sl(),
-    ),
-  );
+  //
 
   // user data bloc
   sl.registerFactory<UserProfileBloc>(
     () => UserProfileBloc(
-      getCurrentUser: sl(),
       userProfileStream: sl(),
     ),
   );
@@ -187,7 +155,6 @@ Future<void> init() async {
   sl.registerFactory(() => UserProfilePageBloc());
 
   sl.registerFactory(() => RequestBloc(
-        getCurrentUser: sl(),
         requestStream: sl(),
         userProfileStream: sl(),
       ));
@@ -204,21 +171,19 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetCachedTutorList(repo: sl()));
 
   sl.registerLazySingleton(() => UserStream(repo: sl()));
-  sl.registerLazySingleton(() => GetCurrentUser(repo: sl()));
-  sl.registerLazySingleton(() => GetUserProfile(repo: sl()));
-  sl.registerLazySingleton(
-      () => CreateAccountWithEmail(repo: sl(), createUserDocument: sl()));
-  sl.registerLazySingleton(
-      () => CreateUserDocument(authServiceRepo: sl(), userRepo: sl()));
-  sl.registerLazySingleton(() => SendEmailVerification(repo: sl()));
-  sl.registerLazySingleton(() => SignInWithEmail(repo: sl()));
-  sl.registerLazySingleton(() => SignInWithGoogle(repo: sl()));
-  sl.registerLazySingleton(() => SignOut(repo: sl()));
+  // sl.registerLazySingleton(() => GetCurrentUser(repo: sl()));
+  // sl.registerLazySingleton(() => GetUserProfile(repo: sl()));
+  // sl.registerLazySingleton(
+  //     () => CreateAccountWithEmail(repo: sl(), createUserDocument: sl()));
+  // sl.registerLazySingleton(
+  //     () => CreateUserDocument(authServiceRepo: sl(), userRepo: sl()));
+  // sl.registerLazySingleton(() => SendEmailVerification(repo: sl()));
+  // sl.registerLazySingleton(() => SignInWithEmail(repo: sl()));
+  // sl.registerLazySingleton(() => SignInWithGoogle(repo: sl()));
+  // sl.registerLazySingleton(() => SignOut(repo: sl()));
 
-  sl.registerLazySingleton(() => EmailAndPasswordValidators());
-
-  sl.registerLazySingleton(() => IsFirstAppLaunch(repo: sl()));
-  sl.registerLazySingleton(() => SetIsFirstAppLaunchFalse(repo: sl()));
+  // sl.registerLazySingleton(() => IsFirstAppLaunch(repo: sl()));
+  // sl.registerLazySingleton(() => SetIsFirstAppLaunchFalse(repo: sl()));
 
   sl.registerLazySingleton(() => UserProfileStream(repo: sl()));
 
@@ -254,17 +219,17 @@ Future<void> init() async {
         networkInfo: sl(),
         userDs: sl(),
       ));
-  sl.registerLazySingleton<AuthServiceRepo>(
-    () => AuthServiceRepoImpl(
-      auth: sl(),
-      networkInfo: sl(),
-    ),
-  );
-  sl.registerLazySingleton<MiscRepo>(
-    () => MiscRepoImpl(
-      preferences: sl(),
-    ),
-  );
+  // sl.registerLazySingleton<AuthServiceRepo>(
+  //   () => AuthServiceRepoImpl(
+  //     auth: sl(),
+  //     networkInfo: sl(),
+  //   ),
+  // );
+  // sl.registerLazySingleton<MiscRepo>(
+  //   () => MiscRepoImpl(
+  //     preferences: sl(),
+  //   ),
+  // );
 
   // DataSources
   sl.registerLazySingleton<OnboardInfoDataSource>(
@@ -283,6 +248,7 @@ Future<void> init() async {
     () => FirestoreUserDataSource(
       auth: sl(),
       store: sl(),
+      storage: sl(),
     ),
   );
   sl.registerLazySingleton<UserLocalDataSource>(
@@ -291,16 +257,17 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton<AuthServiceRemote>(
-    () => FirebaseAuthService(
-      auth: sl(),
-      googleSignIn: sl(),
-      store: sl(),
-    ),
-  );
+  // sl.registerLazySingleton<AuthServiceRemote>(
+  //   () => FirebaseAuthService(
+  //     auth: sl(),
+  //     googleSignIn: sl(),
+  //     store: sl(),
+  //   ),
+  // );
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+  sl.registerLazySingleton(() => EmailAndPasswordValidators());
 
   //! External
   final sharedPreferences = await SharedPreferences.getInstance();

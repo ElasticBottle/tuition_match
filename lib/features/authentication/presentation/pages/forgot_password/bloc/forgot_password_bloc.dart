@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cotor/constants/strings.dart';
 import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/core/utils/validator.dart';
-import 'package:cotor/domain/usecases/auth_service/forget_password.dart';
+import 'package:cotor/features/authentication/domain/usecases/forget_password.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';

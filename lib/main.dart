@@ -1,6 +1,6 @@
 import 'package:cotor/core/bloc/bloc_delegate.dart';
 import 'package:cotor/core/theme/app_theme.dart';
-import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
+import 'package:cotor/features/authentication/authentication.dart';
 import 'package:cotor/initial_page_decider.dart';
 import 'package:cotor/user_data_injector.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cotor/injection_container.dart' as di;
 import 'package:cotor/routing/router.gr.dart';
 
+import 'home_page.dart';
 import 'injection_container.dart';
 
 Future<void> main() async {
@@ -16,10 +17,18 @@ Future<void> main() async {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   await di.init();
   runApp(
-    BlocProvider(
-      create: (context) => sl<AuthServiceBloc>()..add(AppStarted()),
+    MultiBlocProvider(
+      providers: [
+        // BlocProvider<VerifyEmailBloc>(
+        //   create: (context) => sl<VerifyEmailBloc>(),
+        // ),
+        BlocProvider<AuthenticationBloc>(
+          create: (context) => sl<AuthenticationBloc>()..add(AppStarted()),
+        )
+      ],
       child: MyApp(),
     ),
+    // MyApp(),
   );
 }
 
@@ -39,8 +48,9 @@ class MyApp extends StatelessWidget {
     );
 
     // return MaterialApp(
+    //   theme: AppTheme(isDark: false).themeData,
     //   debugShowCheckedModeBanner: false,
-    //   home: OnboardPage(),
+    //   home: HomePage(),
     // );
   }
 }

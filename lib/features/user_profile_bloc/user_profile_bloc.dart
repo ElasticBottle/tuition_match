@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:cotor/core/error/failures.dart';
 import 'package:cotor/domain/entities/user/user_export.dart';
 import 'package:cotor/domain/usecases/auth_service/get_current_user.dart';
-import 'package:cotor/domain/usecases/usecase.dart';
 import 'package:cotor/domain/usecases/user/user_info/user_profile_stream.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
@@ -15,12 +13,10 @@ part 'user_profile_state.dart';
 
 class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
   UserProfileBloc({
-    @required this.getCurrentUser,
     @required this.userProfileStream,
   });
-  final GetCurrentUser getCurrentUser;
   final UserProfileStream userProfileStream;
-  StreamSubscription userProfilesubscription;
+  StreamSubscription userProfileSubscription;
 
   @override
   UserProfileState get initialState => UserProfileStateImpl.empty();
@@ -30,7 +26,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     UserProfileEvent event,
   ) async* {
     if (event is UserEnterHompage) {
-      yield* _mapUserEnterHomepageToState();
+      yield* _mapUserEnterHomepageToState(event.uid);
     } else if (event is RefreshUserProfile) {
       yield* _mapRefreshUserProfileToState(event.user);
     } else if (event is UpdateProfileSuccess) {
@@ -40,22 +36,15 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
     }
   }
 
-  Stream<UserProfileState> _mapUserEnterHomepageToState() async* {
-    userProfilesubscription?.cancel();
-    final Either<Failure, User> userId = await getCurrentUser(NoParams());
-    yield* userId.fold(
-      (Failure failure) async* {
-        print(failure.toString());
+  Stream<UserProfileState> _mapUserEnterHomepageToState(String uid) async* {
+    userProfileSubscription?.cancel();
+    userProfileSubscription = userProfileStream(uid).listen(
+      (User userProfile) {
+        print('user got');
+        add(RefreshUserProfile(user: userProfile));
       },
-      (User userId) async* {
-        userProfilesubscription = userProfileStream(userId.identity.uid).listen(
-          (User userProfile) {
-            add(RefreshUserProfile(user: userProfile));
-          },
-          onError: (dynamic error) {
-            print(error.toString());
-          },
-        );
+      onError: (dynamic error) {
+        print(error.toString());
       },
     );
   }
@@ -78,7 +67,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
 
   @override
   Future<void> close() {
-    userProfilesubscription?.cancel();
+    userProfileSubscription?.cancel();
     return super.close();
   }
 }

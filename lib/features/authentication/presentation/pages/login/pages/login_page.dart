@@ -1,4 +1,4 @@
-import 'package:cotor/features/auth_service/login/bloc/login_bloc.dart';
+import 'package:cotor/features/authentication/presentation/pages/login/bloc/login_bloc.dart';
 import 'package:cotor/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

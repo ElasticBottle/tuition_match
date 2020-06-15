@@ -1,5 +1,5 @@
 import 'package:cotor/features/Request/request_bloc/request_bloc.dart';
-import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
+import 'package:cotor/features/authentication/authentication.dart';
 import 'package:cotor/features/edit_tutee_assignment/bloc/edit_tutee_assignment_bloc.dart';
 import 'package:cotor/features/edit_tutor_profile/bloc/edit_tutor_profile_bloc.dart';
 import 'package:cotor/features/request_tutor/request_tutor_form/bloc/request_tutor_form_bloc.dart';
@@ -20,21 +20,21 @@ class UserDataInjector extends StatelessWidget {
     Key key,
     @required this.builder,
   }) : super(key: key);
-  final Widget Function(BuildContext, AuthServiceState) builder;
+  final Widget Function(BuildContext, AuthenticationState) builder;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthServiceBloc, AuthServiceState>(
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is Authenticated) {
           return MultiBlocProvider(providers: [
             BlocProvider<UserProfileBloc>(
-              create: (context) =>
-                  sl<UserProfileBloc>()..add(UserEnterHompage()),
+              create: (context) => sl<UserProfileBloc>()
+                ..add(UserEnterHompage(uid: state.userProfile.uid)),
             ),
             BlocProvider(
-              create: (context) =>
-                  sl<RequestBloc>()..add(InitialiseRequestBloc()),
+              create: (context) => sl<RequestBloc>()
+                ..add(InitialiseRequestBloc(uid: state.userProfile.uid)),
             ),
             BlocProvider<ViewAssignmentBloc>(
               create: (context) => sl<ViewAssignmentBloc>(),

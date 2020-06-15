@@ -1,7 +1,8 @@
-import 'package:cotor/features/auth_service/bloc/auth_service_bloc/auth_service_bloc.dart';
-import 'package:cotor/features/auth_service/pages/first_time_google_sign_in_page.dart';
-import 'package:cotor/features/auth_service/pages/login_page.dart';
-import 'package:cotor/features/auth_service/verify_email/pages/verify_email_page.dart';
+// import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
+// import 'package:cotor/features/auth_service/first_time_google_sign_in/pages/first_time_google_sign_in_page.dart';
+// import 'package:cotor/features/auth_service/login/pages/login_page.dart';
+// import 'package:cotor/features/auth_service/verify_email/pages/verify_email_page.dart';
+import 'package:cotor/features/authentication/authentication.dart';
 import 'package:cotor/features/onboarding/presentation/pages/onboard_page.dart';
 import 'package:cotor/home_page.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class InitialPageDecider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthServiceBloc, AuthServiceState>(
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is Uninitialized) {
           return Scaffold(
@@ -26,7 +27,7 @@ class InitialPageDecider extends StatelessWidget {
           return OnboardPage();
         } else if (state is Authenticated) {
           return HomePage();
-        } else if (state is NewGoogleUser) {
+        } else if (state is MissingUserInfo) {
           return FirstTimeGoogleSignInPage();
         } else if (state is UnverifiedEmail) {
           return VerifyEmailPage();
@@ -35,7 +36,7 @@ class InitialPageDecider extends StatelessWidget {
         }
         return Container(
           child: Center(
-            child: Text('error occured'),
+            child: Text('error occurred'),
           ),
         );
       },

@@ -4,7 +4,6 @@ class VerifyEmailState extends Equatable {
   const VerifyEmailState({
     this.isSending,
     this.isSent,
-    this.isSigningOut,
     this.error,
   });
 
@@ -12,7 +11,6 @@ class VerifyEmailState extends Equatable {
     return VerifyEmailState(
       isSending: false,
       isSent: false,
-      isSigningOut: false,
       error: null,
     );
   }
@@ -20,23 +18,13 @@ class VerifyEmailState extends Equatable {
     return VerifyEmailState(
       isSending: false,
       isSent: false,
-      isSigningOut: false,
       error: error,
-    );
-  }
-  factory VerifyEmailState.signingOut() {
-    return VerifyEmailState(
-      isSending: false,
-      isSent: false,
-      isSigningOut: true,
-      error: null,
     );
   }
   factory VerifyEmailState.sendingVerificationEmail() {
     return VerifyEmailState(
       isSending: true,
       isSent: false,
-      isSigningOut: false,
       error: null,
     );
   }
@@ -44,35 +32,31 @@ class VerifyEmailState extends Equatable {
     return VerifyEmailState(
       isSending: false,
       isSent: true,
-      isSigningOut: false,
       error: null,
     );
   }
   final bool isSending;
   final bool isSent;
-  final bool isSigningOut;
   final String error;
 
   VerifyEmailState copyWith({
     bool isSending,
     bool isSent,
-    bool isSigningOut,
     String error,
   }) {
     return VerifyEmailState(
       isSending: isSending ?? this.isSending,
       isSent: isSent ?? this.isSent,
-      isSigningOut: isSigningOut ?? this.isSigningOut,
       error: error,
     );
   }
 
   @override
-  List<Object> get props => [isSending, isSent, isSigningOut, error];
+  List<Object> get props => [isSending, isSent, error];
 
   @override
   String toString() =>
-      'VerfiyEmailState { isSending : $isSending, isSent : $isSent, isSigningOut : $isSigningOut, error : $error}';
+      'VerifyEmailState { isSending : $isSending, isSent : $isSent, error : $error}';
 }
 
 class VerifyEmailInitial extends VerifyEmailState {}

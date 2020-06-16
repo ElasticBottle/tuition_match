@@ -1,3 +1,4 @@
+import 'package:cotor/common_widgets/bars/bottom_action_bar_new.dart';
 import 'package:cotor/common_widgets/information_display/info_display.dart';
 import 'package:cotor/common_widgets/information_display/user_detail_card.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
@@ -17,6 +18,7 @@ class DisplayTile extends StatelessWidget {
     this.cardColor,
     this.cardElevation,
     this.cardPadding,
+    this.bottomActionBar,
   }) : super(key: key);
 
   // user detail card
@@ -45,6 +47,7 @@ class DisplayTile extends StatelessWidget {
   final Color cardColor;
   final double cardElevation;
   final EdgeInsets cardPadding;
+  final BottomActionBarNew bottomActionBar;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -74,7 +77,7 @@ class DisplayTile extends StatelessWidget {
             SizedBox(
               height: 10.0,
             ),
-            // bottomActionBar,
+            if (bottomActionBar != null) bottomActionBar,
           ],
         ),
       ),
@@ -93,7 +96,7 @@ class DisplayTile extends StatelessWidget {
         spacingBgColor: Theme.of(context).colorScheme.surface,
         icons: icons,
         descriptions: description,
-        spacingBetweenFields: 15,
+        spacingBetweenFields: 7,
       ),
     );
   }

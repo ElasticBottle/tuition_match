@@ -12,6 +12,7 @@ class CustomSnackBar extends SnackBar {
     this.bgColor,
     this.actionText = 'Dismiss',
     this.onBgColor,
+    this.actionOnPressed,
   }) : super(key: key, content: const Text(''));
 
   /// The widget use to display in the center of the snackbar
@@ -36,6 +37,8 @@ class CustomSnackBar extends SnackBar {
 
   /// Action text of the snackBar
   final String actionText;
+
+  final VoidCallback actionOnPressed;
 
   /// Color of [actionText]
   ///
@@ -66,9 +69,10 @@ class CustomSnackBar extends SnackBar {
       action: SnackBarAction(
         textColor: onBgColor ?? Theme.of(context).colorScheme.onError,
         label: actionText,
-        onPressed: () {
-          Scaffold.of(context).hideCurrentSnackBar();
-        },
+        onPressed: actionOnPressed ??
+            () {
+              Scaffold.of(context).hideCurrentSnackBar();
+            },
       ),
       backgroundColor: bgColor ?? Theme.of(context).colorScheme.error,
     );

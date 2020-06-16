@@ -25,7 +25,7 @@ class Avatar extends StatelessWidget {
         backgroundColor:
             avatarBackgroundColor ?? Theme.of(context).colorScheme.primary,
         backgroundImage: photoUrl != null && photoUrl.isNotEmpty
-            ? NetworkImage(photoUrl)
+            ? _getNetworkImage(photoUrl)
             : null,
         child: photoUrl == null || photoUrl.isEmpty
             ? Icon(
@@ -49,5 +49,16 @@ class Avatar extends StatelessWidget {
       );
     }
     return null;
+  }
+
+  NetworkImage _getNetworkImage(String photoUrl) {
+    NetworkImage result;
+    try {
+      result = NetworkImage(photoUrl);
+    } catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
+    }
+    return result;
   }
 }

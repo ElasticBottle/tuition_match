@@ -37,7 +37,7 @@ class _BottomBarDeciderState extends State<BottomBarDecider> {
   Widget build(BuildContext context) {
     if (widget.post.isProfile) {
       final List<dynamic> isApplied = _checkIfIsApplied(
-          widget.post.identity.uid, requestBloc.state.requests);
+          widget.post.identity?.uid, requestBloc.state.requests);
 
       if (widget.post.identity?.uid ==
           userProfileBloc.state.userProfile.identity.uid) {

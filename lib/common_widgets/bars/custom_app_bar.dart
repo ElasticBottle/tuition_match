@@ -3,18 +3,37 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
-    this.title,
+    this.title = '',
+    this.subtitle = '',
     this.controller,
+    this.leading,
+    this.actions = const [],
   });
   final String title;
+  final String subtitle;
   final ScrollController controller;
+  final Widget leading;
+  final List<Widget> actions;
   @override
   Widget build(BuildContext context) {
+    if (controller == null) {
+      return _noControllerAppBar(context);
+    } else {
+      return _controllerAppBar(context);
+    }
+  }
+
+  Widget _controllerAppBar(BuildContext context) {
     return SliverAppBar(
       backgroundColor: Theme.of(context).colorScheme.background,
       expandedHeight: MediaQuery.of(context).size.height / 5 * 2,
+      leading: leading,
+      actions: [...actions],
+      actionsIconTheme:
+          IconThemeData(color: Theme.of(context).colorScheme.primary),
       floating: false,
       pinned: true,
+      elevation: 2,
       title: FadeOnScroll(
         scrollController: controller,
         fullOpacityOffset: 200,
@@ -28,12 +47,13 @@ class CustomAppBar extends StatelessWidget {
         ),
       ),
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(bottom: 8.0),
+        // titlePadding: const EdgeInsets.only(left: 108.0),
         centerTitle: true,
         background: FadeOnScroll(
           scrollController: controller,
           zeroOpacityOffset: 200,
           child: Stack(
+            overflow: Overflow.visible,
             children: <Widget>[
               Align(
                 alignment: Alignment.centerLeft,
@@ -41,13 +61,23 @@ class CustomAppBar extends StatelessWidget {
                   padding:
                       EdgeInsets.all(MediaQuery.of(context).size.width / 8),
                   child: CustomAnimSwitcher(
-                    child: Text(
-                      title.split(' ').join('\n'),
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline4
-                          .apply(fontWeightDelta: 3),
+                    child: Column(
                       key: ValueKey<String>(title),
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title.split(' ').join('\n'),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4
+                              .apply(fontWeightDelta: 3),
+                        ),
+                        Text(
+                          subtitle,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -56,6 +86,25 @@ class CustomAppBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _noControllerAppBar(BuildContext context) {
+    return SliverAppBar(
+      iconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      floating: true,
+      pinned: false,
+      elevation: 2,
+      title: Text(
+        title,
+        style: Theme.of(context)
+            .textTheme
+            .headline6
+            .copyWith(fontWeight: FontWeight.bold),
+      ),
+      leading: leading,
+      actions: [...actions],
     );
   }
 }

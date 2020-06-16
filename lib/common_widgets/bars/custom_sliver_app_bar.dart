@@ -1,6 +1,8 @@
 import 'package:cotor/constants/custom_color_and_fonts.dart';
 import 'package:cotor/constants/spacings_and_heights.dart';
+import 'package:cotor/features/auth_service/auth_service_bloc/auth_service_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomSliverAppbar extends StatelessWidget {
   const CustomSliverAppbar({
@@ -60,7 +62,7 @@ class CustomSliverAppbar extends StatelessWidget {
                   color: ColorsAndFonts.primaryColor,
                 ),
                 onPressed: () {
-                  print('favourtie press');
+                  BlocProvider.of<AuthServiceBloc>(context).add(LoggedOut());
                 },
               ),
               Padding(

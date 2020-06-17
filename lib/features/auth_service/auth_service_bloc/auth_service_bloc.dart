@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cotor/core/error/failures.dart';
-import 'package:cotor/domain/entities/user.dart';
+import 'package:cotor/domain/entities/user/user.dart';
+import 'package:cotor/domain/usecases/auth_service/get_current_user.dart';
 import 'package:cotor/domain/usecases/auth_service/sign_out.dart';
+import 'package:cotor/domain/usecases/auth_service/user_stream.dart';
 import 'package:cotor/domain/usecases/is_first_app_launch.dart';
 import 'package:cotor/domain/usecases/set_is_first_app_launch_false.dart';
 import 'package:cotor/domain/usecases/usecase.dart';
-import 'package:cotor/domain/usecases/user/get_current_user.dart';
-import 'package:cotor/domain/usecases/user/get_user_profile.dart';
-import 'package:cotor/domain/usecases/user/user_stream.dart';
+import 'package:cotor/domain/usecases/user/user_info/get_user_profile.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -83,21 +83,22 @@ class AuthServiceBloc extends Bloc<AuthServiceEvent, AuthServiceState> {
       },
       (User user) async* {
         // User is logged in, checking to see if the user is in one of three categories:
-        // - First time goolge sign in
+        // - First time Google sign in
         // - Needs to verify email
         // - Is existing user
         final Either<Failure, User> databaseProfile =
-            await getUserProfile(GetUserProfileParams(uid: user.uid));
+            await getUserProfile(GetUserProfileParams(uid: user.identity.uid));
         yield* databaseProfile.fold(
           (Failure noDataBaseProfile) async* {
             if (noDataBaseProfile is NoUserFailure) {
               yield NewGoogleUser();
             } else {
+              // TODO(elasticBottle): handle other failure states: no internet, server failure etc.
               yield Unauthenticated();
             }
           },
           (User userProfile) async* {
-            if (user.isEmailVerified) {
+            if (user.identity.isEmailVerified) {
               yield Authenticated(
                 userProfile: user,
               );

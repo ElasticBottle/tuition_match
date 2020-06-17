@@ -13,38 +13,35 @@ class VerifyEmailPage extends StatelessWidget {
   const VerifyEmailPage();
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<VerifyEmailBloc>(),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
-          elevation: 0,
-          leading: IconButton(
-            icon: Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.rotationY(math.pi),
-              child: Icon(
-                Icons.exit_to_app,
-                color: Theme.of(context).colorScheme.primary,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.rotationY(math.pi),
+            child: Icon(
+              Icons.exit_to_app,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          onPressed: () =>
+              BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
+        ),
+      ),
+      body: RefreshIndicator(
+          onRefresh: () async {
+            BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
+          },
+          child: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: VerifyEmailPageBody(),
+                physics: const AlwaysScrollableScrollPhysics(),
               ),
             ),
-            onPressed: () =>
-                BlocProvider.of<VerifyEmailBloc>(context).add(LogOut()),
-          ),
-        ),
-        body: RefreshIndicator(
-            onRefresh: () async {
-              BlocProvider.of<AuthServiceBloc>(context).add(LoggedIn());
-            },
-            child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: VerifyEmailPageBody(),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                ),
-              ),
-            )),
-      ),
+          )),
     );
   }
 }

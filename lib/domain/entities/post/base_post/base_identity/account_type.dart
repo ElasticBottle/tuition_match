@@ -27,6 +27,16 @@ class AccountType extends Equatable {
       AccountType(student + verifiedTutor);
   static const AccountType VERIFIED_ACCOUNT = AccountType(verifiedAccount);
 
+  bool isStudent() {
+    final List<String> toCheck = accountType.split('.');
+    for (String type in toCheck) {
+      if (type == student[1]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool isTutor() {
     final List<String> toCheck = accountType.split('.');
     for (String type in toCheck) {
@@ -68,6 +78,8 @@ class AccountType extends Equatable {
   AccountType makeStudent() {
     if (accountType == basic) {
       return STUDENT;
+    } else if (isStudent()) {
+      return AccountType(accountType);
     } else {
       return AccountType(accountType + student);
     }

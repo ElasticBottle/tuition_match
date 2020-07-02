@@ -1,5 +1,6 @@
 import 'package:cotor/domain/entities/post/base_post/base_stats/stats_simple.dart';
 import 'package:cotor/domain/entities/post/base_post/post_base.dart';
+import 'package:cotor/domain/entities/post/tutee_assignment/assignment.dart';
 import 'package:cotor/domain/entities/post/tutee_assignment/details/details_tutee.dart';
 import 'package:cotor/domain/entities/post/tutee_assignment/identity/identity_tutee.dart';
 import 'package:cotor/domain/entities/post/tutee_assignment/requirements/requirements_tutee.dart';
@@ -16,7 +17,13 @@ class TuteeAssignment extends Equatable implements PostBase {
         _identityTutee = identityTutee,
         _requirementsTutee = requirementsTutee,
         _statsSimple = statsSimple;
-
+  factory TuteeAssignment.empty() {
+    return TuteeAssignment(
+      identityTutee: IdentityTutee(
+        isOpen: true,
+      ),
+    );
+  }
   final DetailsTutee _detailsTutee;
   final IdentityTutee _identityTutee;
   final RequirementsTutee _requirementsTutee;
